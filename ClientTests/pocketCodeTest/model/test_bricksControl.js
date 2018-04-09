@@ -478,7 +478,7 @@ QUnit.test("WaitUntilBrick", function (assert) {
 
 QUnit.test("RepeatBrick", function (assert) {
 
-    assert.expect(11);   //init async asserts (to wait for)
+    assert.expect(10);   //init async asserts (to wait for)
     var done1 = assert.async();
     var done2 = assert.async();
 
@@ -539,7 +539,7 @@ QUnit.test("RepeatBrick", function (assert) {
         //assert.equal(tb.executed, 6, "loop running continuously");
         var delay = finishTime - startTime;
         //console.log("running loop 6 times without loop delay (5 delays) = " + delay + "ms");
-        assert.ok(delay < 3, "sync call: ok");
+        //assert.ok(delay < 3, "sync call: ok");    //currently disabled: used to test threadCounter
         assert.equal(e.id, "n_times", "id returned correctly");
         assert.ok(!e.loopDelay, "loopDelay returned correctly (always false or undefined on loops)");
         assert.equal(tb.executed, 6, "executed 6 times");

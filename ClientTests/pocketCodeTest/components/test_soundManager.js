@@ -208,11 +208,31 @@ QUnit.test("SoundManager", function (assert) {
 
 });
 
-
 QUnit.test("SoundManager: supported", function (assert) {
 
     var sm = new PocketCode.SoundManager();
-    sm._supported = false;  //override to check if an error occurs when not supported (e.g. safari for windows)
+    if (!sm.supported) {
+        assert.ok(false, "WARNING: tests not executed due to missing browser support- please run these tests in another browser");
+        return;
+    }
+
+    var done1 = assert.async();
+    var done2 = assert.async();
+    var done3 = assert.async();
+
+    assert.ok(false, "TODO");
+    done1();
+    done2();
+    done3();
+});
+
+QUnit.test("SoundManager: unsupported", function (assert) {
+
+    //override to check if an error occurs when not supported (e.g. safari for windows)
+    Object.defineProperty(PocketCode.SoundManager.prototype, 'supported', { value: false, enumerable: false });
+
+    //PocketCode.SoundManager.prototype.df
+    var sm = new PocketCode.SoundManager();
     var sceneId = "s01";
 
     var onLoadCount = 0,
@@ -288,35 +308,16 @@ QUnit.test("SoundManager: supported", function (assert) {
 });
 
 
-QUnit.test("SoundManager: unsupported", function (assert) {
-
-    var done1 = assert.async();
-    var done2 = assert.async();
-    var done3 = assert.async();
-
-    var sm = new PocketCode.SoundManager();
-    if (!sm.supported) {
-        assert.ok(false, "WARNING: not all tests (alternative tests) were executed due to missing browser support");
-        done1();
-        done2();
-        done3();
-        return
-    }
-
-    assert.ok(false, "TODO");
-    done1();
-    done2();
-    done3();
-});
-
-
 QUnit.test("AudioPlayer", function (assert) {
 
-    var ap = new PocketCode.AudioPlayer();
-    assert.ok(ap instanceof PocketCode.AudioPlayer, "instance check");
+    var sm = new PocketCode.SoundManager(),
+        ap = new PocketCode.AudioPlayer(sm.soundCollectionId);
+
+    assert.ok(ap instanceof PocketCode.AudioPlayer && ap instanceof PocketCode.SoundManager, "instance check");
     assert.ok(ap.onFinishedPlaying instanceof SmartJs.Event.Event, "event initialized");
 
     //initial
+    assert.equal(ap.volume, 100, "volume is set to 100 (initial)");
     ap.volume = -2;
     assert.equal(Math.round(ap.volume * 100) / 100, 0, "volume getter/setter check: range min");
     ap.volume = 200;
@@ -324,8 +325,6 @@ QUnit.test("AudioPlayer", function (assert) {
     ap.volume = 92;
     assert.equal(Math.round(ap.volume * 100) / 100, 92, "volume getter/setter check: initialized");
     assert.throws(function () { ap.volume = "failed" }, Error, "ERROR: volume setter with invalid parameter");
-    ap.volume = 92;    //code coverage check only
-    assert.equal(Math.round(ap.volume * 100) / 100, 92, "volume getter/setter check: not changed when same value applied");
 
     //assert.throws(function () { ap.isPlaying(); }, "ERROR: invalid scene id");
     //assert.equal(ap.isPlaying(sceneId), false, "not playing on initialized");

@@ -36,9 +36,6 @@ PocketCode.Model.merge({
 
                     if (!success)
                         this._return(id);
-                    //    return;
-                    //}
-                    //po.soundInstanceId = instanceId;
                 }
             },
             _onStartPlaying: function (id, instanceId) {
@@ -202,8 +199,6 @@ PocketCode.Model.SpeakBrick = (function () {
                 if (!po)  //stopped
                     return;
 
-                //var instanceId;
-                //try {
                 if (this._soundId) {
                     success = this._sprite.startSound(this._soundId, this._onStartPlaying.bind(this, id), this._return.bind(this, id));
                 }
@@ -216,16 +211,10 @@ PocketCode.Model.SpeakBrick = (function () {
 
                     //we use a request object here to generate an url
                     var request = new PocketCode.ServiceRequest(PocketCode.Services.TTS, SmartJs.RequestMethod.GET, { text: text });
-                    success = this._sprite.loadSoundFile(this._soundId, request.url, 'mp3', true, this._onStartPlaying.bind(this, id), this._return.bind(this, id));
-                    //po.soundInstanceId = instanceId;
+                    success = this._sprite.loadSoundFile(SmartJs.getNewId(), request.url, 'mp3', true, this._onStartPlaying.bind(this, id), this._return.bind(this, id));
                 }
                 if (!success)
                     this._return(id);
-                //}
-                //catch (e) {
-                //    this._return(id);
-                //    //return;
-                //}
             }
         },
     });

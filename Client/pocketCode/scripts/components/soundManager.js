@@ -59,6 +59,7 @@ PocketCode.SoundManager = (function () {
     Object.defineProperties(SoundManager.prototype, {
         supported: {
             value: createjs.Sound.initializeDefaultPlugins(),
+            configurable: true, //supporting unit tests
         },
         soundCollectionId: {
             get: function () {
