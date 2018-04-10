@@ -24,133 +24,204 @@ QUnit.test("SoundManager", function (assert) {
     assert.equal(sm1.muted, false, "muted getter/setter");
     sm1.muted = true;
     assert.equal(sm1.muted, sm2.muted, "muted getter/setter: mute() dependency on all soundManager instances");
+    sm1.muted = false;  //set to false gain to hear sounds in other tests
 
     //load: general tests- detailed tests in supported/unsupported test classes
     assert.throws(function () { sm1.loadSounds(undefined, []); }, Error, "ERROR: invalid argument: url");
     assert.throws(function () { sm1.loadSounds(undefined, ""); }, Error, "ERROR: invalid argument: array");
     assert.throws(function () { sm1.loadSounds('', [{ id: "", url: "", size: "" }]); }, Error, "ERROR: invalid parameter size != number");
 
-    var onLoadHandler = function () {
-        assert.ok(true, "onLoad triggered on empty sound list");
-    };
+    var onLoadCounter = 0,
+        onLoadHandler = function () {
+            onLoadCounter++;
+        };
     sm1.onLoad.addEventListener(new SmartJs.Event.EventListener(onLoadHandler, this));
 
     //start tests: empty sound list
     sm1.loadSounds('', []);
+    assert.equal(onLoadCounter, 1, "onLoad triggered on empty sound list");
 
 });
 
 QUnit.test("SoundManager: supported", function (assert) {
 
-    var sm = new PocketCode.SoundManager();
-    if (!sm.supported) {
+    var sm1 = new PocketCode.SoundManager();
+    var sm2 = new PocketCode.SoundManager();
+    if (!sm1.supported) {
         assert.ok(false, "WARNING: tests not executed due to missing browser support- please run these tests in another browser");
         return;
     }
 
     var done1 = assert.async();
     var done2 = assert.async();
-    var done3 = assert.async();
 
+    //create test infrastructure
+    var resourceBaseUrl1 = "_resources/";
+    var sounds1 = [
+        { id: "s16", url: "sounds/3ec79f9addcf5055e069ec794db954e8_c.mp3", size: 11140 },
+        { id: "s17", url: "sounds/778fc114464dcf4b368c7d2841863beb_d.mp3", size: 11140 },
+        { id: "s18", url: "sounds/152badadc1a428c7a89b46cf6d82a43b_e.mp3", size: 11140 },
+        { id: "s19", url: "sounds/dbdd35220c46b04c7ace3f04af185702_f.mp3", size: 11140 },
+        { id: "s20", url: "sounds/e2b1d3b4f3d65de8f6468539ad695e94_g.mp3", size: 11140 }
+    ];
+    var sounds2 = [
+        { id: "s32", url: "sounds/a49fd671df65fb1c1b5f93bb56b53c85_record.mp3", size: 3712 },
+        { id: "s37", url: "sounds/e47dbee99c20968043bcf8b5858c33e1_record.mp3", size: 16192 },
+        { id: "s114", url: "sounds/5952a60f91ed000cf2c46f645698c018_record2", size: 12544 }    //including invalid file
+    ];
 
+    //sound manager 1 tests
+    var sm1Progress = [],
+        sm1ProgressHandler = function (e) {
+            sm1Progress.push(e);
+        };
+    var sm1Load,
+        sm1LoadHandler = function (e) {
+            sm1Load = e;
 
+            test_validateOnLoadSm1();
+        };
+    var sm1Error,
+        sm1ErrorHandler = function (e) {
+            sm1Error = e;
+            //console.log('error');
+        };
 
+    sm1.onLoadingProgress.addEventListener(new SmartJs.Event.EventListener(sm1ProgressHandler, this));
+    sm1.onLoad.addEventListener(new SmartJs.Event.EventListener(sm1LoadHandler, this));
+    sm1.onLoadingError.addEventListener(new SmartJs.Event.EventListener(sm1ErrorHandler, this));
 
+    sm1.loadSounds(resourceBaseUrl1, sounds1);
+    assert.throws(function () { sm1.loadSounds(resourceBaseUrl1, sounds1); }, Error, "ERROR: loading in progress");
 
-    assert.ok(false, "TODO");
-    done1();
-    done2();
-    done3();
+    function test_validateOnLoadSm1() {   //called onLoad
+        assert.equal(sm1Progress.length, 5 + 1, "progress event dispatched after loading each file (including progress = 0 when started)");
+
+        //dispose during loading
+        sm1.loadSounds(resourceBaseUrl1, sounds1);
+        sm1.dispose();
+
+        done1();
+    }
+
+    //sound manager 2 tests: is loading at the same time
+    var sm2Progress = [],
+        sm2ProgressHandler = function (e) {
+            sm2Progress.push(e);
+        };
+    var sm2Load,
+        sm2LoadHandler = function (e) {
+            sm2Load = e;
+
+            test_validateOnLoadsm2();
+        };
+    var sm2Error,
+        sm2ErrorHandler = function (e) {
+            sm2Error = e;
+        };
+
+    sm2.onLoadingProgress.addEventListener(new SmartJs.Event.EventListener(sm2ProgressHandler, this));
+    sm2.onLoad.addEventListener(new SmartJs.Event.EventListener(sm2LoadHandler, this));
+    sm2.onLoadingError.addEventListener(new SmartJs.Event.EventListener(sm2ErrorHandler, this));
+
+    sm2.loadSounds(resourceBaseUrl1, sounds2);
+
+    function test_validateOnLoadsm2() {   //called onLoad
+        assert.equal(sm2Progress.length, 3 + 1, "progress event dispatched even if loading error occures (including progress = 0 when started)");
+        assert.ok(sm2Error != undefined, "error event dispatched on loading error");
+        assert.ok(sm2Error.file != undefined && sm2Error.file.id == "s114" && sm2Error.file.size == 12544 && sm2Error.file.src == "_resources/sounds/5952a60f91ed000cf2c46f645698c018_record2", "detailed file error event on loading error");
+
+        done2();
+    }
+
 });
 
 QUnit.test("SoundManager: unsupported", function (assert) {
 
     //override to check if an error occurs when not supported (e.g. safari for windows)
     Object.defineProperty(PocketCode.SoundManager.prototype, 'supported', { value: createjs.Sound.initializeDefaultPlugins(), enumerable: false, writable: true });
-    var sm = new PocketCode.SoundManager();
-    sm.supported = false;   //forced to false to enable testing in all browsers
+    var sm1 = new PocketCode.SoundManager();
+    var sm2 = new PocketCode.SoundManager();
+    sm1.supported = false;   //forced to false to enable testing in all browsers
+    sm2.supported = false;
 
-    assert.equal(sm.muted, true, "muted returns always true if not supported");
+    assert.equal(sm1.muted, true, "muted returns always true if not supported");
 
+    var done1 = assert.async();
+    var done2 = assert.async();
 
+    //create test infrastructure
+    var resourceBaseUrl1 = "_resources/";
+    var sounds1 = [
+        { id: "s16", url: "sounds/3ec79f9addcf5055e069ec794db954e8_c.mp3", size: 11140 },
+        { id: "s17", url: "sounds/778fc114464dcf4b368c7d2841863beb_d.mp3", size: 11140 },
+        { id: "s18", url: "sounds/152badadc1a428c7a89b46cf6d82a43b_e.mp3", size: 11140 },
+        { id: "s19", url: "sounds/dbdd35220c46b04c7ace3f04af185702_f.mp3", size: 11140 },
+        { id: "s20", url: "sounds/e2b1d3b4f3d65de8f6468539ad695e94_g.mp3", size: 11140 }
+    ];
+    var sounds2 = [
+        { id: "s32", url: "sounds/a49fd671df65fb1c1b5f93bb56b53c85_record.mp3", size: 3712 },
+        { id: "s37", url: "sounds/e47dbee99c20968043bcf8b5858c33e1_record.mp3", size: 16192 },
+        { id: "s114", url: "sounds/5952a60f91ed000cf2c46f645698c018_record2", size: 12544 }    //including invalid file
+    ];
 
+    //sound manager 1 tests
+    var sm1Progress = [],
+        sm1ProgressHandler = function (e) {
+            sm1Progress.push(e);
+        };
+    var sm1Load,
+        sm1LoadHandler = function (e) {
+            sm1Load = e;
 
+            test_validateOnLoadSm1();
+        };
+    var sm1Error,
+        sm1ErrorHandler = function (e) {
+            sm1Error = e;
+            //console.log('error');
+        };
 
+    sm1.onLoadingProgress.addEventListener(new SmartJs.Event.EventListener(sm1ProgressHandler, this));
+    sm1.onLoad.addEventListener(new SmartJs.Event.EventListener(sm1LoadHandler, this));
+    sm1.onLoadingError.addEventListener(new SmartJs.Event.EventListener(sm1ErrorHandler, this));
 
+    sm1.loadSounds(resourceBaseUrl1, sounds1);
 
-    assert.ok(false, "TODO");
+    function test_validateOnLoadSm1() {   //called onLoad
+        assert.equal(sm1Progress.length, 5 + 1, "progress event dispatched after loading each file (including progress = 0 when started)");
+        done1();
+    }
 
-    //var sceneId = "s01";
+    //sound manager 2 tests: is loading at the same time
+    var sm2Progress = [],
+        sm2ProgressHandler = function (e) {
+            sm2Progress.push(e);
+        };
+    var sm2Load,
+        sm2LoadHandler = function (e) {
+            sm2Load = e;
 
-    //var onLoadCount = 0,
-    //onErrorCount = 0,
-    //onProgressCount = 0;
-    //var unsupportedErrorHandler = function (e) {
-    //    onErrorCount++;
-    //};
-    //var unsupportedProgressHandler = function (e) {
-    //    onProgressCount++;
-    //};
-    //var unsupportedLoadHandler = function (e) {
-    //    onLoadCount++;
-    //};
+            test_validateOnLoadsm2();
+        };
+    var sm2Error,
+        sm2ErrorHandler = function (e) {
+            sm2Error = e;
+        };
 
-    //var resourceBaseUrl2 = "_resources/";
-    //var sounds2 = JSON.parse('[{"id":"s32","url":"sounds\/a49fd671df65fb1c1b5f93bb56b53c85_record.mp3","size":3712},{"id":"s37","url":"sounds\/e47dbee99c20968043bcf8b5858c33e1_record.mp3","size":16192},{"id":"s114","url":"sounds\/5952a60f91ed000cf2c46f645698c018_record.mp3","size":12544}]');
+    sm2.onLoadingProgress.addEventListener(new SmartJs.Event.EventListener(sm2ProgressHandler, this));
+    sm2.onLoad.addEventListener(new SmartJs.Event.EventListener(sm2LoadHandler, this));
+    sm2.onLoadingError.addEventListener(new SmartJs.Event.EventListener(sm2ErrorHandler, this));
 
-    ////sm.dispose();
-    ////recreate
-    ////sm = new PocketCode.SoundManager();
+    sm2.loadSounds(resourceBaseUrl1, sounds2);
 
-    //sm.onLoadingError.addEventListener(new SmartJs.Event.EventListener(unsupportedErrorHandler, this));
-    //sm.onLoadingProgress.addEventListener(new SmartJs.Event.EventListener(unsupportedProgressHandler, this));
-    //sm.onLoad.addEventListener(new SmartJs.Event.EventListener(unsupportedLoadHandler, this));
+    function test_validateOnLoadsm2() {   //called onLoad
+        assert.equal(sm2Progress.length, 3 + 1, "progress event dispatched even if loading error occures (including progress = 0 when started)");
+        assert.ok(sm2Error != undefined, "error event dispatched on loading error");
+        assert.ok(sm2Error.file != undefined && sm2Error.file.id == "s114" && sm2Error.file.size == 12544 && sm2Error.file.src == "_resources/sounds/5952a60f91ed000cf2c46f645698c018_record2", "detailed file error event on loading error");
 
-    ////check all public interfaces
-    ////sm.loadSound("url", "id");
-    ////assert.equal(onLoadCount, 1, "unsupported: onLoad dispatched: loadSound()");
-    //onLoadCount = 0;
-    //sm.loadSounds(resourceBaseUrl2, sounds2);
-    //assert.ok(onLoadCount == 1 && onProgressCount == 4 && onErrorCount == 3, "unsupported: loading events check");
-
-    ////synchronous calls
-    //try {
-    //    sm.pauseSound(sceneId, "s32");
-    //    sm.pauseSounds(sceneId);
-    //    sm.pauseSounds();
-    //    sm.resumeSound(sceneId, "s32");
-    //    sm.resumeSounds(sceneId);
-    //    sm.resumeSounds();
-    //    sm.stopSound(sceneId, "s32");
-    //    sm.stopAllSounds(sceneId);
-    //    sm.stopAllSounds();
-    //    assert.ok(true, "unsupported: pause(), resume(), stop()");
-    //}
-    //catch (e) {
-    //    assert.ok(false, "an error occured calling sound manager pause(), resume(), stop() methods in a browser that does not support sounds");
-    //}
-
-    //assert.ok(false, "TODO");
-    ////var success = sm.startSound(sceneId, "id");
-    ////assert.equal(success, false, "unsupprted: sound not started");
-    ////success = sm.startSoundFromUrl(sceneId, "url");
-    ////assert.equal(success, false, "unsupprted: start sound from url: not started");
-    //////assert.notOk(sm.isPlaying(sceneId), "soundManager not playing");
-
-    //////async
-    ////var loaded = 0,
-    ////    loadedCallback = function (e) {
-    ////        loaded++;
-    ////    };
-    ////var finished = 0,
-    ////    finishedCallback = function (e) {
-    ////        finished++;
-    ////    };
-
-    ////sm.startSound(sceneId, "s12", loadedCallback, finishedCallback);
-    ////assert.ok(finished == 1 && loaded == 0, "startSound: finishedCallback executed if sondMgr.unsupported");
-    ////sm.startSoundFromUrl(sceneId, "url", loadedCallback, finishedCallback);
-    ////assert.ok(finished == 2 && loaded == 0, "startSoundFromUrl: finishedCallback executed if sondMgr.unsupported");
+        done2();
+    }
 
 });
 
@@ -182,19 +253,50 @@ QUnit.test("AudioPlayer", function (assert) {
 
 QUnit.test("AudioPlayer:supported", function (assert) {
 
-    var sm = new PocketCode.SoundManager(),
-        ap = new PocketCode.AudioPlayer(sm.soundCollectionId);
+    var done1 = assert.async();
+    //var done2 = assert.async();
+
+    var sm = new PocketCode.SoundManager();
+    sm._scId = "ap_test_";  //set sound collection for tests: to avoid side-effects with other tests
+    var ap = new PocketCode.AudioPlayer(sm.soundCollectionId);
 
     if (!ap.supported) {
         assert.ok(false, "WARNING: tests not executed due to missing browser support- please run these tests in another browser");
         return;
     }
 
+    //playing unknown sound
+    var success = ap.startSound("ap1");
+    assert.notOk(success, "play returns false if sound is not started");
 
+    assert.throws(function () { ap.loadSoundFile(); }, Error, "ERROR: invlid load parameter");
+    success = ap.loadSoundFile("sId1", "_resources/");
+    assert.notOk(success, "loadSoundFile() returns false if not successfull");
+    success = ap.loadSoundFile("sId2", "_resources/sounds/3ec79f9addcf5055e069ec794db954e8_c.mp3");
+    assert.ok(success, "loadSoundFile() returns true if successfull");
 
+    var started = false,
+        onStartCallback = function () {
+            started = true;
+        },
+        finished = false,
+        onFinishCallback = function () {
+            finished = true;
+            assert.ok(started, "sound started onLoad");
+            assert.ok(finished, "sound finished playing (onLoad)");
 
+            runStartSoundTests();
+        };
+    success = ap.loadSoundFile("sId3", "_resources/sounds/3ec79f9addcf5055e069ec794db954e8_c.mp3", undefined, true, onStartCallback, onFinishCallback);
+    //success = ap.loadSoundFile("sId4", "_resources/sounds/778fc114464dcf4b368c7d2841863beb_d.mp3", undefined, true, onStartCallback, onFinishCallback);
 
-    assert.ok(false, "TODO");
+    function runStartSoundTests() {
+        success = ap.startSound("sId2");
+        assert.ok(success, "startSound() successfull");
+
+        done1();
+    }
+
 });
 
 QUnit.test("AudioPlayer: unsupported", function (assert) {

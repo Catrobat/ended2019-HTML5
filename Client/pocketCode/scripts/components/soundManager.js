@@ -101,10 +101,11 @@ PocketCode.SoundManager = (function () {
                     break;
                 }
             }
-            if (!this._loading) //aborted
-                return;
 
             if (idx != undefined) {
+                if (!this._loading) //aborted
+                    return;
+
                 this._registeredFiles.push({ id: e.id, src: e.src });
                 this._loadedSize += file.size;
                 this._onLoadingProgress.dispatchEvent({ progress: Math.round(this._loadedSize / this._totalSize * 100), file: file });
@@ -144,7 +145,7 @@ PocketCode.SoundManager = (function () {
                 if (!this._loading) //aborted
                     return;
 
-                this._onLoadingError.dispatchEvent({ file: file });
+                this._onLoadingError.dispatchEvent({ file: { id: file.id.slice(this._scId.length), src: file.src, size: file.size } });
                 //^^ single files may not be supported- we continue loading anyway but do not add them to our registered files
                 this._loadedSize += file.size;
                 this._onLoadingProgress.dispatchEvent({ progress: Math.round(this._loadedSize / this._totalSize * 100), file: file });
@@ -202,20 +203,22 @@ PocketCode.SoundManager = (function () {
                 this._onLoadingProgress.dispatchEvent({ progress: 0 });
                 if (!this.supported) {  //simulate loading even if sound is not supported
                     for (var i = 0, l = this._filesToLoad.length; i < l; i++) {
-                        this._onLoadingError.dispatchEvent({ file: file });
+                        files = this._filesToLoad;
+                        this._onLoadingError.dispatchEvent({ file: { id: files[i].id.slice(this._scId.length), src: files[i].src, size: files[i].size } });
                         this._loadedSize += file.size;
                         this._onLoadingProgress.dispatchEvent({ progress: Math.round(this._loadedSize / this._totalSize * 100), file: file });
                     }
-                    this._onLoad.dispatchEvent();
                     this._loading = false;
+                    this._onLoad.dispatchEvent();
                     return;
                 }
                 else {
                     this._requestFile(0);
                 }
             }
-            else
+            else {
                 this._onLoad.dispatchEvent();
+            }
         },
         _requestFile: function (fileIndex) {
             var sound = this._filesToLoad[fileIndex];
@@ -358,19 +361,24 @@ PocketCode.AudioPlayer = (function () {
                 return false;
 
             var sound = this._createSoundObject(id, url, undefined, playOnLoad, onStartCallback, onFinishCallback);
+            //^^ loading the same url, e.g. same text in text to speech will not call the onLoad event again, workaround: &id={id}
             var success = false;
-            if (type) { //to enable loading files from restful services (without file extension)
-                var src = {};
-                src[type] = sound.src;
-                success = createjs.Sound.registerSound(src, sound.id, sound.data, '');
+            try {
+                if (type) { //to enable loading files from restful services (without file extension)
+                    var src = {};
+                    src[type] = sound.src;
+                    success = createjs.Sound.registerSound(src, sound.id, sound.data, '');
+                }
+                else {
+                    success = createjs.Sound.registerSound(sound.src, sound.id, sound.data, '');
+                }
             }
-            else {
-                success = createjs.Sound.registerSound(sound.src, sound.id, sound.data, '');
+            catch (e) {
+                success = false;
             }
-
             if (success)
                 this._registeredFiles.push(sound);
-            return success;
+            return !!success;
         },
         _fileOnLoadHandler: function (id, data) {
             //called when successfully loaded to enable playOnLoad
