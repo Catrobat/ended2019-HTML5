@@ -1480,8 +1480,9 @@ this.createjs = this.createjs || {};
 			case "bmp":
 				return createjs.AbstractLoader.IMAGE;
 			case "ogg":
-			case "mp3":
-			case "webm":
+		    case "mp3":
+		    case "mpga":
+		    case "webm":
 				return createjs.AbstractLoader.SOUND;
 			case "mp4":
 			case "webm":
@@ -3667,7 +3668,7 @@ this.createjs = this.createjs || {};
 	 * @since 0.4.0
 	 * @static
 	 */
-	s.SUPPORTED_EXTENSIONS = ["mp3", "ogg", "opus", "mpeg", "wav", "m4a", "mp4", "aiff", "wma", "mid"];
+	s.SUPPORTED_EXTENSIONS = ["mp3", "ogg", "opus", "mpeg", "mpga", "wav", "m4a", "mp4", "aiff", "wma", "mid"];
 
 	/**
 	 * Some extensions use another type of extension support to play (one of them is a codex).  This allows you to map
@@ -4277,14 +4278,14 @@ this.createjs = this.createjs || {};
 
 		if (!s._preloadHash[loadItem.src]) { s._preloadHash[loadItem.src] = [];}
 		s._preloadHash[loadItem.src].push(loadItem);
-		if (s._preloadHash[loadItem.src].length == 1) {
+		//if (s._preloadHash[loadItem.src].length == 1) {   //WINTERSW (pocketCode): we need these events for TTS support (playOnLoad)
 			// OJR note this will disallow reloading a sound if loading fails or the source changes
 			loader.on("complete", createjs.proxy(this._handleLoadComplete, this));
 			loader.on("error", createjs.proxy(this._handleLoadError, this));
 			s.activePlugin.preload(loader);
-		} else {
-			if (s._preloadHash[loadItem.src][0] == true) {return true;}
-		}
+		//} else {
+		//	if (s._preloadHash[loadItem.src][0] == true) {return true;}
+		//}
 
 		return loadItem;
 	};
