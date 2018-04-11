@@ -384,11 +384,7 @@ PocketCode.merge({
                         return '(' + this._parseJsonType(jsonFormula.right, uiString) + ')';
 
                     case 'STRING':
-                        return '\'' + jsonFormula.value.replace(/('|\n|\\)/g, '\\\$1') + '\'';
-                        //var tmp = jsonFormula.value.replace(/'/g, '\\\'').replace(/\n/g, '\\n');
-                        //if (uiString)
-                        //    return '\'' + tmp + '\'';
-                        //return '\'' + tmp.replace(/\\/g, '\\\\') + '\'';
+                        return '\'' + jsonFormula.value.replace(/(')/g, '\\$1').replace(/(\n)/g, '\\n') + '\'';
 
                     case 'COLLISION_FORMULA':
                         //    if (uiString) //TODO

@@ -58,8 +58,13 @@ QUnit.test("FormulaParser: operators", function (assert) {
     assert.throws(function () { f.json = unknown_sensor; }, Error, "ERROR: unknown sensor");
 
     //interfaces: device + sprite
-    assert.ok(device.accelerationX !== undefined && device.accelerationY !== undefined && device.accelerationZ !== undefined && device.compassDirection !== undefined && device.inclinationX !== undefined && device.inclinationY !== undefined && device.loudness !== undefined && device.faceDetected !== undefined && device.faceSize !== undefined && device.facePositionX !== undefined && device.facePositionY !== undefined, "interface: device");
-    assert.ok(sprite.brightness !== undefined && sprite.transparency !== undefined && sprite.layer !== undefined && sprite.direction !== undefined && sprite.size !== undefined && sprite.positionX !== undefined && sprite.positionY !== undefined, "interface: sprite");
+    assert.ok(device.accelerationX !== undefined && device.accelerationY !== undefined && device.accelerationZ !== undefined &&
+        device.compassDirection !== undefined && device.inclinationX !== undefined && device.inclinationY !== undefined &&
+        device.faceDetected !== undefined && device.faceSize !== undefined && device.facePositionX !== undefined && device.facePositionY !== undefined, "interface: device");
+
+    assert.ok(sprite.brightness !== undefined && sprite.transparency !== undefined && sprite.layer !== undefined &&
+        sprite.direction !== undefined && sprite.size !== undefined && sprite.positionX !== undefined && sprite.positionY !== undefined &&
+        sprite.volume !== undefined, "interface: sprite");
 
     //string to number conversion
     f.json = number2;

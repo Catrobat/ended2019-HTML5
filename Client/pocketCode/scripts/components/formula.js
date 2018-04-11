@@ -35,7 +35,7 @@ PocketCode.Formula = (function () {
                     this.isStatic = true;
                     this._calculate = parsed.calculate;  //to map scope to formula (currently scope = parsed)
                     var val = this._calculate();
-                    val = (typeof val === 'string') ? '\'' + val.replace(/('|\n|\\)/g, '\\\$1') + '\'' : val;
+                    val = (typeof val !== 'string') ? val : '\'' + val.replace(/(')/g, '\\$1').replace(/(\n)/g, '\\n') + '\'';
                     val = 'return ' + val + ';';
                     this._calculate = new Function(val);
                 }
@@ -50,9 +50,9 @@ PocketCode.Formula = (function () {
 
     //methods
     Formula.prototype.merge({
-        calculate: function() {
+        calculate: function(scope) {
             if (this._json !== undefined)   //null is allowed
-                return this._calculate();
+                return this._calculate(scope);
             throw new Error('No Formula objct loaded');
         },
         _degree2radian: function (val) {
@@ -93,6 +93,7 @@ PocketCode.Formula = (function () {
                     size: 100,
                     positionX: 0,
                     positionY: 0,
+                    volume: 100,
                     collidesWithEdge: false,
                     collidesWithPointer: true,
                     velocityX: 0,
