@@ -409,7 +409,7 @@ PocketCode.AudioPlayer = (function () {
             for (var i = 0, l = active.length; i < l; i++) {
                 if (active[i].uniqueId === instanceId) {
                     active[i].stop();
-                    //active[i].dispatchEvent('complete');
+                    active[i].dispatchEvent('complete');
                     active.remove(active[i]);
                     break;
                 }

@@ -418,7 +418,8 @@ QUnit.test("AudioPlayer:supported", function (assert) {
         ap.resumeAllSounds();
         assert.equal(ap._activeSounds[0].paused, false, "sound resumed");
         ap.stopSound(activeSoundInstance);
-        assert.equal(prsOnFinishCallbackCalled, 0, "finished callback NOT called on stoped sound instance");
+        assert.equal(prsOnFinishCallbackCalled, 1, "finished callback called on stoped sound instance");
+        prsOnFinishCallbackCalled = 0;
         assert.equal(ap._activeSounds.length, 1, "first sound stopped");
         ap.startSound("s17", undefined, prsOnFinishCallback);   //start another
         assert.equal(ap._activeSounds.length, 2, "check 2 running sounds");
