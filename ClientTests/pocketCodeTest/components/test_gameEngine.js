@@ -67,6 +67,7 @@ QUnit.test("GameEngine", function (assert) {
 
     //Hardcoded sound Tests
     var sounds = [{ id: "id1", url: "src", size: 1 }, { id: "id2", url: "src", size: 2 }, { id: "id3", url: "src", size: 3 }];
+    gameEngine._resourceBaseUrl = "";
     gameEngine._sounds = sounds;
     assert.ok(gameEngine.__sounds["id1"] === sounds[0] && gameEngine.__sounds["id2"] === sounds[1] && gameEngine.__sounds["id3"] === sounds[2], "sounds set correctly (hardcoded)");
     gameEngine._soundManager.init();

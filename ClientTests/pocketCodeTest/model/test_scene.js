@@ -428,6 +428,7 @@ QUnit.test("Scene", function (assert) {
         }
         scene2._onSpriteUiChange.addEventListener(new SmartJs.Event.EventListener(clearPenStampEvent, this));
         scene2.clearPenStampBackground();
+        scene2._onSpriteUiChange.removeEventListener(new SmartJs.Event.EventListener(clearPenStampEvent, this));
 
         //setGravity
 
@@ -473,8 +474,8 @@ QUnit.test("Scene", function (assert) {
 
         //deleteClone
         var cloneId = scene2._sprites[0].id;
-
-        scene2.deleteClone(cloneId);
+        //scene2.deleteClone(cloneId);
+        scene2._sprites[0].deleteClone();
 
         var cloneStillExists = false;
 

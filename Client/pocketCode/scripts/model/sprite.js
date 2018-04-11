@@ -263,14 +263,6 @@ PocketCode.Model.Sprite = (function () {
                 this._audioPlayer.volume = value;
             },
         },
-        //muted: {
-        //    set: function (value) {
-        //        if (typeof value !== 'boolean')
-        //            throw new Error('invalid parameter: muted');
-
-        //        this._audioPlayer.muted = value;
-        //    },
-        //},
         //pen & stamp
         penDown: {
             set: function (penDown) {

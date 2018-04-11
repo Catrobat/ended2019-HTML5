@@ -203,6 +203,10 @@ QUnit.test("Sprite", function (assert) {
 
     // ********************* sound interface *********************
     var audioPlayer = sprite._audioPlayer;
+    assert.equal(audioPlayer.volume, 100, "default volume set to 100");
+    audioPlayer.volume = 50;
+    assert.equal(audioPlayer.volume, 50, "volume getter/setter");
+
     assert.ok(typeof audioPlayer.loadSoundFile == 'function' &&
         typeof audioPlayer.startSound == 'function' &&
         typeof audioPlayer.stopSound == 'function' &&

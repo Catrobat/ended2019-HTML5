@@ -58,7 +58,7 @@ QUnit.test("Device", function (assert) {
     assert.ok(!isNaN(dev.getArduinoDigitalPin()), "Arduino digital getter");
 
     assert.equal(dev.vibrate(''), false, "vibrate call without valid parameter");
-    dev._features.VIBRATE.supported = false; //disable
+    dev._features.VIBRATE._supported = false; //disabled internal
     assert.notOk(dev.vibrate("10"), "vibrate: invalid argument");
     assert.equal(dev.vibrate(10), false, "vibrate call with parameter");
 
