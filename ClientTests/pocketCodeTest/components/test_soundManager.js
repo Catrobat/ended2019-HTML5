@@ -254,7 +254,6 @@ QUnit.test("AudioPlayer", function (assert) {
 QUnit.test("AudioPlayer:supported", function (assert) {
 
     var done1 = assert.async();
-    //var done2 = assert.async();
 
     var sm = new PocketCode.SoundManager();
     sm._scId = "ap_test_";  //set sound collection for tests: to avoid side-effects with other tests
@@ -264,6 +263,16 @@ QUnit.test("AudioPlayer:supported", function (assert) {
         assert.ok(false, "WARNING: tests not executed due to missing browser support- please run these tests in another browser");
         return;
     }
+
+    //resources
+    var resourceBaseUrl1 = "_resources/";
+    var sounds1 = [
+        { id: "s16", url: "sounds/3ec79f9addcf5055e069ec794db954e8_c.mp3", size: 11140 },
+        { id: "s17", url: "sounds/778fc114464dcf4b368c7d2841863beb_d.mp3", size: 11140 },
+        { id: "s18", url: "sounds/152badadc1a428c7a89b46cf6d82a43b_e.ogg", size: 11140 },   //invalid
+        { id: "s19", url: "sounds/dbdd35220c46b04c7ace3f04af185702_f.mp3", size: 11140 },
+        { id: "s20", url: "sounds/e2b1d3b4f3d65de8f6468539ad695e94_g.mp3", size: 11140 }
+    ];
 
     //playing unknown sound
     var success = ap.startSound("ap1");
@@ -276,7 +285,9 @@ QUnit.test("AudioPlayer:supported", function (assert) {
     assert.ok(success, "loadSoundFile() returns true if successfull");
 
     var started = false,
-        onStartCallback = function () {
+        onStartCallback = function (instanceId) {
+            assert.ok(ap.isPlaying, "isPlaying accessor during playing sound");
+            assert.ok(instanceId != undefined, "sound instance returned on callback");
             started = true;
         },
         finished = false,
@@ -288,15 +299,134 @@ QUnit.test("AudioPlayer:supported", function (assert) {
             runStartSoundTests();
         };
     success = ap.loadSoundFile("sId3", "_resources/sounds/3ec79f9addcf5055e069ec794db954e8_c.mp3", undefined, true, onStartCallback, onFinishCallback);
-    //success = ap.loadSoundFile("sId4", "_resources/sounds/778fc114464dcf4b368c7d2841863beb_d.mp3", undefined, true, onStartCallback, onFinishCallback);
+    //fin in soudJs.custom: missing onLoad events when loading the same file more than once
+
+    var ttsUrl = (new PocketCode.ServiceRequest(PocketCode.Services.TTS, SmartJs.RequestMethod.GET, { text: "hello world" })).url;
+    var onFinishedPlayingCounter = 0;
 
     function runStartSoundTests() {
         success = ap.startSound("sId2");
         assert.ok(success, "startSound() successfull");
 
-        done1();
+        success = ap.loadSoundFile("tts1", ttsUrl, 'mp3');
+        assert.ok(success, "loading tts text");
+
+        var ttsStarted = false,
+            ttsOnStartCallback = function (instanceId) {
+                assert.ok(ap.isPlaying, "isPlaying accessor during tts playback");
+                assert.ok(instanceId != undefined, "sound instance returned on callback");
+                ttsStarted = true;
+            },
+            ttsFinished = false,
+            ttsOnFinishCallback = function () {
+                ttsFinished = true;
+                assert.ok(ttsStarted, "tts sound started onLoad");
+                assert.ok(ttsFinished, "tts sound finished playing (onLoad)");
+            },
+            onFinishedPlayingHandler = function (e) {
+                //remove to prevent another call
+                ap.onFinishedPlaying.removeEventListener(new SmartJs.Event.EventListener(onFinishedPlayingHandler));
+
+                onFinishedPlayingCounter++;
+
+                sm.onLoad.addEventListener(new SmartJs.Event.EventListener(runPreloadedTests, this));
+                sm.loadSounds(resourceBaseUrl1, sounds1);
+            };
+
+        ap.onFinishedPlaying.addEventListener(new SmartJs.Event.EventListener(onFinishedPlayingHandler));
+        ap.loadSoundFile("tts1", ttsUrl, 'mp3', true, ttsOnStartCallback, ttsOnFinishCallback);
+        //using same id to make sure all events are triggered
     }
 
+    function runPreloadedTests() {
+        assert.equal(onFinishedPlayingCounter, 1, "onFinishedPlaying event dispatched");
+
+        ap.startSound("s17");
+        ap.volume = 10;
+
+        var preloadedOnStart = 0,
+            preloadedOnStartCallback = function () {
+                preloadedOnStart++;
+            },
+        preloadedOnOnFinishCallback = function () {
+            assert.equal(preloadedOnStart, 0, "invalid sound started (callback check: NO STARTED CALLBACK)");
+            assert.ok(true, "preloaded sound finished playing (callback check)");
+
+            runPauseResumeStopTests();
+        };
+
+        //start invalid sound file
+        ap.startSound("s18", preloadedOnStartCallback, preloadedOnOnFinishCallback);
+    }
+
+    //pause, resume, stop tests
+    function runPauseResumeStopTests() {
+        //run all tests without an instance running
+        try {
+            ap.stopAllSounds();
+            assert.ok(true, "stopAllSounds(): no instance running");
+        }
+        catch (e) {
+            assert.ok(false, "stopAllSounds(): no instance running");
+        }
+
+        try {
+            ap.stopSound("instanceId");
+            assert.ok(true, "stopSound(): no instance running");
+        }
+        catch (e) {
+            assert.ok(false, "stopSound(): no instance running");
+        }
+
+        try {
+            ap.pauseAllSounds();
+            assert.ok(true, "pauseAllSounds(): no instance running");
+        }
+        catch (e) {
+            assert.ok(false, "pauseAllSounds(): no instance running");
+        }
+
+        try {
+            ap.resumeAllSounds();
+            assert.ok(true, "resumeAllSounds(): no instance running");
+        }
+        catch (e) {
+            assert.ok(false, "resumeAllSounds(): no instance running");
+        }
+
+        runPauseTest();
+    }
+
+    var activeSoundInstance;
+    var prsOnStartCallback = function (instanceId) {
+        activeSoundInstance = instanceId;
+        ap.pauseAllSounds();
+        window.setTimeout(validatePause, 3000);
+    };
+    var prsOnFinishCallbackCalled = 0;
+    var prsOnFinishCallback = function () {
+        prsOnFinishCallbackCalled++;
+    };
+
+    function runPauseTest() {
+        ap.startSound("s17", prsOnStartCallback, prsOnFinishCallback);
+    }
+
+    function validatePause() {  //on start callback
+        assert.equal(ap._activeSounds[0].paused, true, "sound paused");
+        ap.startSound("s16");   //start another
+        ap.resumeAllSounds();
+        assert.equal(ap._activeSounds[0].paused, false, "sound resumed");
+        ap.stopSound(activeSoundInstance);
+        assert.equal(prsOnFinishCallbackCalled, 0, "finished callback NOT called on stoped sound instance");
+        assert.equal(ap._activeSounds.length, 1, "first sound stopped");
+        ap.startSound("s17", undefined, prsOnFinishCallback);   //start another
+        assert.equal(ap._activeSounds.length, 2, "check 2 running sounds");
+        ap.stopAllSounds();
+        assert.equal(ap._activeSounds.length, 0, "stopAllSounds()");
+        assert.equal(prsOnFinishCallbackCalled, 1, "finished callback called on stopAllSounds() for each instance");
+        done1();
+    }
 });
 
 QUnit.test("AudioPlayer: unsupported", function (assert) {
@@ -304,14 +434,74 @@ QUnit.test("AudioPlayer: unsupported", function (assert) {
     //override to check if an error occurs when not supported (e.g. safari for windows)
     Object.defineProperty(PocketCode.AudioPlayer.prototype, 'supported', { value: createjs.Sound.initializeDefaultPlugins(), enumerable: false, writable: true });
 
-    var sm = new PocketCode.SoundManager(),
-        ap = new PocketCode.AudioPlayer(sm.soundCollectionId);
+    var sm = new PocketCode.SoundManager();
+    sm._scId = "ap_u_test_";  //set sound collection for tests: to avoid side-effects with other tests
+    var ap = new PocketCode.AudioPlayer(sm.soundCollectionId);
     ap.supported = false;   //forced to false to enable testing in all browsers
 
+    //resources
+    var resourceBaseUrl1 = "_resources/";
+    var sounds1 = [
+        { id: "s16", url: "sounds/3ec79f9addcf5055e069ec794db954e8_c.mp3", size: 11140 },
+        { id: "s17", url: "sounds/778fc114464dcf4b368c7d2841863beb_d.mp3", size: 11140 },
+        { id: "s18", url: "sounds/152badadc1a428c7a89b46cf6d82a43b_e.ogg", size: 11140 },   //invalid
+        { id: "s19", url: "sounds/dbdd35220c46b04c7ace3f04af185702_f.mp3", size: 11140 },
+        { id: "s20", url: "sounds/e2b1d3b4f3d65de8f6468539ad695e94_g.mp3", size: 11140 }
+    ];
 
+    //playing unknown sound
+    var success = ap.startSound("ap1");
+    assert.notOk(success, "play returns false if sound is not started");
 
+    assert.throws(function () { ap.loadSoundFile(); }, Error, "ERROR: invlid load parameter");
+    success = ap.loadSoundFile("sId1", "_resources/");
+    assert.notOk(success, "loadSoundFile() returns false if not successfull");
 
+    var started = false,
+        onStartCallback = function (instanceId) {
+        },
+        finished = false,
+        onFinishCallback = function () {
+        };
+    success = ap.loadSoundFile("sId3", "_resources/sounds/3ec79f9addcf5055e069ec794db954e8_c.mp3", undefined, true, onStartCallback, onFinishCallback);
+    //fin in soudJs.custom: missing onLoad events when loading the same file more than once
+    assert.notOk(success, "Not supported: loadSoundFile returns always false");
 
-    assert.ok(ap.supported, "TODO");
+    success = ap.startSound("s17");
+    assert.notOk(success, "Not supported: startSound() returns always false");
+
+    //pause, resume, stop tests
+    //run all tests without an instance running
+    try {
+        ap.stopAllSounds();
+        assert.ok(true, "stopAllSounds(): no instance running");
+    }
+    catch (e) {
+        assert.ok(false, "stopAllSounds(): no instance running");
+    }
+
+    try {
+        ap.stopSound("instanceId");
+        assert.ok(true, "stopSound(): no instance running");
+    }
+    catch (e) {
+        assert.ok(false, "stopSound(): no instance running");
+    }
+
+    try {
+        ap.pauseAllSounds();
+        assert.ok(true, "pauseAllSounds(): no instance running");
+    }
+    catch (e) {
+        assert.ok(false, "pauseAllSounds(): no instance running");
+    }
+
+    try {
+        ap.resumeAllSounds();
+        assert.ok(true, "resumeAllSounds(): no instance running");
+    }
+    catch (e) {
+        assert.ok(false, "resumeAllSounds(): no instance running");
+    }
 
 });
