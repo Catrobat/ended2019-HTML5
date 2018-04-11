@@ -858,9 +858,11 @@ PocketCode.MediaDevice = (function () {
         dispose: function () {
             this._removeDomListener(window, 'orientationchange', this._orientationListener);
             this._fd.dispose();
+            this._fd = undefined;
             this._cam.onInit.removeEventListener(new SmartJs.Event.EventListener(this._featureInitializedHandler, this));
             this._cam.onChange.removeEventListener(new SmartJs.Event.EventListener(this._cameraChangeHandler, this));
             this._cam.dispose();
+            this._cam = undefined;
 
             PocketCode.Device.prototype.dispose.call(this);
         },
