@@ -45,7 +45,7 @@ PocketCode.Model.Sprite = (function () {
         this._positionY = 0.0;
         this._rotationStyle = PocketCode.RotationStyle.ALL_AROUND;
         this._rotation = new SmartJs.Animation.Rotation(90.0);
-        this._direction = 90.0;    //cache
+        this._direction = 90.0;    //cache: while _rotation is 0..380, direction returns +-180 and is updated onRotationChange
         this._rotation.onUpdate.addEventListener(new SmartJs.Event.EventListener(this._rotationUpdateHander, this));
         ////looks
         this._looks = [];
@@ -157,10 +157,6 @@ PocketCode.Model.Sprite = (function () {
         },
         direction: {
             get: function () {
-                //var angle = this._rotation.value;   //0..<360
-                //if (angle > 180.0)
-                //    return angle - 360.0;
-                //return angle;
                 return this._direction;
             },
         },
@@ -598,18 +594,19 @@ PocketCode.Model.Sprite = (function () {
             var previous_d = this._direction,
                 new_d = e.value,
                 new_d = new_d > 180.0 ? new_d - 360.0 : new_d,
-                props = {};
+                props = {},
+                style = PocketCode.RotationStyle;
             this._direction = new_d;
 
-            if (this._rotationStyle == PocketCode.RotationStyle.DO_NOT_ROTATE)  //rotation == 0.0
+            if (this._rotationStyle ==style.DO_NOT_ROTATE)  //rotation == 0.0
                 return false;
-            else if (this._rotationStyle == PocketCode.RotationStyle.LEFT_TO_RIGHT) {
+            else if (this._rotationStyle == style.LEFT_TO_RIGHT) {
                 if (previous_d < 0.0 && new_d >= 0.0 || previous_d >= 0.0 && new_d < 0.0)   //flipXChanged
                     props.flipX = new_d < 0.0;
                 else
                     return false;
             }
-            else if (this._rotationStyle == PocketCode.RotationStyle.ALL_AROUND) {
+            else if (this._rotationStyle == style.ALL_AROUND) {
                 props.rotation = this._direction - 90.0;
             }
 
@@ -629,7 +626,14 @@ PocketCode.Model.Sprite = (function () {
             if (isNaN(degree) || degree == this._direction)
                 return false;
 
-            this._rotation.angle = degree;
+            var previous = this._direction,
+                style = PocketCode.RotationStyle;;
+            this._rotation.angle = degree;  //updates _direction
+
+            if (this._rotationStyle == style.DO_NOT_ROTATE || 
+                this._rotationStyle == style.LEFT_TO_RIGHT && (previous < 0.0 && this._direction < 0.0 || previous >= 0.0 && this._direction >= 0.0) ||
+                previous == this._direction)
+                return false;
             return true;
         },
         setDirectionTo: function (spriteId) {

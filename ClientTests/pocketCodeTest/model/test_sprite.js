@@ -99,6 +99,18 @@ QUnit.test("Sprite", function (assert) {
     sprite = new PocketCode.Model.Sprite(gameEngine, scene, { id: "newId", name: "myName" });
     var returnVal;
 
+    // ********************* show/hide *********************
+    returnVal = sprite.show();
+    assert.ok(sprite._visible, "show sprite");
+    assert.ok(!returnVal, "call show() on visisble sprite: return value");
+    returnVal = sprite.hide();
+    assert.ok(!sprite._visible, "show sprite");
+    assert.ok(returnVal, "call hide() on invisisble sprite: return value");
+    assert.ok(lastOnChangeArgs.visible !== undefined, "visibility event args");
+    sprite.hide();
+    sprite.show();
+    assert.ok(sprite._visible, "show sprite");
+
     // ********************* GraphicEffects *********************
     assert.notOk(sprite.setGraphicEffect(PocketCode.GraphicEffect.BRIGHTNESS, "asdf"), "invalid brightness value: ignored");
     assert.throws(function () { sprite.setGraphicEffect(null, 50) }, Error, "unknown graphic effect");
@@ -189,20 +201,27 @@ QUnit.test("Sprite", function (assert) {
     returnVal = sprite.clearGraphicEffects();
     assert.ok(!returnVal, "clear graphic effect: return value (no updates)");
 
-    // *************************************************************
+    // ********************* sound interface *********************
+    var audioPlayer = sprite._audioPlayer;
+    assert.ok(typeof audioPlayer.loadSoundFile == 'function' &&
+        typeof audioPlayer.startSound == 'function' &&
+        typeof audioPlayer.stopSound == 'function' &&
+        typeof audioPlayer.stopAllSounds == 'function', "audio Player interface check");
 
-    // ********************* show/hide *********************
-    returnVal = sprite.show();
-    assert.ok(sprite._visible, "show sprite");
-    assert.ok(!returnVal, "call show() on visisble sprite: return value");
-    returnVal = sprite.hide();
-    assert.ok(!sprite._visible, "show sprite");
-    assert.ok(returnVal, "call hide() on invisisble sprite: return value");
-    assert.ok(lastOnChangeArgs.visible !== undefined, "visibility event args");
-    sprite.hide();
-    sprite.show();
-    assert.ok(sprite._visible, "show sprite");
-    // *************************************************************
+    var success = sprite.loadSoundFile("id", "url");
+    assert.ok(typeof success == 'boolean', "loadSoundFile() returns status");
+
+    success = sprite.startSound("id");
+    assert.ok(typeof success == 'boolean', "startSound() returns status");
+    try {
+        sprite.stopSound("id");
+        sprite.stopAllSounds();
+        assert.ok(true, "audio inface call");
+    }
+    catch(e) {
+        assert.ok(false, "audio inface call");
+    }
+    //detailed tests in bricks and player
 
     // ********************* Constructor *********************
 
@@ -414,7 +433,7 @@ QUnit.test("Sprite", function (assert) {
     assert.equal(sprite.size, 20, "change size upwards");
     sprite.changeSize(15);
     sprite.changeSize(20);
-    assert.equal(sprite.size, 55, "double change size");
+    assert.equal(Math.round(sprite.size * 100) / 100, 55, "double change size");
     assert.throws(function () { sprite.changeSize(); }, Error, "ERROR: missing argument");
     lastOnChangeArgs = undefined;
     returnVal = sprite.changeSize(0);
@@ -1986,10 +2005,6 @@ QUnit.test("PhysicsSprite", function (assert) {
     sprite.mass = value;
     assert.equal(sprite._mass, value, "mass set correctly");
 
-    value = 213;
-    sprite.turnNDegreePerSecond = value;
-    assert.equal(sprite._turnNDegreePerSecond, value, "turnNDegreePerSecond set correctly");
-
     value = 42;
     sprite.friction = value;
     assert.equal(sprite._friction, value, "friction set correctly");
@@ -2017,6 +2032,8 @@ QUnit.test("PhysicsSprite", function (assert) {
     sprite.setVelocity(x, y);
     assert.equal(sprite._velocityX, x, "velocityX set correctly");
     assert.equal(sprite._velocityY, y, "velocityY set correctly");
+
+    assert.ok(false, "TODO");
 });
 
 
@@ -2129,7 +2146,7 @@ QUnit.test("SpriteClone", function (assert) {
             clone._penColor.b == sprite._penColor.b &&
             clone._penColor.r == sprite._penColor.r &&
             clone._penColor.g == sprite._penColor.g &&
-            clone._penColor != sprite._penColor &&
+            clone._penColor != sprite._penColor &&  /* new object but same values */
             clone.positionX == sprite.positionX &&
             clone.positionY == sprite.positionY &&
             clone._lookOffsetX == sprite._lookOffsetX &&
