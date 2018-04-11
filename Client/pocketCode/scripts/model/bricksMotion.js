@@ -124,9 +124,8 @@ PocketCode.Model.merge({
             var degreesPerSecond = this._degreesPerSecond.calculate(scope);
 
             if (isNaN(degreesPerSecond))
-                this._return();
-            else
-                this._return(this._sprite.setRotationSpeed(-degreesPerSecond));
+                this._sprite.setRotationSpeed(-degreesPerSecond)
+            this._return(); //without delay
         };
 
         return RotationSpeedLeftBrick;
@@ -145,9 +144,8 @@ PocketCode.Model.merge({
             var degreesPerSecond = this._degreesPerSecond.calculate(scope);
 
             if (isNaN(degreesPerSecond))
-                this._return();
-            else
-                this._return(this._sprite.setRotationSpeed(degreesPerSecond));
+                this._sprite.setRotationSpeed(degreesPerSecond)
+            this._return(); //without delay
         };
 
         return RotationSpeedRightBrick;

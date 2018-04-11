@@ -26,7 +26,7 @@ PocketCode.Model.merge({
                     threadId: threadId,
                     scope: scope,
                     loopDelay: false,
-                    childIdx: 0,
+                    //brick: undefined,
                 };
                 this._executeContainerItem({ id: id, loopDelay: false });
             },
@@ -41,15 +41,16 @@ PocketCode.Model.merge({
                     return;
                 }
 
-                var idx = po.childIdx,
-                    bricks = this._bricks;
+                var bricks = this._bricks,
+                    idx = bricks.indexOf(po.brick) + 1; //indexOf will return -1 if not found.. starting with index = 0
                 if (idx < bricks.length && !args.stopped) {
-                    po.childIdx++;
+                    po.brick = bricks[idx];
                     bricks[idx].execute(new SmartJs.Event.EventListener(this._executeContainerItem, this), args.id, po.scope);
                 }
                 else {
                     if (typeof po.scope == 'object' && (po.scope instanceof PocketCode.GameEngine || po.scope instanceof PocketCode.Model.Sprite))
-                        po.scope = undefined;   //make sure to not dispose objects currently in use
+                        delete po.scope;    //make sure to not dispose objects currently in use
+                    delete po.brick;    //do not dispose brick
                     var listener = po.listener,
                         threadId = po.threadId,
                         loopDelay = po.loopDelay;
@@ -95,6 +96,7 @@ PocketCode.Model.merge({
                     po = this._pendingOps[id];
                     if (typeof po.scope == 'object' && (po.scope instanceof PocketCode.GameEngine || po.scope instanceof PocketCode.Model.Sprite))
                         po.scope = undefined;   //make sure to not dispose objects currently in use
+                    delete po.brick;
 
                     for (var prop in po) //may include objects like timer, animation, ...
                         if (po[prop] && po[prop].dispose)
