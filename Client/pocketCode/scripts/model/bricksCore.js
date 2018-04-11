@@ -48,9 +48,9 @@ PocketCode.Model.merge({
                     bricks[idx].execute(new SmartJs.Event.EventListener(this._executeContainerItem, this), args.id, po.scope);
                 }
                 else {
-                    if (typeof po.scope == 'object' && (po.scope instanceof PocketCode.GameEngine || po.scope instanceof PocketCode.Model.Sprite))
-                        delete po.scope;    //make sure to not dispose objects currently in use
-                    delete po.brick;    //do not dispose brick
+                    //if (typeof po.scope == 'object' && (po.scope instanceof PocketCode.GameEngine || po.scope instanceof PocketCode.Model.Sprite))
+                    delete po.scope;    //make sure to not dispose objects currently in use
+                    delete po.brick;
                     var listener = po.listener,
                         threadId = po.threadId,
                         loopDelay = po.loopDelay;
@@ -94,8 +94,8 @@ PocketCode.Model.merge({
                 var po;
                 for (var id in this._pendingOps) {
                     po = this._pendingOps[id];
-                    if (typeof po.scope == 'object' && (po.scope instanceof PocketCode.GameEngine || po.scope instanceof PocketCode.Model.Sprite))
-                        po.scope = undefined;   //make sure to not dispose objects currently in use
+                    //if (typeof po.scope == 'object' && (po.scope instanceof PocketCode.GameEngine || po.scope instanceof PocketCode.Model.Sprite))
+                    delete po.scope;    //make sure to not dispose objects currently in use
                     delete po.brick;
 
                     for (var prop in po) //may include objects like timer, animation, ...
@@ -245,8 +245,8 @@ PocketCode.Model.merge({
                     pos = this._pendingOps;
                 for (var id in pos) {
                     po = this._pendingOps[id];
-                    if (typeof po.scope == 'object' && (po.scope instanceof PocketCode.GameEngine || po.scope instanceof PocketCode.Model.Sprite))
-                        po.scope = undefined;   //make sure to not dispose objects currently in use
+                    //if (typeof po.scope == 'object' && (po.scope instanceof PocketCode.GameEngine || po.scope instanceof PocketCode.Model.Sprite))
+                    delete po.scope;   //make sure to not dispose objects currently in use
 
                     for (var prop in po) //may include objects like animation, ...
                         if (po[prop] && po[prop].dispose)
