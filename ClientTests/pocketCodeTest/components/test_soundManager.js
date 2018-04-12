@@ -267,10 +267,10 @@ QUnit.test("AudioPlayer:supported", function (assert) {
     //resources
     var resourceBaseUrl1 = "_resources/";
     var sounds1 = [
-        { id: "s16", url: "sounds/3ec79f9addcf5055e069ec794db954e8_c.mp3", size: 11140 },
-        { id: "s17", url: "sounds/778fc114464dcf4b368c7d2841863beb_d.mp3", size: 11140 },
+        { id: "s19", url: "sounds/3ec79f9addcf5055e069ec794db954e8_c.mp3", size: 11140 },
+        { id: "s16", url: "sounds/8586959b14c74023b91e2c17da40cab4_c#.mp3", size: 11140 },
         { id: "s18", url: "sounds/152badadc1a428c7a89b46cf6d82a43b_e.ogg", size: 11140 },   //invalid
-        { id: "s19", url: "sounds/dbdd35220c46b04c7ace3f04af185702_f.mp3", size: 11140 },
+        { id: "s17", url: "sounds/dbdd35220c46b04c7ace3f04af185702_f.mp3", size: 11140 },
         { id: "s20", url: "sounds/e2b1d3b4f3d65de8f6468539ad695e94_g.mp3", size: 11140 }
     ];
 
@@ -301,7 +301,7 @@ QUnit.test("AudioPlayer:supported", function (assert) {
     success = ap.loadSoundFile("sId3", "_resources/sounds/3ec79f9addcf5055e069ec794db954e8_c.mp3", undefined, true, onStartCallback, onFinishCallback);
     //fin in soudJs.custom: missing onLoad events when loading the same file more than once
 
-    var ttsUrl = (new PocketCode.ServiceRequest(PocketCode.Services.TTS, SmartJs.RequestMethod.GET, { text: "hello world" })).url;
+    var ttsUrl = (new PocketCode.ServiceRequest(PocketCode.Services.TTS, SmartJs.RequestMethod.GET, { text: "audio player" })).url;
     var onFinishedPlayingCounter = 0;
 
     function runStartSoundTests() {
@@ -400,8 +400,8 @@ QUnit.test("AudioPlayer:supported", function (assert) {
     var activeSoundInstance;
     var prsOnStartCallback = function (instanceId) {
         activeSoundInstance = instanceId;
-        ap.pauseAllSounds();
-        window.setTimeout(validatePause, 3000);
+        window.setTimeout(ap.pauseAllSounds.bind(ap), 250);
+        window.setTimeout(validatePause, 1000);
     };
     var prsOnFinishCallbackCalled = 0;
     var prsOnFinishCallback = function () {
@@ -409,19 +409,19 @@ QUnit.test("AudioPlayer:supported", function (assert) {
     };
 
     function runPauseTest() {
-        ap.startSound("s17", prsOnStartCallback, prsOnFinishCallback);
+        var success = ap.startSound("s17", prsOnStartCallback, prsOnFinishCallback);
     }
 
     function validatePause() {  //on start callback
         assert.equal(ap._activeSounds[0].paused, true, "sound paused");
-        ap.startSound("s16");   //start another
         ap.resumeAllSounds();
         assert.equal(ap._activeSounds[0].paused, false, "sound resumed");
         ap.stopSound(activeSoundInstance);
+        ap.startSound("s16");   //start another
         assert.equal(prsOnFinishCallbackCalled, 1, "finished callback called on stoped sound instance");
         prsOnFinishCallbackCalled = 0;
         assert.equal(ap._activeSounds.length, 1, "first sound stopped");
-        ap.startSound("s17", undefined, prsOnFinishCallback);   //start another
+        var success = ap.startSound("s17", undefined, prsOnFinishCallback);   //start another
         assert.equal(ap._activeSounds.length, 2, "check 2 running sounds");
         ap.stopAllSounds();
         assert.equal(ap._activeSounds.length, 0, "stopAllSounds()");

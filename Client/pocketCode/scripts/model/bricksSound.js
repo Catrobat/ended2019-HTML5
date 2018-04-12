@@ -44,15 +44,21 @@ PocketCode.Model.merge({
                     return;
                 po.soundInstanceId = instanceId;
             },
+            //pause:function(){},   //handled in sprite: player.pauseAllSounds() & player.resumeAllSounds()
+            //resume:function(){},
             stop: function () {//stopEventType) {
                 var po,
-                    pos = this._pendingOps;
+                    pos = this._pendingOps,
+                    instances = [];
                 for (var id in pos) {
                     po = pos[id];
                     if (/*stopEventType && */ po.soundInstanceId)
-                        this._sprite.stopSound(po.soundInstanceId);
+                        instances.push(po.soundInstanceId);
                 }
                 PocketCode.Model.ThreadedBrick.prototype.stop.call(this);
+                //^^ stop bricks first so _return() called by stopSound() will not start next brick
+                for (var i = 0, l = instances.length; i < l;i++)
+                    this._sprite.stopSound(i);
             },
         });
 

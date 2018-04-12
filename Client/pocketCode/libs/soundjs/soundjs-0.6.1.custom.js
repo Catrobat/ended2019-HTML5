@@ -3992,8 +3992,11 @@ this.createjs = this.createjs || {};
 	 * @static
 	 * @since 0.6.0
 	 */
-	s._handleLoadComplete = function(event) {
-		var src = event.target.getItem().src;
+	s._handleLoadComplete = function (event) {
+	    var item = event.target.getItem();
+	    if (!item)
+	        return;
+		var src = item.src;
 		if (!s._preloadHash[src]) {return;}
 
 		for (var i = 0, l = s._preloadHash[src].length; i < l; i++) {
