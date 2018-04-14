@@ -4,6 +4,13 @@
     background-color: #04222C;
 }
 
+.pc-playerViewport button {
+    font-weight: normal;
+    text-decoration: none;
+    text-shadow: none;
+    text-transform: none;
+}
+
 /* inner player screens */
 .pc-playerStartScreen {
     font-size: 10px;
@@ -89,12 +96,30 @@
     filter: alpha(opacity=60);
 }
 
+/* player toolbar */
+.pc-playerMenuH, .pc-playerMenuV {
+    font-size: 10px;
+}
+
+
 .pc-playerMenuOverlay, .pc-playerMenuPlayOverlay div {
     background-color: #00475E;
     -moz-opacity: 0.8;
     opacity: 0.8;
     filter: alpha(opacity=80);
 }
+
+/* menu toolbar & buttons */
+.pc-playerMenuContainer {
+    font-family: Arial, sans-serif;
+}
+
+.pc-playerMenuContainer button {
+    font-style: inherit;
+    font-size: inherit;
+}
+
+
 
 /* svg buttons */
 .pc-playerButton, .pc-playerButton:active, .pc-menuBigButton, .pc-menuBigButton:active {
@@ -103,6 +128,11 @@
     color: #A9DCF1;
     border-color: #A9DCF1;
     outline: none;
+}
+
+.pc-playerButton span {
+    font-size: 1.01em;
+    font-weight: 600;
 }
 
 .pc-playerButton:hover {
@@ -148,6 +178,7 @@
     filter: alpha(opacity=60);
 }
 
+
 .pc-dialog {
     border-color: #3F3F3F;
     background-color: #282828;
@@ -164,6 +195,16 @@
     font-size: 21px;
     font-weight: 500;
 }
+
+.pc-askDialogHeader {
+    font-size: 18px;
+}
+
+.pc-askDialogBody {
+    font-size: 16px;
+    font-weight: 500;
+}
+
 
 .pc-dialogWarning {
     border-bottom-color: #EF7716;
@@ -193,6 +234,12 @@
 .pc-dialogFooter {
     border-color: #282828;
     border-top-color: #484848;
+}
+
+.pc-dialogFooter button {
+    color: inherit;
+    font-size: 13px;
+    font-weight: bold;
 }
 
 .pc-dialogFooter button:active {
