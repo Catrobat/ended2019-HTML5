@@ -22,7 +22,7 @@ QUnit.test("Menu", function (assert) {
     assert.ok(ctrl.objClassName === "Menu", "objClassName check");
 
     assert.ok(ctrl.onMenuAction instanceof SmartJs.Event.Event && ctrl.onOpen instanceof SmartJs.Event.Event, "event accessors");
-    assert.equal(ctrl.className, "pc-menu", "css set correctly");
+    assert.ok(ctrl.className.indexOf("pc-menu") >= 0, "css set correctly");
 
     assert.ok(ctrl._subMenu.hidden, "closed by default");
     ctrl._openCloseHandler();    //simulate click/tab

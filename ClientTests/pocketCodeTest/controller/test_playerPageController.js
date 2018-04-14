@@ -30,7 +30,7 @@ QUnit.test("PlayerPageController", function (assert) {
     var json = { title: "json1", thumbnailUrl: "null", baseUrl: "" };
     controller.projectDetails = json;
     assert.ok(controller._view._startScreen.title == "json1" &&
-        controller._view._startScreen._previewImage.src == "https://share.catrob.at/images/default/screenshot.png" || 
+        controller._view._startScreen._previewImage.src == "https://share.catrob.at/images/default/screenshot.png" ||
         controller._view._startScreen._previewImage.src == "https://web-test.catrob.at/images/default/screenshot.png", "projectDetails")
 
     assert.throws(function () { controller.project = 0; }, Error, "Set gameEngine not instanceof PocketCode.GameEngine");
@@ -109,9 +109,11 @@ QUnit.test("PlayerPageController", function (assert) {
         controller._playerViewportController._projectScreenWidth == 40 &&
         controller._playerViewportController._projectScreenHeight == 50, "sceneChangedHandler, set renderingSprite, rengeringTexts, projectScrrenWidth/Height");
 
-    //_projectExecutedHandler
-    controller._projectExecutedHandler();
-    assert.ok(controller._view.executionState == 0, "_projectExecutedHandler: playerPageView executionstate: stopped");
+    //_projectExecutedHandler: executed only if we are on desktop devices- bile will call browser history.back()
+    if (!SmartJs.Device.isMobile) {
+        controller._projectExecutedHandler();
+        assert.ok(controller._view.executionState == 0, "_projectExecutedHandler: playerPageView executionstate: stopped");
+    }
 
     //_showScreenshotDialog
     var screenshotDialog = new PocketCode.Ui.ScreenshotDialog();
@@ -125,7 +127,8 @@ QUnit.test("PlayerPageController", function (assert) {
     assert.ok(controller._dialogs.length === 2, "add dialog at _showScreenshotDialog");
     var lastElem = controller._view._container._childs.length - 1;
     assert.ok(controller._view._container._childs.length === length_childs + 1 && controller._view._container._childs[lastElem] instanceof PocketCode.Ui.Dialog, "appendChild in _showScreenshotDialog");
-    assert.ok(controller._screenshotDialog._onDownload._listeners.length == 1 &&
+    if (!SmartJs.Device.isMobile)   //there is no download button for mobile devices (long-touch is used to save images)
+        assert.ok(controller._screenshotDialog._onDownload._listeners.length == 1 &&
         controller._screenshotDialog._onCancel._listeners.length == 1, "add EventListener at _showScreenshotDialog");
 
     //_buttonClickedHandler

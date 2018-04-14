@@ -280,7 +280,7 @@ PocketCode.PlayerPageController = (function () {
                     history.back();
             }, this));
             if (SmartJs.Device.isMobile) {
-                var state = history.state;
+                var state = history.state ? history.state : { historyIdx: -1, dialogsLength: 0 };
                 history.replaceState(new PocketCode.HistoryEntry(state.historyIdx, state.dialogsLength, this, PocketCode.ExecutionState.PAUSED, this._dialogs.length), document.title, '');
             }
             else

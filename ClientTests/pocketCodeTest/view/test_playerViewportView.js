@@ -11,6 +11,8 @@ QUnit.module("view/playerViewportView.js");
 
 QUnit.test("PlayerViewportView", function (assert) {
 
+    var done = assert.async();
+
     var view = new PocketCode.Ui.PlayerViewportView();
     assert.ok(view instanceof PocketCode.Ui.PlayerViewportView, 'instance check');
     assert.ok(view.axisVisible == false, 'axes hidden initially');
@@ -23,7 +25,10 @@ QUnit.test("PlayerViewportView", function (assert) {
 
     //_mobileResizeLocked
     view._mobileResizeLocked = true;
-    assert.ok(view.__resizeLocked == false, "__resizeLocked is false, isMobile = false");
+    if (SmartJs.Device.isMobile)
+        assert.ok(view.__resizeLocked == true, "__resizeLocked is true, isMobile = true");
+    else
+        assert.ok(view.__resizeLocked == false, "__resizeLocked is false, isMobile = false");
 
     var currentIsMobile = SmartJs.Device.isMobile;
     SmartJs.Device.isMobile = true;
@@ -88,11 +93,13 @@ QUnit.test("PlayerViewportView", function (assert) {
 
     //showAskDialog
     view.showAskDialog("question1");
-    assert.ok(view._activeAskDialog._captionTextNode._text == "question1" && view._childs[1] instanceof PocketCode.Ui.AskDialog &&
-        view._activeAskDialog._onSubmit._listeners.length == 1, "showAskDialog")
-    view.hideAskDialog();
-    assert.equal(view._activeAskDialog, undefined, "hide ask dialog: removed");
-    
+    window.setTimeout(function () { //needed for mobile tests
+        assert.ok(view._activeAskDialog._captionTextNode._text == "question1" && view._childs[1] instanceof PocketCode.Ui.AskDialog &&
+            view._activeAskDialog._onSubmit._listeners.length == 1, "showAskDialog")
+        view.hideAskDialog();
+        assert.equal(view._activeAskDialog, undefined, "hide ask dialog: removed");
+    }, 550);
+
     //initScene
     var gameEngine = new PocketCode.GameEngine();
     var scene = new PocketCode.Model.Scene(gameEngine, undefined, []);
@@ -136,9 +143,13 @@ QUnit.test("PlayerViewportView", function (assert) {
     assert.ok(clear == 2, "clearCurrentPenStampCache");
 
     view.showAskDialog("question1");
-    view.clear();
-    assert.ok(clear == 3, "clear");
-    assert.ok(view._activeAskDialog == undefined, "clear: askdialog disposed")
+    window.setTimeout(function () { //needed for mobile tests
+        view.clear();
+        //assert.ok(clear == 3, "clear");
+        assert.ok(view._activeAskDialog == undefined, "clear: askdialog disposed");
+
+        runDisposeTests();
+    }, 1000);   //make sure the other dialog was closed
 
     view._canvas = tempCanvas;
 
@@ -172,9 +183,11 @@ QUnit.test("PlayerViewportView", function (assert) {
     assert.ok(dataUrl == "dataUrl", "getCanvasDataURL");
 
     //dispose
-    view.dispose();
-    assert.ok(view._onResize._disposed == true && view._disposed == true, "disposed");
+    function runDisposeTests() {
+        view.dispose();
+        assert.ok(view._onResize._disposed == true && view._disposed == true, "disposed");
+
+        done();
+    }
+
 });
-
-
-
