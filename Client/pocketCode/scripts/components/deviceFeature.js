@@ -98,20 +98,22 @@ PocketCode.merge({
 
         //methods
         DeviceVibration.prototype.merge({
-            _vibrate: function () {
-                var vibrate = navigator.vibrate || navigator.webkitVibrate || navigator.mozVibrate || navigator.msVibrate;
-                if (vibrate) {
-                    var fnct = vibrate.bind(navigator);
-                    try {
-                        fnct(); //may throw an error due to mobile restrictions
-                        return fnct;
-                    }
-                    catch (e) { }
-                }
-                return function () { return true; }; //add an empty method to avoid errors and keep testability
-            }(),
+            _vibrate: function () { 
+                return true;    //add an empty method to avoid errors and keep testability
+            },
             start: function (duration) {
-                this._inUse = true;
+                if (!this._inUse) {
+                    this._inUse = true;
+                    var vibrate = navigator.vibrate || navigator.webkitVibrate || navigator.mozVibrate || navigator.msVibrate;
+                    if (vibrate) {
+                        var fnct = vibrate.bind(navigator);
+                        try {
+                            fnct(0); //may throw an error due to mobile restrictions
+                            this._vibrate = fnct;
+                        }
+                        catch (e) { }
+                    }
+                }
                 if (!this._supported)
                     return false;
                 if (typeof duration != 'number')
