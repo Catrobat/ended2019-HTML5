@@ -141,6 +141,14 @@ QUnit.test("MediaDevice", function (assert) {
 
     assert.ok(dev instanceof PocketCode.Device && dev instanceof PocketCode.MediaDevice, "instance check");
 
+    assert.ok(false, "TODO");
+});
+
+
+QUnit.test("MediaDevice: Camera", function (assert) {
+
+    var dev = new PocketCode.MediaDevice();
+
     //dev._features.CAMERA.inUse = false;
     //assert.equal(dev.selectedCamera, PocketCode.CameraType.BACK, "selected camera: default selected");
     //assert.ok(dev._features.CAMERA.inUse, "camera inUser: after getter");
@@ -160,6 +168,14 @@ QUnit.test("MediaDevice", function (assert) {
     //dev.cameraOn = true;
     //assert.ok(dev._features.CAMERA.inUse, "camera inUser: after setter");
     //assert.ok(dev.cameraOn, "selected camera: getter/setter");
+
+    assert.ok(false, "TODO: geolocation + onInit");
+});
+
+
+QUnit.test("MediaDevice: Face Detection", function (assert) {
+
+    var dev = new PocketCode.MediaDevice();
 
     dev._features.CAMERA.inUse = false;
     assert.ok(typeof dev.faceDetected === 'boolean', "faceDetected getter");

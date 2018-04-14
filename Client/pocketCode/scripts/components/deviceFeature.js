@@ -1,5 +1,6 @@
 ﻿/// <reference path="../../../smartJs/sj.js" />
 /// <reference path="../../../smartJs/sj-event.js" />
+/// <reference path="../../../smartJs/sj-components.js" />
 /// <reference path="../core.js" />
 /// <reference path="device.js" />
 'use strict';
@@ -9,15 +10,17 @@ PocketCode.DeviceFeature = (function () {
     DeviceFeature.extends(SmartJs.Core.EventTarget);
 
     function DeviceFeature(i18nKey, supported) {
-        this._i18nKey = i18nKey;
-        this._supported = supported != undefined ? supported : true;
+        if (!i18nKey)
+            throw new Error('invalid cntr argument: i18nKey');
+        this._i18nKey = i18nKey.toString();
+        this._supported = supported != undefined ? !!supported : false;
         this._inUse = false;
         this._initialized = false;
         this._indistinguishableCameras = false;
 
         //events
         this._onInit = new SmartJs.Event.Event(this);
-        this._onindistinguishableCameras = new SmartJs.Event.Event(this);
+        this._onIndistinguishableCameras = new SmartJs.Event.Event(this);
     }
 
     //events
@@ -48,7 +51,15 @@ PocketCode.DeviceFeature = (function () {
         },
         initialized: {
             get: function () {
-                return !this.inUse || !this._supported || this._initialized ? true : false;
+                return !this.inUse || this._initialized ? true : false;
+            },
+        },
+        viewState: {
+            get: function () {
+                return this._getViewState();
+            },
+            set: function (viewState) {
+                return this._setViewState(viewState);
             },
         },
     });
@@ -58,6 +69,15 @@ PocketCode.DeviceFeature = (function () {
         disable: function () {
             this._supported = false;
         },
+        //abstract
+        _getViewState: function () {
+            //this method should be overridden in the inherited classes
+            throw new Error('abstract: missing override');
+        },
+        _setViewState: function (viewState) {
+            //this method should be overridden in the inherited classes
+            throw new Error('abstract: missing override');
+        },
     });
 
     return DeviceFeature;
@@ -65,6 +85,83 @@ PocketCode.DeviceFeature = (function () {
 
 
 PocketCode.merge({
+
+    DeviceVibration: (function () {
+        DeviceVibration.extends(PocketCode.DeviceFeature, false);
+
+        function DeviceVibration() {
+            var supported = SmartJs.Device.isMobile && !!(navigator.vibrate || navigator.webkitVibrate || navigator.mozVibrate || navigator.msVibrate);
+            PocketCode.DeviceFeature.call(this, 'lblDeviceVibrate', supported);
+
+            this._timer = new SmartJs.Components.Timer();
+        }
+
+        //methods
+        DeviceVibration.prototype.merge({
+            _vibrate: function () {
+                var vibrate = navigator.vibrate || navigator.webkitVibrate || navigator.mozVibrate || navigator.msVibrate;
+                if (vibrate) {
+                    var fnct = vibrate.bind(navigator);
+                    try {
+                        fnct(); //may throw an error due to mobile restrictions
+                        return fnct;
+                    }
+                    catch (e) { }
+                }
+                return function () { return true; }; //add an empty method to avoid errors and keep testability
+            }(),
+            start: function (duration) {
+                this._inUse = true;
+                if (!this._supported)
+                    return false;
+                if (typeof duration != 'number')
+                    return false;
+                if (duration == 0)
+                    this.stop();
+
+                var timespan = duration * 1000;
+                if (this._vibrate(timespan)) {    //started
+                    this._timer.delay = timespan;
+                    this._timer.start();
+                    return true;
+                }
+                return false;
+            },
+            pause: function () {
+                this._timer.pause();
+                this._vibrate(0);
+            },
+            resume: function () {
+                this._vibrate(this._timer.remainingTime);
+                this._timer.resume();
+            },
+            stop: function () {
+                this._vibrate(0);
+                this._timer.stop();
+            },
+            /*override*/
+            _getViewState: function () {
+                var timespan = this._timer.remainingTime;
+                return { remainingTime: timespan > 0 ? (timespan / 1000.0) : undefined };
+            },
+            _setViewState: function (viewState) {
+                if (!this._supported)
+                    return;
+                this._timer.stop();
+                if (viewState && viewState.remainingTime) {
+                    this.start(viewState.remainingTime);
+                }
+            },
+            dispose: function () {
+                this.stop();
+                this._timer.dispose();
+                PocketCode.DeviceFeature.prototype.dispose.call(this);
+            }
+        });
+
+        return DeviceVibration;
+    })(),
+
 
     CameraType: {
         BACK: 0,
@@ -126,9 +223,9 @@ PocketCode.merge({
                     return this._onChange;
                 },
             },
-            onindistinguishableCameras: {
+            onIndistinguishableCameras: {
                 get: function () {
-                    return this._onindistinguishableCameras;
+                    return this._onIndistinguishableCameras;
                 },
             },
         });
@@ -462,6 +559,13 @@ PocketCode.merge({
                 this._selected = PocketCode.CameraType.FRONT;   //default
             },
 
+            /*override*/
+            _getViewState: function () {
+                return {};//TODO: selected cam?, active?
+            },
+            _setViewState: function () {
+                //TODO: selected cam?, active? + reinit
+            },
             dispose: function () {
                 //this.stop();
                 this._stopStream();
@@ -470,6 +574,7 @@ PocketCode.merge({
 
                 //this._video = undefined;
                 //this._onChange.removeEventListener(new SmartJs.Event.EventListener(this._onChangeHandler, this));
+                PocketCode.DeviceFeature.prototype.dispose.call(this);
             },
         });
 
@@ -1326,10 +1431,18 @@ PocketCode.merge({
                 searchWindow.h = Math.floor(1.1 * trackObj.h);
             },
 
+            /*override*/
+            _getViewState: function () {
+                return {};  //TODO: faceDetection on/off?
+            },
+            _setViewState: function () {
+                //TODO: faceDetection on/off?   + init()?
+            },
             dispose: function () {
                 this.stop();
                 this._device = undefined;
                 this._src = undefined;
+                PocketCode.DeviceFeature.prototype.dispose.call(this);
             },
         });
 

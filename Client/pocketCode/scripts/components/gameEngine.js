@@ -166,12 +166,6 @@ PocketCode.GameEngine = (function () {
 
     //methods
     GameEngine.prototype.merge({
-        //reloadProject: function () {
-        //    if (!this._jsonProject)
-        //        throw new Error('no project loaded');
-
-        //    this.loadProject(this._jsonProject);
-        //},
         loadProject: function (jsonProject) {
             if (this._disposing || this._disposed)
                 return;
@@ -250,7 +244,6 @@ PocketCode.GameEngine = (function () {
 
             for (var i = 0, l = jsonScenes.length; i < l; i++) {
                 scene = new PocketCode.Model.Scene(this, this._device, broadcasts, this._minLoopCycleTime);
-                //this._sceneIds.push(scene.id);
                 scene.onProgressChange.addEventListener(new SmartJs.Event.EventListener(this._sceneOnProgressChangeHandler, this));
                 scene.onUnsupportedBricksFound.addEventListener(new SmartJs.Event.EventListener(this._sceneUnsupportedBricksHandler, this));
                 scene.onUiChange.addEventListener(new SmartJs.Event.EventListener(this._dispatchOnSceneChange, this));
@@ -266,61 +259,28 @@ PocketCode.GameEngine = (function () {
             this._scenesLoaded = true;
             this._sceneOnProgressChangeHandler({ bricksLoaded: 0 });
 
+            if (!this._device.initialized)    //divice ready?
+                this._device.onInit.addEventListener(new SmartJs.Event.EventListener(this._deviceInitHandler, this));
         },
         //loading handler
         _sceneOnProgressChangeHandler: function (e) {
-
-            //this._bricksCount = 0;
             this._bricksLoaded += e.bricksLoaded;
-            //var progress = this._bricksCount > 0 ? Math.round(this._bricksLoaded / this._bricksCount * 1000) / 10 : 100;
 
-            if (/*progress == 100 &&*/ this._scenesLoaded) {
-
-                //this._scenesProgressList[e.target._id] = e.progress;
-                //this._fullProgress = 0;
-
-                //for (var i = 0, l = this._sceneIds.length; i < l; i++) {
-                //    var id = this._sceneIds[i];
-                //    this._fullProgress += this._scenesProgressList[id];
-                //}
-
-                //if (this._fullProgress === 100) {
-                //this._scenesLoaded = true;
-                //for (var i = 0, l = this._sceneIds.length; i < l; i++) {
-                //    var id = this._sceneIds[i];
-                //    this._scenes[id].removeSpriteFactoryEventListeners();
-                //}
-                if (this._resourcesLoaded) {
-                    //window.setTimeout(function () { this._onLoad.dispatchEvent(); }.bind(this), 100);    //update UI before
-                    //this._initSceneSprites();
+            if (this._scenesLoaded) {
+                if (this._resourcesLoaded && this._device.initialized)
                     this._handleLoadingComplete();
-                }
             }
             else {
                 this._dispatchLoadingProgress();
-                //this._spritesLoadingProgress = this._fullProgress;
-                //var resourceProgress = Math.round(this._resourceLoadedSize / this._resourceTotalSize * 1000) / 10;
-                //this._onLoadingProgress.dispatchEvent({ progress: Math.min(resourceProgress, progress) });
             }
         },
         _sceneUnsupportedBricksHandler: function (e) {
             this._loadingAlerts.unsupportedBricks = this._loadingAlerts.unsupportedBricks.concat(e.unsupportedBricks);
-            //this._onLoadingAlert.dispatchEvent({ bricks: e.unsupportedBricks });
         },
         _sceneExecutedHandler: function (e) {
             if (e.target == this._currentScene)
                 this._onProgramExecuted.dispatchEvent();
         },
-        //todo this initsialises all spritest from all scenes -> might be too much
-        //_initSceneSprites: function () {
-        //    for (var id in this._scenes)
-        //        this._scenes[id].initializeSprites();
-
-        //    //for (var i = 0, l = this._sceneIds.length; i < l; i++) {
-        //    //    var id = this._sceneIds[i];
-        //    //    this._scenes[id].initializeSprites();
-        //    //}
-        //},
         _resourceProgressChangeHandler: function (e) {
             if (!e.file || !e.file.size)
                 return;
@@ -328,8 +288,6 @@ PocketCode.GameEngine = (function () {
             var size = e.file.size;
             this._resourceLoadedSize += size;
             this._dispatchLoadingProgress();
-            //var resourceProgress = Math.round(this._resourceLoadedSize / this._resourceTotalSize * 1000) / 10;
-            //this._onLoadingProgress.dispatchEvent({ progress: Math.min(resourceProgress, this._spritesLoadingProgress) });
         },
         _dispatchLoadingProgress: function () {
             var sceneProgress = this._bricksCount > 0 ? Math.round(this._bricksLoaded / this._bricksCount * 1000) / 10 : 100;
@@ -337,22 +295,21 @@ PocketCode.GameEngine = (function () {
             this._onLoadingProgress.dispatchEvent({ progress: Math.min(resourceProgress, sceneProgress) });
         },
         _imageStoreLoadHandler: function (e) {
-            //init loading sound files (as soon images are loaded)
             this._sounds = this._jsonProject.sounds || [];
         },
         _soundManagerLoadHandler: function (e) {
             if (this._resourceLoadedSize !== this._resourceTotalSize)
                 return; //load may trigger during loading single (cached) dynamic sound files (e.g. tts)
             this._resourcesLoaded = true;
-            if (this._scenesLoaded) {
-                //window.setTimeout(function () { this._onLoad.dispatchEvent(); }.bind(this), 100);    //update UI before
-                //this._initSceneSprites();
+            if (this._scenesLoaded && this._device.initialized) {
                 this._handleLoadingComplete();
             }
         },
+        _deviceInitHandler:function(){
+            if (this._scenesLoaded && this._resourcesLoaded)
+                this._handleLoadingComplete();
+        },
         _handleLoadingComplete: function () {
-            //this._currentScene = this._sceneIds.length > 0 ? this._scenes[this._sceneIds[0]] : undefined;   //first
-
             //init scene sprites
             for (var id in this._scenes)
                 this._scenes[id].initializeSprites();
@@ -367,15 +324,11 @@ PocketCode.GameEngine = (function () {
 
             if (loadingAlerts.deviceEmulation || loadingAlerts.deviceLockRequired || loadingAlerts.invalidSoundFiles.length != 0 ||
                 loadingAlerts.unsupportedBricks.length != 0 || loadingAlerts.deviceUnsupportedFeatures.length != 0) {
-                this._onLoadingProgress.dispatchEvent({ progress: 100 });       //update ui progress
+                this._onLoadingProgress.dispatchEvent({ progress: 100 });       //update ui progress to hide loading indicator
                 this._onLoad.dispatchEvent({ loadingAlerts: loadingAlerts });   //dispatch warnings
             }
             else {
                 this._onLoad.dispatchEvent();
-                //for (var c in this._scenes) {
-                //  this._currentScene = this._scenes[c];
-                //  break;
-                //}
             }
         },
         _resourceLoadingErrorHandler: function (e) {
@@ -528,7 +481,7 @@ PocketCode.GameEngine = (function () {
                 this._dispatchOnSceneChange(false);
                 scene.start();
             }
-            else
+            else    //already  running
                 return false;
 
             return true;

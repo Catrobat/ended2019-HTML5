@@ -65,10 +65,9 @@ SmartJs.Components = {
         Timer.extends(SmartJs.Core.Component);
 
         function Timer(delay, listener, startOnInit, callbackArgs) {
-            if (isNaN(delay) || parseInt(delay) !== delay)
-                throw new Error('invalid argument delay: expected type: int');
-            this._delay = delay;
-            //this._remainingTime = delay;  //init on start()
+            this._delay = 0;
+            this.delay = this._remainingTime = delay || 0;
+
             this._callBackArgs = callbackArgs;  //introduced to enable threaded timer identification
             this._paused = false;
 
@@ -81,12 +80,29 @@ SmartJs.Components = {
                 this.start();
         }
 
-        //events + properties
+        //events
         Object.defineProperties(Timer.prototype, {
             onExpire: {
                 get: function () { return this._onExpire; },
                 //enumerable: false,
                 //configurable: true,
+            },
+        });
+
+        //properties
+        Object.defineProperties(Timer.prototype, {
+            delay: {
+                set: function (value) {
+                    if (parseInt(value) !== value)
+                        throw new Error('invalid argument delay: expected type: int');
+                    if (this._remainingTime === 0)   //not started
+                        this._delay = value;
+                    else {
+                        this.stop();
+                        this._delay = value;
+                        this.start();
+                    }
+                },
             },
             remainingTime: {
                 get: function () {
@@ -120,7 +136,7 @@ SmartJs.Components = {
 
                 this._clearTimeout();
                 this._remainingTime -= (Date.now() - this._startTime);
-                if (this._remainingTime < 0)    //
+                if (this._remainingTime < 0)
                     this._remainingTime = 0;
                 this._paused = true;
             },
@@ -177,10 +193,15 @@ SmartJs.Components = {
                     if (!this._startDateTime)
                         return ms;
                     if (this._pausedDateTime)   //currently paused
-                        ms = (this._pausedDateTime - this._startDateTime) - this._pausedTimespan;
+                        ms = (this._pausedDateTime - this._startDateTime);
                     else
-                        ms = (Date.now() - this._startDateTime) - this._pausedTimespan;
+                        ms = (Date.now() - this._startDateTime);
                     return ms / 1000.0;
+                },
+            },
+            startTimestamp: {
+                get: function () {
+                    return this._startDateTime;
                 },
             },
         });
@@ -190,19 +211,18 @@ SmartJs.Components = {
             _init: function () {
                 this._startDateTime = undefined;
                 this._pausedDateTime = undefined;   //only set if currently paused
-                this._pausedTimespan = 0.0;
             },
-            start: function () {
+            start: function (timestamp) {
                 this._init();
-                this._startDateTime = Date.now();
+                this._startDateTime = timestamp || Date.now();
             },
             reset: function () {    //sets current timer to 0 (even if stated or paused)
-                var start = this._startDateTime,
-                    paused = this._pausedDateTime;
+                var started = !!this._startDateTime,
+                    paused = !!this._pausedDateTime;
                 this._init();
                 if (paused)
                     this._startDateTime = this._pausedDateTime = Date.now();
-                else if (start)
+                else if (started)
                     this._startDateTime = Date.now();
             },
             pause: function () {
@@ -211,7 +231,7 @@ SmartJs.Components = {
             resume: function () {
                 if (!this._pausedDateTime)
                     return;
-                this._pausedTimespan += Date.now() - this._pausedDateTime;
+                this._startDateTime += Date.now() - this._pausedDateTime;
                 this._pausedDateTime = undefined;
             },
             stop: function () {
@@ -226,10 +246,10 @@ SmartJs.Components = {
         return Stopwatch;
     })(),
 
-    WebWorker: (function () {
-        WebWorker.extends(SmartJs.Core.EventTarget);
+    InlineWorker: (function () {
+        InlineWorker.extends(SmartJs.Core.EventTarget);
 
-        function WebWorker(scope, workerMethod, helperMethods) {
+        function InlineWorker(scope, workerMethod, lookupObject) {
 
             if (!(scope instanceof Object))
                 throw new Error('invalid argument: scope');
@@ -239,31 +259,39 @@ SmartJs.Components = {
             this._workerMethod = workerMethod;
 
             this._busy = false;
-            if (helperMethods && !(helperMethods instanceof Object))
-                throw new Error('invalid argument: helperMethods');
 
             //create web worker internal code
-            var internalCode = ['onmessage=', this._internalOnMessage/*.toString()*/, '; var workerMethod=', this._workerMethod];
-            if (helperMethods) {
-                for (var prop in helperMethods) {
-                    if (!(helperMethods[prop] instanceof Function))
-                        throw new Error('invalid argument: helper methods {functionName: Function}');
-                    internalCode = internalCode.concat([', ', prop, '=', helperMethods[prop]]);
-                }
-            }
+            var internalCode = ['onmessage = ', this._internalOnMessage, '; var workerMethod = ', this._workerMethod, ', '];
+            internalCode = internalCode.concat(this._parseLookupObject(lookupObject));
+            internalCode.pop();    //remove last ', '
             internalCode.push(';');
 
             //create inline worker
             try {   //supported
-                var blobURL = URL.createObjectURL(new Blob(internalCode), { type: "text/javascript" });
-                this._worker = new Worker(blobURL);
-                URL.revokeObjectURL(blobURL);
+                var blob;
+                try {
+                    blob = new Blob(internalCode);
+                }
+                catch (e) {
+                    //older browsers like IE11
+                    if (!window.BlobBuilder)
+                        window.BlobBuilder = window.WebKitBlobBuilder || window.MozBlobBuilder || window.MSBlobBuilder;
+                    if (window.BlobBuilder) {
+                        var bb = new BlobBuilder();
+                        bb.append(internalCode.join(''));
+                        blob = bb.getBlob();
+                    }
+                }
+                this._blobURL = URL.createObjectURL(blob, { type: "text/javascript" });
+                this._worker = new Worker(this._blobURL);
+                //URL.revokeObjectURL(this._blobURL); //IE needs the URL to successfully run the worker
 
                 this._onMessageListener = this._addDomListener(this._worker, 'message', this._onMessageHandler);
                 this._onErrorListener = this._addDomListener(this._worker, 'error', this._onErrorHandler);
                 this._onMessageErrorListener = this._addDomListener(this._worker, 'messageerror', this._onMessageErrorHandler);
             }
             catch (e) { //not supported
+                URL.revokeObjectURL(this._blobURL);
                 this._worker = undefined;
             }
 
@@ -273,7 +301,7 @@ SmartJs.Components = {
         }
 
         //events
-        Object.defineProperties(WebWorker.prototype, {
+        Object.defineProperties(InlineWorker.prototype, {
             onExecuted: {
                 get: function () { return this._onExecuted; },
             },
@@ -283,7 +311,7 @@ SmartJs.Components = {
         });
 
         //properties
-        Object.defineProperties(WebWorker.prototype, {
+        Object.defineProperties(InlineWorker.prototype, {
             isBusy: {
                 get: function () {
                     return this._busy;
@@ -292,7 +320,7 @@ SmartJs.Components = {
         });
 
         //methods
-        WebWorker.prototype.merge({
+        InlineWorker.prototype.merge({
             /*code below is injected to run inside the worker*/
             _internalOnMessage: function (e) {
                 var data = e.data,
@@ -302,55 +330,77 @@ SmartJs.Components = {
                     this.postMessage(returnValue, [returnValue.data.buffer]);
                 else
                     this.postMessage(returnValue);
-                //this.close();
             },
             /*code above is injected to run inside the worker*/
 
-            execute: function (/*arguments*/) {
-                if (!this._worker) {
-                    this._onExecuted.dispatchEvent({ result: this._workerMethod.apply(this._scope, [].slice.call(arguments)), async: false });
-                    return;// this._workerMethod.apply(this._scope, arguments);    //TODO dispatch event
+            _parseLookupObject: function (obj, recursive) {
+                var code = [];
+                if (obj && typeof obj != 'object')
+                    throw new Error('invalid argument: lookupObject');
+                if (obj) {
+                    for (var prop in obj) {
+                        code.push(prop);
+                        code.push(recursive ? ': ' : ' = ');
+                        if (typeof obj[prop] != 'object')
+                            code.push(obj[prop]);
+                        else {
+                            code.push('{ ');
+                            code = code.concat(this._parseLookupObject(obj[prop], true));
+                            code.push(' }');
+                        }
+                        code.push(', ');
+                    }
                 }
-
-                if (this._busy)
-                    throw new Error('worker currently in use');
-                this._busy = true;
-                this._worker.postMessage({ arguments: [].slice.call(arguments), buffer: false });    //post as argument array
+                return code;
             },
-            executeImageData: function (imageData) {
-                if (!(imageData instanceof ImageData))
-                    throw new Error('invalid argument: imageData');
+            _checkFallback: function (args) {
+                if (this._disposed)
+                    throw new Error('worker disposed (terminated)');
                 if (!this._worker) {
-                    this._onExecuted.dispatchEvent({ result: this._workerMethod.call(this._scope, imageData), async: false });
-                    return;// this._workerMethod.apply(this._scope, arguments);    //TODO dispatch event
+                    this._onExecuted.dispatchEvent({ result: this._workerMethod.apply(this._scope, args), async: false });
+                    return true;
                 }
 
                 if (this._busy)
                     throw new Error('worker currently in use');
                 this._busy = true;
-                this._worker.postMessage({ arguments: [imageData], buffer: true }, [imageData.data.buffer]);
+                return false;
+            },
+            execute: function (/*arguments*/) {
+                var args = [].slice.call(arguments);
+                if (!this._checkFallback(args))
+                    this._worker.postMessage({ arguments: args, buffer: false });    //post as argument array
+            },
+            executeOnImageData: function (/*arguments*/) {    //1st has to be imageData
+                var args = [].slice.call(arguments);
+                if (args.length == 0 || !(args[0] instanceof ImageData))
+                    throw new Error('invalid 1st argument: imageData');
+                if (!this._checkFallback(args))
+                    this._worker.postMessage({ arguments: args, buffer: true }, [args[0].data.buffer]);
             },
             _onMessageHandler: function (e) {
                 this._busy = false;
-                this._onExecuted.dispatchEvent({ result: e.data, async: true }); //TODO
+                this._onExecuted.dispatchEvent({ result: e.data, async: true });
             },
             _onErrorHandler: function (e) {
                 this._busy = false;
-                this._onError.dispatchEvent({ error: e }); //TODO
+                this._onError.dispatchEvent({ message: e.message });
             },
             _onMessageErrorHandler: function (e) {
                 this._busy = false;
-                this._onError.dispatchEvent({ error: e }); //TODO
+                this._onError.dispatchEvent({ message: e.message });
             },
-            terminate: function () {
-                if (this._worker)
-                    this._worker.terminate();
-            },
+            //terminate: function () {
+            //    if (this._worker)
+            //        this._worker.terminate();
+            //    this._busy = false;
+            //},
             /*override*/
             dispose: function () {
                 if (this._worker) {
+                    if (this._blobURL)
+                        URL.revokeObjectURL(this._blobURL);
                     this._worker.terminate();
-
                     this._removeDomListener(this._worker, 'message', this._onMessageListener);
                     this._removeDomListener(this._worker, 'error', this._onErrorListener);
                     this._removeDomListener(this._worker, 'messageerror', this._onMessageErrorListener);
@@ -359,7 +409,7 @@ SmartJs.Components = {
             },
         });
 
-        return WebWorker;
+        return InlineWorker;
     })(),
 
     StorageAdapter: (function () {
@@ -488,9 +538,13 @@ SmartJs.Components.merge({
                 throw new Error('invalid argument: expected type: daysUntilExpire = number');
 
             daysUntilExpire || (daysUntilExpire = 365);  //default: in one year
-            this._expires = new Date().getTime() + 1000 * 60 * 60 * 24 * daysUntilExpire;
+            var date = new Date();
+            date.setTime(date.getTime() + (daysUntilExpire * 24 * 60 * 60 * 1000));
+            this._expires = date.toUTCString();
             this._supported = ('cookie' in document && (document.cookie.length > 0 ||
                               (document.cookie = 'test').indexOf.call(document.cookie, 'test') > -1)) && !!JSON;
+            if (this._supported)
+                this._deleteKey('test');
         }
 
         //methods
@@ -577,25 +631,3 @@ SmartJs.Components.merge({
     })(),
 
 });
-
-/*
- * 
- * example: https://jsbin.com/civemiruho/edit?js,console
- * 
-var a = function() {return 2;}
-function run(fn) {
-  console.log(a.toString());
-  return new Worker(URL.createObjectURL(new Blob(['onmessage=',fn,'; var a=',a.toString(),';'])), { type: "text/javascript" });
-}
-
-const worker = run(function(d) {
-  
-  setTimeout(postMessage(JSON.stringify(d.data) + ', ' + this.a()), 10000)
-  //postMessage(JSON.stringify(this));
-  
-  //this.close();
-});
-
-worker.onmessage = (event) => console.log(event.data);
-setTimeout(worker.postMessage({a:1}), 5000);
- */

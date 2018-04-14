@@ -29,7 +29,7 @@ PocketCode.Ui.Dialog = (function () {
         this._marginTopBottom = 15;
 
         //private controls
-        this._header = new SmartJs.Ui.ContainerControl({ className: 'pc-dialogHeader' });
+        this._header = new SmartJs.Ui.HtmlTag('div', { className: 'pc-dialogHeader' });
         // !!!
         this._captionTextNode = new PocketCode.Ui.I18nTextNode(i18nCaptionKey);
         this._messageTextNode = new PocketCode.Ui.I18nTextNode(i18nMsgKey);
@@ -185,8 +185,13 @@ PocketCode.Ui.merge({
             this._header.className = 'pc-askDialogHeader';
             this._header.appendChild(this._scrollContainer);  //scrollcontainer in header
             this._scrollContainer.appendChild(this._captionTextNode);
-            var dir = PocketCode.I18nProvider.getTextDirection(question);
-            this._header._dom.dir = dir;    //no public accessor available
+            if (!question || question.toString().length == 0) {
+                this._header.hide();
+            }
+            else {
+                var dir = PocketCode.I18nProvider.getTextDirection(question);
+                this._header.dom.dir = dir;
+            }
 
             this._container.dispose();  //this._messageTextNode is getting disposed as well
             this._container = new SmartJs.Ui.ContainerControl({ className: 'pc-askDialogBody' });
@@ -354,7 +359,7 @@ PocketCode.Ui.merge({
         //cntr
         function BrowserNotSupportedDialog() {
             PocketCode.Ui.ErrorDialog.call(this, 'lblBrowserNotSupportedErrorCaption', 'msgBrowserNotSupportedError');
-            
+
             this.appendChild(new SmartJs.Ui.HtmlTag('br'));
             this.insertAt(2, new SmartJs.Ui.HtmlTag('br'));
             this.insertAt(3, new PocketCode.Ui.I18nTextNode('msgBrowserNotSupportedErrorOther'));

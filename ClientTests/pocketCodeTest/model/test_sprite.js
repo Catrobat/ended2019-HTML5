@@ -519,75 +519,75 @@ QUnit.test("Sprite", function (assert) {
     // ********************* turn *********************
 
     sprite.setDirection(90, triggerEvent);
-    sprite.turnRight(50);
+    sprite.rotate(50);
     assert.equal(sprite._direction, 140, "turn right 50°");
-    sprite.turnRight(570); //710 --> -10
+    sprite.rotate(570); //710 --> -10
     assert.equal(sprite._direction, -10, "turn right to 710°");
-    sprite.turnRight(-180); // -190 --> 170
+    sprite.rotate(-180); // -190 --> 170
     assert.equal(sprite._direction, 170, "turn right to -190°");
 
     sprite.setDirection(90, triggerEvent);
-    sprite.turnRight(100); //190 --> -170
+    sprite.rotate(100); //190 --> -170
     assert.equal(sprite._direction, -170, "turn right to 190°");
-    returnVal = sprite.turnRight(180); //-170 --> 10
+    returnVal = sprite.rotate(180); //-170 --> 10
     assert.ok(returnVal, "turnRight returns true on update");
     assert.ok(lastOnChangeArgs.rotation !== undefined, "turn right event args");
-    returnVal = sprite.turnRight(0); //-170 --> 10
+    returnVal = sprite.rotate(0); //-170 --> 10
     assert.ok(!returnVal, "turnRight returns false: no update");
-    returnVal = sprite.turnRight(360);
+    returnVal = sprite.rotate(360);
     assert.ok(!returnVal, "turnRight returns false: no update (360°) turn");
-    assert.ok(sprite.turnRight() == false, "turn right without parameter");
+    assert.ok(sprite.rotate() == false, "turn right without parameter");
 
     assert.equal(sprite._direction, 10, "turn right to 10°");
-    sprite.turnRight(-20); //-170 --> 10
+    sprite.rotate(-20); //-170 --> 10
     assert.equal(sprite._direction, -10, "turn right to 10°");
     sprite.setDirection(90, triggerEvent);
-    sprite.turnRight(-100); //-10 --> -10
+    sprite.rotate(-100); //-10 --> -10
     assert.equal(sprite._direction, -10, "turn right to -10°");
 
     sprite.setDirection(0, triggerEvent);
-    sprite.turnRight(-350); //-350 --> 10
+    sprite.rotate(-350); //-350 --> 10
     assert.equal(sprite._direction, 10, "turn right to 10°");
     sprite.setDirection(0, triggerEvent);
-    sprite.turnRight(350); //350 --> -10
+    sprite.rotate(350); //350 --> -10
     assert.equal(sprite._direction, -10, "turn right to -10°");
     sprite.setDirection(0, triggerEvent);
-    returnVal = sprite.turnLeft(350); //350 --> 10
+    returnVal = sprite.rotate(-350); //350 --> 10
     assert.ok(returnVal, "turnLeft returns true on update");
-    returnVal = sprite.turnLeft(360);
+    returnVal = sprite.rotate(-360);
     assert.ok(!returnVal, "turnLeft returns false: no update (360°) turn");
-    assert.ok(sprite.turnLeft() == false, "turn left without parameter");
+    assert.ok(sprite.rotate() == false, "turn left without parameter");
 
     assert.equal(sprite._direction, 10, "turn left to 10°");
     sprite.setDirection(0, triggerEvent);
-    sprite.turnLeft(-350); //-350 --> -10
+    sprite.rotate(350); //-350 --> -10
     assert.equal(sprite._direction, -10, "turn left to -10°");
 
     sprite.setDirection(90, triggerEvent);
-    sprite.turnRight(-540); //-350 --> 10
+    sprite.rotate(-540); //-350 --> 10
     assert.ok(sprite._direction == -90, "turn right to -90°");
     sprite.setDirection(90, triggerEvent);
-    sprite.turnRight(541); //350 --> -10
+    sprite.rotate(541); //350 --> -10
     assert.ok(sprite._direction == -89, "turn right to -89°");
     sprite.setDirection(90, triggerEvent);
-    sprite.turnLeft(540); //350 --> 10
+    sprite.rotate(-540); //350 --> 10
     assert.ok(sprite._direction == -90, "turn left to -90°");
     sprite.setDirection(90, triggerEvent);
-    sprite.turnLeft(-541); //-350 --> -10
+    sprite.rotate(541); //-350 --> -10
     assert.equal(sprite._direction, -89, "turn left to -89°");
 
     sprite.setDirection(-90, triggerEvent);
-    sprite.turnRight(-450); //-350 --> 10
+    sprite.rotate(-450); //-350 --> 10
     assert.equal(sprite._direction, 180, "turn right to 180°");
     sprite.setDirection(-90, triggerEvent);
-    sprite.turnRight(450); //350 --> -10
+    sprite.rotate(450); //350 --> -10
     assert.equal(sprite._direction, 0, "turn right to 0°");
     sprite.setDirection(-90, triggerEvent);
-    sprite.turnLeft(450); //350 --> 10
+    sprite.rotate(-450); //350 --> 10
     assert.equal(sprite._direction, 180, "turn left to 180°");
     assert.ok(lastOnChangeArgs.rotation !== undefined, "turn left event args");
     sprite.setDirection(-90, triggerEvent);
-    sprite.turnLeft(-450); //-350 --> -10
+    sprite.rotate(450); //-350 --> -10
     assert.equal(sprite._direction, 0, "turn left to 0°");
 
     // ********************* variables *********************
@@ -867,25 +867,25 @@ QUnit.test("Sprite", function (assert) {
     newSprite.setPosition(100, 100);
     sprite.setPosition(50, 50);
 
-    returnVal = sprite.SetDirectionTo();
-    assert.ok(!returnVal, "SetDirectionTo: missing argument");
-    returnVal = sprite.SetDirectionTo("id2");
+    returnVal = sprite.setDirectionTo();
+    assert.ok(!returnVal, "setDirectionTo: missing argument");
+    returnVal = sprite.setDirectionTo("id2");
     assert.ok(sprite.direction == 45, "point to right up sprite");
     assert.ok(returnVal, "point to: value changed");
-    assert.ok(lastOnChangeArgs.rotation !== undefined, "SetDirectionTo event args");
-    returnVal = sprite.SetDirectionTo("id2");
+    assert.ok(lastOnChangeArgs.rotation !== undefined, "setDirectionTo event args");
+    returnVal = sprite.setDirectionTo("id2");
     assert.ok(!returnVal, "point to: value not changed");
-    //returnVal = sprite.SetDirectionTo(sprite.id);
+    //returnVal = sprite.setDirectionTo(sprite.id);
     //assert.ok(!returnVal, "point to: self (no change)");
 
     newSprite.setPosition(0, 0);
     sprite.setPosition(0, 0);
-    returnVal = sprite.SetDirectionTo("id2");
+    returnVal = sprite.setDirectionTo("id2");
     assert.ok(!returnVal, "point to: sprite on same position: ignored");
 
     sprite.setPosition(50, 50);
 
-    sprite.SetDirectionTo("id2");
+    sprite.setDirectionTo("id2");
     assert.ok(sprite.direction == -180 + 45, "point to left down sprite");
     // *************************************************************
 
@@ -2094,7 +2094,7 @@ QUnit.test("SpriteClone", function (assert) {
         sprite.penColor = { r: 255, g: 20, b: 20 };
         sprite.setPositionX(300);
         sprite.setPositionY(100);
-        sprite.turnLeft(-10);
+        sprite.rotate(10);
         sprite.setRotationStyle(PocketCode.RotationStyle.LEFT_TO_RIGHT);
         sprite.nextLook();  //set this._currentLook
         sprite.setSize(50);

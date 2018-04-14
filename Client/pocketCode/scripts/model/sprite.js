@@ -1,10 +1,11 @@
 /// <reference path="../../../smartJs/sj.js" />
 /// <reference path="../../../smartJs/sj-core.js" />
 /// <reference path="../../../smartJs/sj-event.js" />
+/// <reference path="../../../smartJs/sj-animation.js" />
 /// <reference path="../core.js" />
 /// <reference path="userVariableHost.js" />
+/// <reference path="scene.js" />
 /// <reference path="../components/renderingItem.js" />
-/// <reference path="../model/scene.js" />
 'use strict';
 
 PocketCode.RotationStyle = {
@@ -44,8 +45,9 @@ PocketCode.Model.Sprite = (function () {
         this._positionX = 0.0;
         this._positionY = 0.0;
         this._rotationStyle = PocketCode.RotationStyle.ALL_AROUND;
-        this._direction = 90.0; //pointing to right: 0 means up
-
+        this._rotation = new SmartJs.Animation.Rotation(90.0);
+        this._direction = 90.0;    //cache
+        this._rotation.onUpdate.addEventListener(new SmartJs.Event.EventListener(this._rotationUpdateHander, this));
         ////looks
         this._looks = [];
         this._lookOffsetX = 0.0;
@@ -112,7 +114,7 @@ PocketCode.Model.Sprite = (function () {
                     x: this._positionX + this._lookOffsetX,
                     y: this._positionY + this._lookOffsetY,
                     rotation: this.rotationStyle === PocketCode.RotationStyle.ALL_AROUND ? this._direction - 90.0 : 0.0,
-                    flipX: this.rotationStyle === PocketCode.RotationStyle.LEFT_TO_RIGHT && this.direction < 0,
+                    flipX: this.rotationStyle === PocketCode.RotationStyle.LEFT_TO_RIGHT && this._direction < 0,
                     look: this._currentLook ? this._currentLook.canvas : undefined,
                     scaling: this._scaling,
                     visible: this._visible,
@@ -137,6 +139,12 @@ PocketCode.Model.Sprite = (function () {
             },
         },
 
+        layer: {
+            get: function () {
+                return this._scene.getSpriteLayer(this);
+            },
+        },
+
         //motion
         positionX: {
             get: function () {
@@ -150,12 +158,11 @@ PocketCode.Model.Sprite = (function () {
         },
         direction: {
             get: function () {
+                //var angle = this._rotation.value;   //0..<360
+                //if (angle > 180.0)
+                //    return angle - 360.0;
+                //return angle;
                 return this._direction;
-            },
-        },
-        layer: {
-            get: function () {
-                return this._scene.getSpriteLayer(this);
             },
         },
         rotationStyle: {
@@ -222,7 +229,7 @@ PocketCode.Model.Sprite = (function () {
         },
         size: {     //percentage
             get: function () {
-                return Math.round(this._scaling * 100.0);
+                return this._scaling * 100.0;
             },
         },
         transparency: {
@@ -308,7 +315,7 @@ PocketCode.Model.Sprite = (function () {
                 if (!this._currentLook) //sprite/background without look
                     return false;
                 var collisionMgr = this._scene.collisionManager,
-                    dir = this.direction,
+                    dir = this._direction,
                     rotationCW = this.rotationStyle === PocketCode.RotationStyle.ALL_AROUND ? dir - 90.0 : 0.0,
                     //^^ sprite has a direction but is not rotated
                     flipX = this.rotationStyle === PocketCode.RotationStyle.LEFT_TO_RIGHT && dir < 0.0 ? true : false;
@@ -328,7 +335,7 @@ PocketCode.Model.Sprite = (function () {
                 if (!this._currentLook) //sprite/background without look
                     return false;
                 var collisionMgr = this._scene.collisionManager,
-                    dir = this.direction,
+                    dir = this._direction,
                     rotationCW = this.rotationStyle === PocketCode.RotationStyle.ALL_AROUND ? dir - 90.0 : 0.0,
                     //^^ sprite has a direction but is not rotated
                     flipX = this.rotationStyle === PocketCode.RotationStyle.LEFT_TO_RIGHT && dir < 0.0 ? true : false;
@@ -399,7 +406,8 @@ PocketCode.Model.Sprite = (function () {
             //motion
             this._positionX = 0.0;
             this._positionY = 0.0;
-            this._direction = 90.0; //pointing to right: 0 means up
+            this._rotation.stop();
+            this._rotation.angle = this._direction = 90.0; //pointing to right: 0 means up
             this._rotationStyle = PocketCode.RotationStyle.ALL_AROUND;
 
             //looks
@@ -426,6 +434,7 @@ PocketCode.Model.Sprite = (function () {
                 if (scripts[i].pause)
                     scripts[i].pause();
             }
+            this._rotation.pause();
             if (andSounds)
                 this._audioPlayer.pauseAllSounds();
         },
@@ -435,6 +444,7 @@ PocketCode.Model.Sprite = (function () {
                 if (scripts[i].resume)
                     scripts[i].resume();
             }
+            this._rotation.resume();
             if (andSounds)
                 this._audioPlayer.resumeAllSounds();
         },
@@ -462,8 +472,8 @@ PocketCode.Model.Sprite = (function () {
                     if (properties.rotation != undefined && this._bubbleVisible) {
                         var boundary = { top: 0, right: 0, bottom: 0, left: 0 };
                         if (this._currentLook && this._transparency < 100.0) {
-                            var rotationCW = this.rotationStyle === PocketCode.RotationStyle.ALL_AROUND ? this.direction - 90.0 : 0.0,
-                                flipX = this.rotationStyle === PocketCode.RotationStyle.LEFT_TO_RIGHT && this.direction < 0.0 ? true : false;
+                            var rotationCW = this.rotationStyle === PocketCode.RotationStyle.ALL_AROUND ? this._direction - 90.0 : 0.0,
+                                flipX = this.rotationStyle === PocketCode.RotationStyle.LEFT_TO_RIGHT && this._direction < 0.0 ? true : false;
                             boundary = this._currentLook.getBoundary(this._scaling, rotationCW, flipX, true);
                         }
                         properties.boundary = boundary;
@@ -583,41 +593,20 @@ PocketCode.Model.Sprite = (function () {
 
             return this.setPosition(this._positionX + offsetX, this._positionY + offsetY, true, undefined, velocity);
         },
-        //motion:direction
-        turnLeft: function (degree) {
-            if (!degree)
-                return false;
-            return this.setDirection(this._direction - degree);
-        },
-        turnRight: function (degree) {
-            if (!degree)
-                return false;
-            return this.setDirection(this._direction + degree);
-        },
-        setDirection: function (degree, triggerEvent) {
-            if (degree === undefined || this._direction === degree)
-                return false;
 
-            var nd = degree % 360.0;
-            if (nd <= -180.0) {
-                nd += 360.0;
-            }
-            if (nd > 180.0) {
-                nd -= 360.0;
-            }
-            if (this._direction === nd)
-                return false;
-
-            //check if sprite rotation changed: e.g. flipped/rotation
-            var old = this._direction;
-            this._direction = nd;
-            var props = {};
+        //motion: direction
+        _rotationUpdateHander: function (e) {  //e: { value: ? }
+            var previous_d = this._direction,
+                new_d = e.value,
+                new_d = new_d > 180.0 ? new_d - 360.0 : new_d,
+                props = {};
+            this._direction = new_d;
 
             if (this._rotationStyle == PocketCode.RotationStyle.DO_NOT_ROTATE)  //rotation == 0.0
                 return false;
             else if (this._rotationStyle == PocketCode.RotationStyle.LEFT_TO_RIGHT) {
-                if (old < 0.0 && nd >= 0.0 || old >= 0.0 && nd < 0.0)   //flipXChanged
-                    props.flipX = nd < 0.0;
+                if (previous_d < 0.0 && new_d >= 0.0 || previous_d >= 0.0 && new_d < 0.0)   //flipXChanged
+                    props.flipX = new_d < 0.0;
                 else
                     return false;
             }
@@ -626,58 +615,69 @@ PocketCode.Model.Sprite = (function () {
             }
 
             this._recalculateLookOffsets();
-            if (triggerEvent == false)
-                return true;
+            //if (triggerEvent == false)
+            //    return true;
 
             props.x = this._positionX + this._lookOffsetX;
             props.y = this._positionY + this._lookOffsetY;
 
             return this._triggerOnChange(props);
         },
-        SetDirectionTo: function (spriteId) {
+        rotate: function (degree) {
+            return this.setDirection(this._direction + degree);
+        },
+        setDirection: function (degree) {//, triggerEvent) {
+            if (isNaN(degree) || degree == this._direction)
+                return false;
+
+            this._rotation.angle = degree;
+            return true;
+        },
+        setDirectionTo: function (spriteId) {
             if (!spriteId)
                 return false;
 
-            var SetDirectionTo = this._scene.getSpriteById(spriteId); //throws error if undefined
+            var toSprite = this._scene.getSpriteById(spriteId); //throws error if undefined
 
-            var offsetX = SetDirectionTo.positionX - this.positionX;
-            var offsetY = SetDirectionTo.positionY - this.positionY;
+            var offsetX = toSprite.positionX - this.positionX;
+            var offsetY = toSprite.positionY - this.positionY;
 
             if (offsetX === 0 && offsetY === 0)
                 return false;
 
             return this.setDirection(90.0 - Math.atan2(offsetY, offsetX) * 180.0 / Math.PI);
         },
-        //motion: layer
-        goBack: function (layers) {
-            return this._scene.setSpriteLayerBack(this, layers);
-        },
-        comeToFront: function () {
-            return this._scene.setSpriteLayerToFront(this);
+        setRotationSpeed: function (value) {
+            if (isNaN(value) || this._rotation.rotationSpeed == value)
+                return false;
+
+            this._rotation.rotationSpeed = value;
+            return true;
         },
         setRotationStyle: function (value) {
             var old = this._rotationStyle,
-                props = {};
+            props = {};
             if (this._rotationStyle == value)
                 return false;
             this._rotationStyle = value;
+            var dir = this._direction;
 
-            if (old == PocketCode.RotationStyle.LEFT_TO_RIGHT && this._direction < 0)
+            if (old == PocketCode.RotationStyle.LEFT_TO_RIGHT && dir < 0)
                 props.flipX = false; //switched from
 
             switch (this._rotationStyle) {
                 case PocketCode.RotationStyle.ALL_AROUND:
-                    if (this._direction != 90.0) {  //rotation changed
+                    if (dir != 90.0) {  //rotation changed
                         this._recalculateLookOffsets();
-                        props.rotation = this._direction - 90.0;
+                        props.rotation = dir - 90.0;
                         //props.x = Math.round(this._positionX + this._lookOffsetX);
                         //props.y = Math.round(this._positionY + this._lookOffsetY);
                     }
                     break;
                 case PocketCode.RotationStyle.LEFT_TO_RIGHT:
-                    if (this._direction < 0)
+                    if (dir < 0)
                         props.flipX = true; //switched to
-                    if (this._direction != 90.0 && old == PocketCode.RotationStyle.ALL_AROUND) {
+                    if (dir != 90.0 && old == PocketCode.RotationStyle.ALL_AROUND) {
                         this._recalculateLookOffsets();
                         props.rotation = 0.0;
                         //props.x = Math.round(this._positionX + this._lookOffsetX);
@@ -685,7 +685,7 @@ PocketCode.Model.Sprite = (function () {
                     }
                     break;
                 case PocketCode.RotationStyle.DO_NOT_ROTATE:
-                    if (this._direction != 90.0 && old == PocketCode.RotationStyle.ALL_AROUND) {
+                    if (dir != 90.0 && old == PocketCode.RotationStyle.ALL_AROUND) {
                         this._recalculateLookOffsets();
                         props.rotation = 0.0;
                         //props.x = Math.round(this._positionX + this._lookOffsetX);
@@ -702,6 +702,13 @@ PocketCode.Model.Sprite = (function () {
             if (props.flipX == undefined && props.rotation == undefined)
                 return false;
             return this._triggerOnChange(props);
+        },
+        //motion: layer
+        goBack: function (layers) {
+            return this._scene.setSpriteLayerBack(this, layers);
+        },
+        comeToFront: function () {
+            return this._scene.setSpriteLayerToFront(this);
         },
         //looks
         setLook: function (lookId) {
@@ -973,7 +980,7 @@ PocketCode.Model.Sprite = (function () {
             var x = this._positionX,
                 y = this._positionY;
 
-            var dir = this.direction;
+            var dir = this._direction;
             var look = this._currentLook,
                 scaling = this._scaling,
                 rotationCW = this.rotationStyle === PocketCode.RotationStyle.ALL_AROUND ? dir - 90.0 : 0.0,
@@ -1143,10 +1150,11 @@ PocketCode.Model.Sprite = (function () {
 
             //set sprite values: avoid triggering multiple onChange events
             var props = changes || {};
-            this.setDirection(newDir, false);   //setDirection return true if an UI update is required (or was triggered), not when the direction is changed without UI update 
-            if (this._direction !== dir) { //direction changed
+            this.setDirection(newDir);//, false);   //setDirection return true if an UI update is required (or was triggered), not when the direction is changed without UI update 
+            newDir = this._direction;
+            if (newDir !== dir) { //direction changed
                 if (this._rotationStyle == PocketCode.RotationStyle.ALL_AROUND) {
-                    props.rotation = Math.round(this._direction - 90.0);
+                    props.rotation = newDir - 90.0;
 
                     //align sprite to edges not in directory: max correction = movement without triggering an overflow on the opposit edge
                     var correction;
@@ -1218,8 +1226,8 @@ PocketCode.Model.Sprite = (function () {
             this._bubbleVisible = true;
             var boundary = { top: 0, right: 0, bottom: 0, left: 0 };
             if (this._currentLook && this._transparency < 100.0) {
-                var rotationCW = this.rotationStyle === PocketCode.RotationStyle.ALL_AROUND ? this.direction - 90.0 : 0.0,
-                    flipX = this.rotationStyle === PocketCode.RotationStyle.LEFT_TO_RIGHT && this.direction < 0.0 ? true : false;
+                var rotationCW = this.rotationStyle === PocketCode.RotationStyle.ALL_AROUND ? this._direction - 90.0 : 0.0,
+                    flipX = this.rotationStyle === PocketCode.RotationStyle.LEFT_TO_RIGHT && this._direction < 0.0 ? true : false;
                 boundary = this._currentLook.getBoundary(this._scaling, rotationCW, flipX, true);
             }
             return this._triggerOnChange({ boundary: boundary, bubble: { type: type, text: text, visible: true, screenSize: this._scene.screenSize } });
@@ -1238,7 +1246,7 @@ PocketCode.Model.Sprite = (function () {
                 _positionX: this._positionX,
                 _positionY: this._positionY,
                 _rotationStyle: this._rotationStyle,
-                _direction: this._direction,
+                rotation: this._rotation.toObject(),
 
                 //looks
                 _scaling: this._scaling,
@@ -1318,6 +1326,10 @@ PocketCode.Model.merge({
                 this.looks = jsonSprite.looks;
 
             this.initLooks();
+
+            //rotation
+            this._rotation.setObject(definition.rotation || {});
+            delete definition.rotation;
 
             //sounds
             if (jsonSprite.sounds) {
@@ -1437,7 +1449,6 @@ PocketCode.Model.merge({
             this._velocityY = 0;
             this._friction = 0.2;
             this._bounceFactor = 0.8;
-            this._turnNDegreePerSecond = 0;
         }
 
         //properties
@@ -1445,11 +1456,6 @@ PocketCode.Model.merge({
             mass: {
                 set: function (value) {
                     this._mass = value
-                }
-            },
-            turnNDegreePerSecond: {
-                set: function (value) {
-                    this._turnNDegreePerSecond = value;
                 }
             },
             friction: {

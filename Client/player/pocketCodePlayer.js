@@ -704,7 +704,7 @@ PocketCode.Web = {
             this._resources = resources;
             this._root = resources.root;
             this._files = resources.files;
-            this._version = Date.now().toString().substring(4, 9); //prevent caching
+            this._version = Date.now().toString().substring(3, 6); //prevent caching
 
             //events to override
             this.onProgress = function () { };
@@ -1093,15 +1093,15 @@ PocketCode.Web.resources = {
         return PocketCode.domain + 'html5/';
     }(),
     files: [
-		//{ url: 'smartJs/sj.css', type: 'css' },
-		//{ url: 'smartJs/sj.js', type: 'js' },
-		//{ url: 'smartJs/sj-core.js', type: 'js' },
-		//{ url: 'smartJs/sj-event.js', type: 'js' },
-		//{ url: 'smartJs/sj-components.js', type: 'js' },
-		//{ url: 'smartJs/sj-animation.js', type: 'js' },
-		//{ url: 'smartJs/sj-communication.js', type: 'js' },
-		//{ url: 'smartJs/sj-ui.js', type: 'js' },
-		{ url: 'pocketCode/libs/smartJs/sj.custom.min.js', type: 'js' },
+		{ url: 'smartJs/sj.css', type: 'css' },
+		{ url: 'smartJs/sj.js', type: 'js' },
+		{ url: 'smartJs/sj-core.js', type: 'js' },
+		{ url: 'smartJs/sj-event.js', type: 'js' },
+		{ url: 'smartJs/sj-components.js', type: 'js' },
+		{ url: 'smartJs/sj-animation.js', type: 'js' },
+		{ url: 'smartJs/sj-communication.js', type: 'js' },
+		{ url: 'smartJs/sj-ui.js', type: 'js' },
+		//{ url: 'pocketCode/libs/smartJs/sj.custom.min.js', type: 'js' },
 
 		{ url: 'pocketCode/libs/soundjs/soundjs-0.6.1.custom.min.js', type: 'js' },
 		{ url: 'pocketCode/libs/iscroll/iscroll-5.3.1.custom.min.js', type: 'js' },

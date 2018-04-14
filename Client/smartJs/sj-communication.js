@@ -3,7 +3,6 @@
 /// <reference path="sj-event.js" />
 'use strict';
 
-
 SmartJs.RequestMethod = {
     GET: 'GET',
     PUT: 'PUT',
