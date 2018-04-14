@@ -58,7 +58,7 @@ PocketCode.Model.merge({
                 PocketCode.Model.ThreadedBrick.prototype.stop.call(this);
                 //^^ stop bricks first so _return() called by stopSound() will not start next brick
                 for (var i = 0, l = instances.length; i < l;i++)
-                    this._sprite.stopSound(i);
+                    this._sprite.stopSound(instances[i]);
             },
         });
 
