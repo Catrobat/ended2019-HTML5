@@ -3,3 +3,278 @@
     font-size: 10px;
     background-color: #04222C;
 }
+
+/* inner player screens */
+.pc-playerStartScreen {
+    font-size: 10px;
+    font-family: Arial, sans-serif;
+    background-color: #003041;
+    box-sizing: border-box;
+}
+
+.pc-playerStartScreen img {
+    background-color: #A5A5A5;
+    opacity: 0.6;
+    filter: alpha(opacity=60);
+}
+
+.pc-playerStartScreen .disabled {
+    background-color: #A5A5A5;
+    opacity: 0.3;
+    filter: alpha(opacity=30);
+}
+
+.pc-playerStartScreen .pc-title {
+    background-color: #00475E;
+    background-color: rgba(0, 71, 94, .8);
+}
+
+.pc-playerStartScreen .pc-title div {
+    color: #A9DCF1;
+    font-size: 3.8em;
+    font-weight: 700;
+    padding: 0.37em;
+}
+
+.pc-playerStartScreen .pc-loadingIndicatorLayout {
+    color: #ef7716;
+    text-align: center;
+    background-color: #003041;
+}
+
+.pc-playerStartScreen .pc-loadingIndicatorLayout span {
+    font-size: 1.8em;
+    font-weight: 700;
+}
+
+.pc-playerStartScreen .pc-liProgress {
+    background-color: #ef7716;
+}
+
+.pc-playerStartScreen button, .pc-playerStartScreen button:active {
+    border: medium none;
+    outline: medium none;
+    color: #A9DCF1;
+    fill: #A9DCF1;
+}
+
+.pc-playerStartScreen button:hover {
+    fill: #FFFFFF;
+}
+
+
+.pc-playerStartScreen button:active {
+    fill: #17A5B8;
+}
+
+.pc-playerStartScreen button:disabled {
+    fill: #A5A5A5;
+}
+
+/* page */
+.pc-page {
+    font-size: 10px;
+}
+
+.pc-pageFooter {
+    border-top: solid 1px #4D7F8F;
+    background-color: #003041; /*#01485F;*/
+}
+
+/* overlay */
+.pc-overlay {
+    background-color: #000;
+    -moz-opacity: 0.6;
+    opacity: 0.6;
+    filter: alpha(opacity=60);
+}
+
+.pc-playerMenuOverlay, .pc-playerMenuPlayOverlay div {
+    background-color: #00475E;
+    -moz-opacity: 0.8;
+    opacity: 0.8;
+    filter: alpha(opacity=80);
+}
+
+/* svg buttons */
+.pc-playerButton, .pc-playerButton:active, .pc-menuBigButton, .pc-menuBigButton:active {
+    border: none;
+    fill: #A9DCF1;
+    color: #A9DCF1;
+    border-color: #A9DCF1;
+    outline: none;
+}
+
+.pc-playerButton:hover {
+    color: #FFF;
+    fill: #FFFFFF;
+    border-color: #FFF;
+}
+
+.pc-playerButton:active {
+    color: #17A5B8;
+    fill: #17A5B8;
+    border-color: #17A5B8;
+}
+
+.pc-playerButton:disabled {
+    color: #A5A5A5;
+    fill: #A5A5A5;
+    border-color: #A5A5A5;
+}
+
+.pc-playerButtonChecked {
+    color: #ef7716;
+    fill: #ef7716;
+    border-color: #ef7716;
+}
+
+.pc-playerButtonChecked:hover {
+    color: #E8CCB9;
+    fill: #E8CCB9;
+    border-color: #E8CCB9;
+}
+
+/* canvas */
+.pc-canvasContainer {
+    background-color: #FFF;
+}
+
+/* dialog */
+.pc-dialogOverlay {
+    background-color: #555;
+    -moz-opacity: 0.6;
+    opacity: 0.6;
+    filter: alpha(opacity=60);
+}
+
+.pc-dialog {
+    border-color: #3F3F3F;
+    background-color: #282828;
+    font-size: 15px;
+    color: #D3D3D3;
+    -webkit-box-shadow: 0px 0px 10px -2px rgba(0, 0, 0, 0.6);
+    -moz-box-shadow: 0px 0px 10px -2px rgba(0, 0, 0, 0.6);
+    box-shadow: 0px 0px 10px -2px rgba(0, 0, 0, 0.6);
+}
+
+.pc-dialogHeader, .pc-askDialogHeader {
+    border-bottom-color: #33B5E5;
+    color: #33B5E5;
+    font-size: 21px;
+    font-weight: 500;
+}
+
+.pc-dialogWarning {
+    border-bottom-color: #EF7716;
+    color: #EF7716;
+}
+
+.pc-dialogError {
+    border-bottom-color: #A31515;
+    color: #A31515;
+}
+
+.pc-dialogBody, .pc-askDialogBody {
+    font-weight: 500;
+    border: solid 1px #282828;
+}
+
+.pc-askDialogBody input {
+    border-color: #282828;
+    background-color: white;
+    font-size: 16px;
+}
+
+.pc-askDialogBody input:focus {
+    border: solid 2px #FB9B27;
+}
+
+.pc-dialogFooter {
+    border-color: #282828;
+    border-top-color: #484848;
+}
+
+.pc-dialogFooter button:active {
+    text-decoration: underline;
+    background-color: #2F7D99;
+}
+
+.pc-dialogFooter button:disabled {
+    color: #484848;
+    text-decoration: none;
+}
+
+.iScrollIndicator {
+    background-color: #00475E;
+    -moz-opacity: 0.8;
+    opacity: 0.8;
+    filter: alpha(opacity=80);
+}
+
+/* menu */
+.pc-menu {
+    font-size: 15px;
+    color: #D3D3D3;
+}
+
+.pc-menuButton {
+    border-color: transparent;
+    background-color: transparent;
+}
+
+.pc-menuButtonOpened {
+    border-color: #484848;
+    background-color: #282828;
+}
+
+.pc-menuMobile .pc-menuButton {
+    background-color: #00475E;
+    background-color: rgba(0, 71, 94, 0.8);
+}
+
+.pc-menuMobile .pc-menuButtonOpened {
+    border-color: #484848;
+    background-color: #282828;
+}
+
+.pc-subMenu {
+    background-color: #282828;
+    border-color: #484848;
+}
+
+/* menu item, separator*/
+.pc-menuItem, .pc-checkbox, .pc-radio {
+    background: none;
+    color: inherit;
+    font-size: inherit;
+    font-weight: normal;
+    text-shadow: none;
+    text-transform: none;
+}
+
+.pc-menuItem:hover, .pc-checkbox label:hover, .pc-radio label:hover {
+    color: #33B5E5;
+}
+
+
+.pc-menuSeparator hr {
+    color: #484848;
+    background-color: #484848;
+}
+
+.pc-checkbox label:before, .pc-radio label:before {
+    border-color: #4C6168;
+}
+
+/* checked mark aspect */
+.pc-checkbox label:after {
+    font-size: 22px;
+    font-family: Arial, Helvetica, sans-serif;
+    font-weight: bold;
+    color: #33B5E5;
+}
+
+.pc-radio label:after {
+    background-color: #33B5E5;
+}

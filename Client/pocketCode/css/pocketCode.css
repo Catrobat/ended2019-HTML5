@@ -16,134 +16,108 @@
     cursor: default;
 }
 
-    .pc-playerViewport button {
-        border: 0;
-        border-radius: 0;
-        display: inline-block;
-        /*padding: 0;*/
-        margin: 0;
-        background: none;
-        font-weight: normal;
-        text-decoration: none;
-        text-shadow: none;
-        /*text-align: initial;*/
-        text-transform: none;
-    }
+.pc-playerViewport button {
+    border: 0;
+    border-radius: 0;
+    display: inline-block;
+    /*padding: 0;*/
+    margin: 0;
+    background: none;
+    font-weight: normal;
+    text-decoration: none;
+    text-shadow: none;
+    /*text-align: initial;*/
+    text-transform: none;
+}
 
 /* inner player screens */
 .pc-playerStartScreen {
-    font-size: 10px;
-    font-family: Arial, sans-serif;
     position: absolute;
     top: 0;
     left: 0;
     height: 100%;
     width: 100%;
-    background-color: #003041;
     overflow: hidden;
     box-sizing: border-box;
 }
 
-    .pc-playerStartScreen img {
-        height: 100%;
-        width: 100%;
-        margin: 0px;
-        background-color: #A5A5A5;
-        opacity: 0.6;
-        filter: alpha(opacity = 60);
-    }
+.pc-playerStartScreen img {
+    height: 100%;
+    width: 100%;
+    margin: 0px;
+}
 
-    .pc-playerStartScreen .disabled {
-        background-color: #A5A5A5;
-        opacity: 0.3;
-        filter: alpha(opacity = 30);
-    }
+/*.pc-playerStartScreen .disabled {
+    background-color: #A5A5A5;
+    opacity: 0.3;
+    filter: alpha(opacity=30);
+}*/
 
-    .pc-playerStartScreen .pc-title {
-        position: absolute;
-        width: 100%;
-        top: 0;
-        left: 0;
-        background-color: #00475E;
-        background-color: rgba(0,71,94,.8);
-    }
+.pc-playerStartScreen .pc-title {
+    position: absolute;
+    width: 100%;
+    top: 0;
+    left: 0;
+}
 
-        .pc-playerStartScreen .pc-title div {
-            color: #A9DCF1;
-            font-size: 3.8em;
-            font-weight: 700;
-            padding: 0.37em;
-        }
+.pc-playerStartScreen .pc-title div {
+    padding: 0.37em;
+}
 
-    .pc-playerStartScreen .pc-loadingIndicatorLayout {
-        position: absolute;
-        bottom: 0;
-        left: 0;
-        padding-top: 1em;
-        padding-bottom: 1em;
-        color: #ef7716;
-        width: 100%;
-        text-align: center;
-        background-color: #003041;
-    }
+.pc-playerStartScreen .pc-loadingIndicatorLayout {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    padding-top: 1em;
+    padding-bottom: 1em;
+    width: 100%;
+}
 
-        .pc-playerStartScreen .pc-loadingIndicatorLayout span {
-            font-size: 1.8em;
-            font-weight: 700;
-        }
+.pc-playerStartScreen .pc-loadingIndicatorLayout .pc-loadingIndicator {
+    display: table;
+    margin: 0 auto;
+    width: 19em;
+}
 
-        .pc-playerStartScreen .pc-loadingIndicatorLayout .pc-loadingIndicator {
-            display: table;
-            margin: 0 auto;
-            width: 19em;
-        }
+.pc-playerStartScreen .pc-liContainer {
+    margin-top: 0.5em;
+}
 
-    .pc-playerStartScreen .pc-liContainer {
-        margin-top: 0.5em;
-    }
 
-    .pc-playerStartScreen .pc-liProgress {
-        background-color: #ef7716;
-    }
+.pc-playerStartScreen .pc-liBar, .pc-playerStartScreen .pc-li {
+    top: 0;
+}
 
-    .pc-playerStartScreen .pc-liBar, .pc-playerStartScreen .pc-li {
-        top: 0;
-    }
+[dir='rtl'] .pc-playerStartScreen .pc-liBar, .pc-playerStartScreen .pc-li {
+    right: 0;
+}
 
-    [dir='rtl'] .pc-playerStartScreen .pc-liBar, .pc-playerStartScreen .pc-li {
-        right: 0;
-    }
+.pc-playerStartScreen .pc-liProgressStyle div {
+    display: table-cell;
+    width: 2.5em;
+}
 
-    .pc-playerStartScreen .pc-liProgressStyle div {
-        display: table-cell;
-        width: 2.5em;
-    }
+.pc-playerStartScreen button, .pc-playerStartScreen button:active {
+    background: none;
+    cursor: pointer;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    position: absolute;
+    width: 100%;
+    top: 0px;
+    left: 0px;
+}
 
-    .pc-playerStartScreen button, .pc-playerStartScreen button:active {
-        background: none;
-        border: medium none;
-        color: #A9DCF1;
-        cursor: pointer;
-        fill: #A9DCF1;
-        height: 100%;
-        margin: 0;
-        outline: medium none;
-        padding: 0;
-        position: absolute;
-        width: 100%;
-        top: 0px;
-        left: 0px;
-    }
-
-        .pc-playerStartScreen button svg {
-            height: 44%;
-            left: 28%;
-            top: 28%;
-            width: 44%;
-            margin: 0;
-            padding: 0;
-            position: absolute;
-        }
+.pc-playerStartScreen button svg {
+    height: 44%;
+    left: 28%;
+    top: 28%;
+    width: 44%;
+    margin: 0;
+    padding: 0;
+    position: absolute;
+}
 
 [dir='rtl'] .pc-playerStartScreen button svg {
     -webkit-transform: rotate(180deg);
@@ -152,18 +126,12 @@
     transform: rotate(180deg);
 }
 
-.pc-playerStartScreen button:hover {
-    fill: #FFFFFF;
-}
-
 .pc-playerStartScreen button:active {
-    fill: #17A5B8;
     margin: 0;
     padding: 0;
 }
 
 .pc-playerStartScreen button:disabled {
-    fill: #A5A5A5;
     cursor: default;
 }
 
@@ -172,7 +140,6 @@
 .pc-page {
     height: 100%;
     position: absolute;
-    font-size: 10px;
 }
 
 .pc-page, .pc-pageHeader, .pc-pageBodyLayout, .pc-pageBody, .pc-pageFooter {
@@ -184,33 +151,22 @@
     border-bottom: solid 1px #385F6E;
     background-color: #003041;
     /*display: table;
-	*/ border-spacing: 0;
+	*/
+    border-spacing: 0;
 }
-    /*	.pc-pageHeader div {
-		display: table-cell;
-		vertical-align: middle;
-	}
-
-	.pc-pageHeader .pc-icon {
-		width: 4.8em;
-		min-width: 4.8em;
-	}
-	.pc-pageHeader .pc-icon img {
-
-	}
-
-	.pc-pageHeader .pc-caption {
-		//TODO: the caption div max-width has to be set using script to enable the text overflow settings/
-		font-size: 3em;
-		white-space: nowrap;
-		text-overflow: ellipsis;
-		overflow: hidden;
-	}
+/*
+.pc-pageHeader .pc-caption {
+    //TODO: the caption div max-width has to be set using script to enable the text overflow settings/
+    font-size: 3em;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+}
 */
-    .pc-pageHeader .pc-menuButton {
-        width: 4.8em;
-        min-width: 4.8em;
-    }
+.pc-pageHeader .pc-menuButton {
+    width: 4.8em;
+    min-width: 4.8em;
+}
 
 .pc-pageBodyLayout, .pc-pageBody {
     position: relative;
@@ -219,13 +175,10 @@
 
 .pc-pageFooter {
     height: 4.8em;
-    border-top: solid 1px #4D7F8F;
-    background-color: #003041; /*#01485F;*/
     position: absolute;
     bottom: 0;
     /*display: table;*/
 }
-
 
 /* onscreen keyboard */
 .pc-cursorButton, .pc-cursorButton:active {
@@ -236,15 +189,15 @@
     border-radius: 10%;
 }
 
-    .pc-cursorButton svg {
-        position: absolute;
-        width: 60%;
-        height: 60%;
-        padding: 20%;
-        margin: 0;
-        top: 0;
-        left: 0;
-    }
+.pc-cursorButton svg {
+    position: absolute;
+    width: 60%;
+    height: 60%;
+    padding: 20%;
+    margin: 0;
+    top: 0;
+    left: 0;
+}
 
 .pc-cursorTable {
     display: table;
@@ -260,18 +213,12 @@
     display: table-cell;
 }
 
-
 /* overlay */
 .pc-overlay {
     position: absolute;
     width: 100%;
     height: 100%;
-    background-color: #000;
-    -moz-opacity: 0.6;
-    opacity: 0.6;
-    filter: alpha(opacity = 60);
 }
-
 
 /* player toolbar */
 .pc-playerMenuH, .pc-playerMenuV {
@@ -287,18 +234,11 @@
     overflow: hidden;
 }
 
-    .pc-playerMenuOverlay, .pc-playerMenuPlayOverlay div {
-        background-color: #00475E;
-        -moz-opacity: 0.8;
-        opacity: 0.8;
-        filter: alpha(opacity = 80);
-    }
-
-    .pc-playerMenuPlayOverlay div {
-        height: 9.6em;
-        width: 9.6em;
-        border-radius: 4.8em;
-    }
+.pc-playerMenuPlayOverlay div {
+    height: 9.6em;
+    width: 9.6em;
+    border-radius: 4.8em;
+}
 
 [dir='rtl'] .pc-playerMenuPlayOverlay div {
     -webkit-transform: rotate(180deg);
@@ -321,10 +261,10 @@
     margin-left: -4.6em;
 }
 
-    .pc-playerMenuH .pc-playerMenuPlayOverlay div {
-        position: absolute;
-        left: -0.3em;
-    }
+.pc-playerMenuH .pc-playerMenuPlayOverlay div {
+    position: absolute;
+    left: -0.3em;
+}
 
 .pc-playerMenuH .pc-alignedCell {
     margin-left: -0.3em;
@@ -391,10 +331,10 @@
     font-family: Arial, sans-serif;
 }
 
-    .pc-playerMenuContainer button {
-        font-style: inherit;
-        font-size: inherit;
-    }
+.pc-playerMenuContainer button {
+    font-style: inherit;
+    font-size: inherit;
+}
 
 .pc-playerMenuV .pc-playerMenuContainer {
     top: 0px;
@@ -440,11 +380,6 @@
     position: relative;
     width: 6.7em;
     height: 8.5em;
-    border: none;
-    fill: #A9DCF1;
-    color: #A9DCF1;
-    border-color: #A9DCF1;
-    outline: none;
     vertical-align: bottom;
 }
 
@@ -483,10 +418,10 @@
     height: 10.8em;
 }
 
-    [dir='rtl'] .pc-playerMenuOutside .pc-menuBigButton, .pc-playerMenuOutside .pc-menuBigButton:active {
-        margin-left: auto;
-        margin-right: 0em;
-    }
+[dir='rtl'] .pc-playerMenuOutside .pc-menuBigButton, .pc-playerMenuOutside .pc-menuBigButton:active {
+    margin-left: auto;
+    margin-right: 0em;
+}
 
 .pc-playerButton svg {
     position: absolute;
@@ -520,38 +455,15 @@
     right: 0;
 }
 
-.pc-playerButton:hover {
-    color: #FFF;
-    fill: #FFFFFF;
-    border-color: #FFF;
-}
+
 
 .pc-playerButton:active {
     padding: 0;
-    color: #17A5B8;
-    fill: #17A5B8;
-    border-color: #17A5B8;
 }
 
 .pc-playerButton:disabled {
-    color: #A5A5A5;
-    fill: #A5A5A5;
-    border-color: #A5A5A5;
     cursor: default;
 }
-
-.pc-playerButtonChecked {
-    color: #ef7716;
-    fill: #ef7716;
-    border-color: #ef7716;
-}
-
-    .pc-playerButtonChecked:hover {
-        color: #E8CCB9;
-        fill: #E8CCB9;
-        border-color: #E8CCB9;
-    }
-
 
 /* player viewport view*/
 .pc-playerViewportView {
@@ -562,45 +474,32 @@
     overflow: hidden;
 }
 
-
 /* canvas */
 .pc-canvasContainer {
     position: relative;
-    background-color: #FFF;
 }
 
-    .pc-canvasContainer canvas {
-        position: absolute;
-        top: 0;
-        border: 0;
-        padding: 0;
-        margin: 0;
-    }
-
+.pc-canvasContainer canvas {
+    position: absolute;
+    top: 0;
+    border: 0;
+    padding: 0;
+    margin: 0;
+}
 
 /* dialog */
 .pc-dialogOverlay {
     position: absolute;
     width: 100%;
     height: 100%;
-    background-color: #555;
-    -moz-opacity: 0.6;
-    opacity: 0.6;
-    filter: alpha(opacity = 60);
 }
 
 .pc-dialog {
     max-width: 310px;
     border-radius: 2px;
-    border-top: 1px solid #3F3F3F;
-    background-color: #282828;
+    border-top: 1px solid;
     position: relative;
     overflow: hidden;
-    font-size: 15px;
-    color: #D3D3D3;
-    -webkit-box-shadow: 0px 0px 10px -2px rgba(0,0,0,0.6);
-    -moz-box-shadow: 0px 0px 10px -2px rgba(0,0,0,0.6);
-    box-shadow: 0px 0px 10px -2px rgba(0,0,0,0.6);
 }
 
 .pc-dialogCol {
@@ -612,16 +511,11 @@
 .pc-dialog > div {
     position: relative;
     width: 100%;
-    /*float: left;
-    box-sizing: border-box;*/
 }
 
 .pc-dialogHeader, .pc-askDialogHeader {
     overflow: hidden;
-    border-bottom: solid 2px #33B5E5;
-    color: #33B5E5;
-    font-size: 21px;
-    font-weight: 500;
+    border-bottom: solid 2px;
     padding: 19px 15px;
 }
 
@@ -630,26 +524,11 @@
     padding: 15px;
 }
 
-.pc-dialogWarning {
-    border-bottom-color: #EF7716;
-    color: #EF7716;
-}
-
-.pc-dialogError {
-    border-bottom-color: #A31515;
-    color: #A31515;
-}
 
 .pc-dialogBody, .pc-askDialogBody {
     text-align: center;
-    font-weight: 500;
     overflow: hidden;
-    /*overflow-x: hidden;
-	overflow-y: auto;
-	-webkit-overflow-scrolling: touch;
-    padding: 0px;*/
     padding: 0px 15px;
-    border: solid 1px #282828;
 }
 
 .pc-askDialogBody {
@@ -658,30 +537,28 @@
     font-weight: 500;
     padding: 17px 4px;
 }
+
 [dir='rtl'] .pc-askDialogBody {
     text-align: right;
 }
 
-    .pc-askDialogBody div {
-        padding: 0px 11px;
-    }
+.pc-askDialogBody div {
+    padding: 0px 11px;
+}
 
-    .pc-askDialogBody input {
-        outline-width: 0px;
-        width: 100%;
-        border: solid 2px #282828;
-        background-color: white;
-        height: 35px;
-        margin-top: 20px;
-        padding-left: 5px;
-        padding-right: 5px;
-        font-size: 16px;
-    }
+.pc-askDialogBody input {
+    outline-width: 0px;
+    width: 100%;
+    border: solid 2px;
+    height: 35px;
+    margin-top: 20px;
+    padding-left: 5px;
+    padding-right: 5px;
+}
 
-        .pc-askDialogBody input:focus {
-            border: solid 2px #FB9B27;
-            border-radius: 2px;
-        }
+.pc-askDialogBody input:focus {
+    border-radius: 2px;
+}
 
 .pc-dialogBody .pc-dialogContent {
     padding-top: 14px;
@@ -690,13 +567,13 @@
     overflow: hidden;
 }
 
-    .pc-dialogBody .pc-dialogContent ul {
-        list-style-type: square;
-        padding-left: 18px;
-        padding-right: 0px;
-        margin-top: 4px;
-        margin-bottom: 8px;
-    }
+.pc-dialogBody .pc-dialogContent ul {
+    list-style-type: square;
+    padding-left: 18px;
+    padding-right: 0px;
+    margin-top: 4px;
+    margin-bottom: 8px;
+}
 
 [dir='rtl'] .pc-dialogBody .pc-dialogContent ul {
     padding-left: 0px;
@@ -708,44 +585,37 @@
 }
 
 .pc-dialogFooter {
-    border: solid 1px #282828;
-    border-top: solid 1px #484848;
+    border: solid 1px;
+    border-top: solid 1px;
     height: 47px;
     float: none;
 }
 
-    .pc-dialogFooter button {
-        height: 100%;
-        color: inherit;
-        font-size: 13px;
-        font-weight: bold;
-        cursor: pointer;
-        padding: 0;
-        margin: 0;
-    }
+.pc-dialogFooter button {
+    height: 100%;
+    color: inherit;
+    font-size: 13px;
+    font-weight: bold;
+    cursor: pointer;
+    padding: 0;
+    margin: 0;
+}
 
-        .pc-dialogFooter button:hover {
-            text-decoration: underline;
-        }
+.pc-dialogFooter button:hover {
+    text-decoration: underline;
+}
 
-        .pc-dialogFooter button:active {
-            text-decoration: underline;
-            background-color: #2F7D99;
-        }
+.pc-dialogFooter button:focus {
+    outline: none;
+}
 
-        .pc-dialogFooter button:focus {
-            outline: none;
-        }
+.pc-dialogFooter button:disabled {
+    cursor: default;
+}
 
-        .pc-dialogFooter button:disabled {
-            color: #484848;
-            cursor: default;
-            text-decoration: none;
-        }
-
-        .pc-dialogFooter button::-moz-focus-inner {
-            border: 0;
-        }
+.pc-dialogFooter button::-moz-focus-inner {
+    border: 0;
+}
 
 /* scroll container: iScroll */
 .iScrollVerticalScrollbar {
@@ -763,17 +633,10 @@
     width: 7px;
     position: absolute;
     border-radius: 1px;
-    background-color: #00475E;
-    -moz-opacity: 0.8;
-    opacity: 0.8;
-    filter: alpha(opacity = 80);
 }
-
 
 /* menu */
 .pc-menu {
-    font-size: 15px;
-    color: #D3D3D3;
     position: relative;
     z-index: 10000;
 }
@@ -781,9 +644,7 @@
 .pc-menuButton {
     border-style: solid;
     border-width: 1px 1px 0;
-    border-color: transparent;
     border-radius: 2px 2px 0 0;
-    background-color: transparent;
     margin: 3px;
     margin-bottom: 0;
     position: absolute;
@@ -792,11 +653,6 @@
 
 .pc-menu .pc-menuButton span {
     visibility: hidden;
-}
-
-.pc-menuButtonOpened {
-    border-color: #484848;
-    background-color: #282828;
 }
 
 /* mobile menu */
@@ -808,25 +664,20 @@
     right: 15px;
 }
 
-    .pc-menuMobile .pc-menuButton {
-        background-color: #00475E;
-        background-color: rgba(0,71,94,0.8);
-        border-radius: 2px;
-    }
+.pc-menuMobile .pc-menuButton {
+    border-radius: 2px;
+}
 
-    .pc-menuMobile .pc-menuButtonOpened {
-        border-color: #484848;
-        background-color: #282828;
-        border-width: 1px 1px 0;
-        border-radius: 2px 2px 0 0;
-    }
+.pc-menuMobile .pc-menuButtonOpened {
+    border-width: 1px 1px 0;
+    border-radius: 2px 2px 0 0;
+}
 
 [dir='rtl'] .pc-menuMobile {
     margin-right: 4px;
     right: auto;
     left: 15px;
 }
-
 
 .pc-subMenu {
     position: absolute;
@@ -837,8 +688,7 @@
     right: 3px;
     padding: 1px 0px;
     float: right;
-    background-color: #282828;
-    border: 1px solid #484848;
+    border: 1px solid;
     border-radius: 2px 0px 2px 2px;
 }
 
@@ -856,27 +706,19 @@
     margin: 0px;
     width: 100%;
     height: 35px;
-    background: none;
     border: 0;
-    text-align: inherit;
-    color: inherit;
-    font-size: inherit;
-    font-weight: normal;
     display: block;
-    text-shadow: none;
-    text-transform: none;
 }
 
 .pc-menuSymbol {
     margin-right: 0 !important;
 }
 
-    .pc-menuSymbol span {
-        display: none;
-    }
+.pc-menuSymbol span {
+    display: none;
+}
 
 .pc-menuItem:hover, .pc-checkbox label:hover, .pc-radio label:hover {
-    color: #33B5E5;
     cursor: pointer;
 }
 
@@ -892,8 +734,6 @@
 .pc-menuSeparator hr {
     border: 0;
     margin: 1px 12px 1px 2px;
-    color: #484848;
-    background-color: #484848;
     height: 1px;
 }
 
@@ -936,7 +776,7 @@
     left: 0px;
     width: 19px;
     height: 19px;
-    border: 2px solid #4C6168;
+    border: 2px solid;
     top: -2px;
 }
 
@@ -957,10 +797,6 @@
     content: '✔';
     top: -2px;
     left: 3px;
-    font-size: 22px;
-    font-family: Arial, Helvetica, sans-serif;
-    font-weight: bold;
-    color: #33B5E5;
     -webkit-transition: all .1s;
     -moz-transition: all .1s;
     -ms-transition: all .1s;
@@ -979,7 +815,6 @@
     border-radius: 50%;
     width: 9px;
     height: 9px;
-    background-color: #33B5E5;
     left: 5px;
     top: 3px;
     -webkit-transition: all .1s;
@@ -992,7 +827,6 @@
     left: auto;
     right: 5px;
 }
-
 
 /* checked mark aspect changes */
 .pc-checkbox [type="checkbox"]:not(:checked) + label:after,
