@@ -70,6 +70,18 @@ PocketCode.DeviceFeature = (function () {
             this._supported = false;
         },
         //abstract
+        pause: function () {
+            //this method should be overridden in the inherited classes
+            throw new Error('abstract: missing override');
+        },
+        resume: function () {
+            //this method should be overridden in the inherited classes
+            throw new Error('abstract: missing override');
+        },
+        reset: function () {
+            //this method should be overridden in the inherited classes
+            throw new Error('abstract: missing override');
+        },
         _getViewState: function () {
             //this method should be overridden in the inherited classes
             throw new Error('abstract: missing override');
@@ -98,7 +110,7 @@ PocketCode.merge({
 
         //methods
         DeviceVibration.prototype.merge({
-            _vibrate: function () { 
+            _vibrate: function () {
                 return true;    //add an empty method to avoid errors and keep testability
             },
             start: function (duration) {
@@ -108,8 +120,8 @@ PocketCode.merge({
                     if (vibrate) {
                         var fnct = vibrate.bind(navigator);
                         try {
-                            fnct(0); //may throw an error due to mobile restrictions
-                            this._vibrate = fnct;
+                            if (fnct(0))    //may throw an error due to mobile restrictions or return false if not inside of a user click event handled
+                                this._vibrate = fnct;
                         }
                         catch (e) { }
                     }
@@ -119,7 +131,7 @@ PocketCode.merge({
                 if (typeof duration != 'number')
                     return false;
                 if (duration == 0)
-                    this.stop();
+                    this.reset();
 
                 var timespan = duration * 1000;
                 if (this._vibrate(timespan)) {    //started
@@ -129,6 +141,7 @@ PocketCode.merge({
                 }
                 return false;
             },
+            /*override*/
             pause: function () {
                 this._timer.pause();
                 this._vibrate(0);
@@ -137,11 +150,10 @@ PocketCode.merge({
                 this._vibrate(this._timer.remainingTime);
                 this._timer.resume();
             },
-            stop: function () {
+            reset: function () {
                 this._vibrate(0);
                 this._timer.stop();
             },
-            /*override*/
             _getViewState: function () {
                 var timespan = this._timer.remainingTime;
                 return { remainingTime: timespan > 0 ? (timespan / 1000.0) : undefined };
@@ -149,13 +161,13 @@ PocketCode.merge({
             _setViewState: function (viewState) {
                 if (!this._supported)
                     return;
-                this._timer.stop();
+                this.reset();
                 if (viewState && viewState.remainingTime) {
                     this.start(viewState.remainingTime);
                 }
             },
             dispose: function () {
-                this.stop();
+                this.reset();
                 this._timer.dispose();
                 PocketCode.DeviceFeature.prototype.dispose.call(this);
             }

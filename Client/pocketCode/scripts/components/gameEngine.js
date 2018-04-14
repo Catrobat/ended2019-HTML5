@@ -58,6 +58,10 @@ PocketCode.GameEngine = (function () {
 
         //rendring cache
         this._globalRenderingTexts = {};    //stored by scene to enable different settings (positions, visible) for one variable per scene
+        this._viewStates = {};
+        //^^ viewStates are stored per scene if a scene gets paused while starting another
+        //it includes current visibility states of global resources used by the scene, eg. global variable visibility states or the current state of the device
+        //so these settings can be restored as soon a scene is resumed
 
         //events
         this._onLoadingProgress = new SmartJs.Event.Event(this);

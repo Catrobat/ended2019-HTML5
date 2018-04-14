@@ -13,7 +13,7 @@ QUnit.test("DeviceFeature", function (assert) {
     assert.ok(df instanceof PocketCode.DeviceFeature && df instanceof SmartJs.Core.EventTarget, "instance check");
     assert.ok(df.onInit instanceof SmartJs.Event.Event, "onInit event accessor");
 
-    assert.throws(function () { df = new PocketCode.DeviceFeature(); }, Error, "ERROR: invlaid cntr argument");
+    assert.throws(function () { df = new PocketCode.DeviceFeature(); }, Error, "ERROR: invalid cntr argument");
 
     assert.equal(df.supported, false, "supported = false (default)");
     assert.equal(df.i18nKey, "key", "i18nKey getter");
@@ -26,6 +26,10 @@ QUnit.test("DeviceFeature", function (assert) {
 
     df.disable();
     assert.notOk(df.supported, "disable: supported set to false");
+
+    assert.throws(function () { df.pause(); }, Error, "ERROR: pause(): override required");
+    assert.throws(function () { df.resume(); }, Error, "ERROR: resume(): override required");
+    assert.throws(function () { df.reset(); }, Error, "ERROR: reset(): override required");
 
     assert.throws(function () { df.viewState; }, Error, "ERROR: viewState setter: override required");
     assert.throws(function () { df.viewState = {}; }, Error, "ERROR: viewState getter: override required");
@@ -51,10 +55,14 @@ QUnit.test("DeviceFeature: DeviceVibration", function (assert) {
         vs = v.viewState;
         assert.equal(vs.remainingTime, undefined, "viewstate setter on unsupported feature (no remainingTime)");
 
-        assert.ok(false, "unit tests on device vibration aborted due to missing browser support: please run the tests in another browser or using mobile settings (developer toolbar)");
-        done();
-        return;
+        //assert.ok(false, "unit tests on device vibration aborted due to missing browser support: please run the tests in another browser or using mobile settings (developer toolbar)");
+        //done();
+        //return;
     }
+
+    //mock supported
+    v = new PocketCode.DeviceVibration();
+    v._supported = true;
 
     assert.ok(v.supported, "DeviceVibration supported");
 
@@ -90,7 +98,7 @@ QUnit.test("DeviceFeature: DeviceVibration", function (assert) {
         assert.ok(remainingTime > 0 && remainingTime < 18, "viewState setter");
 
         v.start(0);
-        assert.equal(getRemainingTime(), undefined, "start(0) calls stop() and sets remainingTime to undefined");
+        assert.equal(getRemainingTime(), undefined, "start(0) calls reset() and sets remainingTime to undefined");
 
         v.start(3);
         assert.ok(getRemainingTime() > 0, "started again");
@@ -109,8 +117,8 @@ QUnit.test("DeviceFeature: DeviceVibration", function (assert) {
     function validateResume() {
         assert.ok(remainingTime > getRemainingTime(), "resume(): remaining time decreases after resume");
 
-        v.stop();
-        assert.equal(getRemainingTime(), undefined, "stop() sets remainingTime to undefined");
+        v.reset();
+        assert.equal(getRemainingTime(), undefined, "reset() sets remainingTime to undefined");
 
         v.dispose();
         assert.ok(v._disposed, "disposed");

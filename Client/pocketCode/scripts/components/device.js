@@ -645,10 +645,10 @@ PocketCode.Device = (function () {
         },
 
         pause: function () {
-            //TODO: vibration
+            this._features.VIBRATE.pause();
         },
         resume: function () {
-            //TODO: vibration
+            this._features.VIBRATE.resume();
         },
         reset: function () {
             //clear touch history
@@ -656,28 +656,25 @@ PocketCode.Device = (function () {
                 active: {},
                 history: [],
             };
-            //TODO: vibration
+            //features
+            this._features.VIBRATE.reset();
         },
         /* override */
         dispose: function () {
-            if (this._initDeviceOrientationListener) {
+            //stop vibration
+            this._features.VIBRATE.reset();
+
+            if (this._initDeviceOrientationListener)
                 this._removeDomListener(window, 'deviceorientation', this._initDeviceOrientationListener);
-                //delete this._initDeviceOrientationListener;
-            }
-            if (this._initDeviceMotionListener) {
+            if (this._initDeviceMotionListener)
                 this._removeDomListener(window, 'devicemotion', this._initDeviceMotionListener);
-                //delete this._initDeviceMotionListener;
-            }
-            if (this._orientationChangeListener) {
+            if (this._orientationChangeListener)
                 this._removeDomListener(window, 'orientationchange', this._orientationChangeListener);
-                //delete this._orientationChangeListener;
-            }
 
             if (this._deviceOrientationListener)
                 this._removeDomListener(window, 'deviceorientation', this._deviceOrientationListener);
             if (this._deviceMotionListener)
                 this._removeDomListener(window, 'devicemotion', this._deviceMotionListener);
-
 
             SmartJs.Core.EventTarget.prototype.dispose.call(this);    //call super()
         },
@@ -857,6 +854,7 @@ PocketCode.MediaDevice = (function () {
         },
         dispose: function () {
             this._removeDomListener(window, 'orientationchange', this._orientationListener);
+
             this._fd.dispose();
             this._fd = undefined;
             this._cam.onInit.removeEventListener(new SmartJs.Event.EventListener(this._featureInitializedHandler, this));
