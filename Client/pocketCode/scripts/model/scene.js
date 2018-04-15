@@ -26,6 +26,7 @@ PocketCode.Model.Scene = (function () {
         this._sprites = [];
         this._originalSpriteOrder = [];
         this._minLoopCycleTime = minLoopCycleTime || 20; //ms
+        this._gameEngine = gameEngine;
         this._device = device;
 
         this._broadcastMgr = new PocketCode.BroadcastManager(jsonBroadcasts || []);
@@ -538,6 +539,13 @@ PocketCode.Model.Scene = (function () {
             clone.dispose(); //dispose results in an error: hanging project 965 (dispose will stop scripts- no broadcastWait callback?)
             //window.setTimeout(clone.dispose.bind(clone), 50);   //dispose with delay to make sure scripts are not stopped immediately
             this._onUiChange.dispatchEvent();   //to remove clone from rendering sprites
+        },
+        //scene transition & start
+        resumeOrStartOtherScene: function (sceneId) {
+            return this._gameEngine.resumeOrStartScene(sceneId);
+        },
+        startOtherScene: function (sceneId) {
+            return this._gameEngine.startScene(sceneId);
         },
         //physics
         setGravity: function (x, y) {

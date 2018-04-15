@@ -676,12 +676,12 @@ QUnit.test("SceneTransitionBrick (continue scene)", function (assert) {
     gameEngine._scenes[scene2._id] = scene2;
     gameEngine._scenes[scene._id] = scene;
 
-    var b = new PocketCode.Model.SceneTransitionBrick(device, sprite, gameEngine, { sceneId: "s2" });
+    var b = new PocketCode.Model.SceneTransitionBrick(device, sprite, scene, { sceneId: "s2" });
     b.dispose();
-    assert.ok(b._disposed && !sprite._disposed && !scene._disposed && !scene2._disposed && !gameEngine._disposed, "disposed without changing other objects");
+    assert.ok(b._disposed && !sprite._disposed && !scene._disposed && !scene2._disposed && !scene._disposed, "disposed without changing other objects");
 
     //recreate
-    b = new PocketCode.Model.SceneTransitionBrick(device, sprite, gameEngine, { sceneId: "s2" });
+    b = new PocketCode.Model.SceneTransitionBrick(device, sprite, scene, { sceneId: "s2" });
 
     assert.ok(b._device === device && b._sprite === sprite, "brick created and properties set correctly");
     assert.ok(b instanceof PocketCode.Model.SceneTransitionBrick && b instanceof PocketCode.Model.BaseBrick, "instance check");
@@ -719,12 +719,12 @@ QUnit.test("StartSceneBrick", function (assert) {
     gameEngine._scenes[scene2._id] = scene2;
     gameEngine._scenes[scene._id] = scene;
 
-    var b = new PocketCode.Model.StartSceneBrick(device, sprite, gameEngine, { sceneId: "s2" });
+    var b = new PocketCode.Model.StartSceneBrick(device, sprite, scene, { sceneId: "s2" });
     b.dispose();
-    assert.ok(b._disposed && !sprite._disposed && !scene._disposed && !scene2._disposed && !gameEngine._disposed, "disposed without changing other objects");
+    assert.ok(b._disposed && !sprite._disposed && !scene._disposed && !scene2._disposed && !scene._disposed, "disposed without changing other objects");
 
     //recreate
-    b = new PocketCode.Model.StartSceneBrick(device, sprite, gameEngine, { sceneId: "s2" });
+    b = new PocketCode.Model.StartSceneBrick(device, sprite, scene, { sceneId: "s2" });
 
     assert.ok(b._device === device && b._sprite === sprite, "brick created and properties set correctly");
     assert.ok(b instanceof PocketCode.Model.StartSceneBrick && b instanceof PocketCode.Model.BaseBrick, "instance check");

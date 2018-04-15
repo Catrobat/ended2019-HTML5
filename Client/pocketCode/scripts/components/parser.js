@@ -49,7 +49,7 @@ PocketCode.merge({
                     throw new Error('invalid argument: expected type: object');
 
                 this._unsupportedBricks = [];
-                var brickFactory = new PocketCode.BrickFactory(this._device, this._gameEngine, currentScene, broadcastMgr, this._minLoopCycleTime);
+                var brickFactory = new PocketCode.BrickFactory(this._device, currentScene, broadcastMgr, this._minLoopCycleTime);
                 brickFactory.onUnsupportedBrickFound.addEventListener(new SmartJs.Event.EventListener(function (e) { this._unsupportedBricks.push(e.unsupportedBrick); }, this));
 
                 var sprite = asBackground ?
@@ -74,7 +74,7 @@ PocketCode.merge({
                 if (typeof jsonSprite !== 'object' || jsonSprite instanceof Array)
                     throw new Error('invalid argument: expected type: object');
 
-                var brickFactory = new PocketCode.BrickFactory(this._device, this._gameEngine, currentScene, broadcastMgr, this._minLoopCycleTime);
+                var brickFactory = new PocketCode.BrickFactory(this._device, currentScene, broadcastMgr, this._minLoopCycleTime);
                 var clone = new PocketCode.Model.SpriteClone(this._gameEngine, currentScene, jsonSprite, definition);
                 var scripts = [];
                 for (var i = 0, l = jsonSprite.scripts.length; i < l; i++)
@@ -97,9 +97,8 @@ PocketCode.merge({
     BrickFactory: (function () {
         BrickFactory.extends(SmartJs.Core.Component);
 
-        function BrickFactory(device, gameEngine, scene, broadcastMgr, minLoopCycleTime) {
+        function BrickFactory(device, scene, broadcastMgr, minLoopCycleTime) {
             this._device = device;
-            this._gameEngine = gameEngine;
             this._scene = scene;
             this._broadcastMgr = broadcastMgr;
             this._minLoopCycleTime = minLoopCycleTime;
@@ -201,6 +200,8 @@ PocketCode.merge({
                     case 'SetBackgroundByIndexBrick':
                     case 'ClearBackgroundBrick':
                     case 'WhenBackgroundChangesToBrick':
+                    case 'StartSceneBrick':
+                    case 'SceneTransitionBrick':
                         brick = new PocketCode.Model[type](this._device, currentSprite, this._scene, jsonBrick);
                         break;
 
@@ -221,11 +222,6 @@ PocketCode.merge({
 
                     case 'WhenConditionMetBrick':
                         brick = new PocketCode.Model[type](this._device, currentSprite, this._minLoopCycleTime, jsonBrick, this._scene.onStart);
-                        break;
-
-                    case 'StartSceneBrick':
-                    case 'SceneTransitionBrick':
-                        brick = new PocketCode.Model[type](this._device, currentSprite, this._gameEngine, jsonBrick);
                         break;
 
                     case 'StopBrick':
@@ -293,7 +289,6 @@ PocketCode.merge({
             },
             dispose: function () {
                 this._device = undefined;
-                this._gameEngine = undefined;
                 this._scene = undefined;
                 this._broadcastMgr = undefined;
                 SmartJs.Core.Component.prototype.dispose.call(this);
