@@ -702,7 +702,7 @@ PocketCode.merge({
                             return 'number_of_items(' + this._parseJsonType(jsonFormula.left, uiString) + ')';
 
                         //this._isStatic = false;
-                        return this._parseJsonType(jsonFormula.left, uiString, 'string') + '.length';
+                        return this._parseJsonType(jsonFormula.left) + '.length';
 
                     case 'LIST_ITEM':
                         if (uiString)
