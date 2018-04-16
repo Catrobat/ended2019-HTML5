@@ -113,8 +113,6 @@ PocketCode.Model.merge({
                     return undefined;
                 if (value instanceof PocketCode.Model.UserVariable) //for variables and lists
                     return value.value;
-                //if (value instanceof PocketCode.Model.UserVariableList)    //assigning lists to valiables not allowed (ignored) in scratch- we support it using toString()
-                //    return this._toTypedValue(value.toString());
                 if (typeof value === 'string') { //convert numbers added as string
                     var num = parseFloat(value);
                     return (num.toString() === value ? num : value);
@@ -138,17 +136,8 @@ PocketCode.Model.merge({
 
         function UserVariableSimple(id, name, value) {
             PocketCode.Model.UserVariable.call(this, id, name);
-            //this._uiCache = {
-            //    visible: false,
-            //    x: 0,
-            //    y: 0,
-            //};
-            //this._defaultValue = 0.000001;
-            //else
-            //    this._value = 0.000001;   //prevent division by zero
-            //this._onChange = new SmartJs.Event.Event(this);
-            //init
-            this._value = 0;//undefined;
+
+            this._value = 0;
             if (value != undefined)
                 this._value = this._toTypedValue(value);
         }
@@ -160,62 +149,20 @@ PocketCode.Model.merge({
                     return this._value;
                 },
                 set: function (value) {
-                    //if (value === undefined)  //if a variable is set using e.g. an uninitialized list item
-                    //    return;
                     value = this._toTypedValue(value);
                     if (this._value == value)
                         return;
                     this._value = value;
-                    //if (this._uiCache.visible)
                     this._onChange.dispatchEvent({ id: this._id, value: this._value });
                 },
             },
-            //valueAsNumber: {
-            //    get: function () {
-            //        if (typeof this._value === 'number')
-            //            return this._value;
-            //        return 0;
-            //    },
-            //},
         });
 
         //methods
         UserVariableSimple.prototype.merge({
-            toString: function () {
-                return this._value.toString();
-                //if (val === undefined)
-                //    return '';
-                //return val.toString();  //we do not format variable values in any way
-                //if (typeof val != 'number')
-                //    return val.toString();
-                //if (parseInt(val) === val)
-                //    return val.toFixed(1);
-                //return Math.round(val * Math.pow(10, 8)) / Math.pow(10, 8);
-            },
             reset: function () {
-                //this._uiCache = {
-                //    visible: false,
-                //    x: 0,
-                //    y: 0,
-                //};
                 this._value = 0;
             },
-            //showAt: function (x, y) {
-            //    this._uiCache = {
-            //        visible: true,
-            //        x: x,
-            //        y: y,
-            //    };
-            //    //TODO event?
-            //},
-            //hide: function () {
-            //    this._uiCache.visible = false;
-            //    //TODO event?
-            //},
-            //asRenderingText: function (scopeId) {
-            //    var uiCache = this._uiCache;
-            //    return new PocketCode.RenderingText({ scopeId: scopeId, id: this._id, value: this._value, x: uiCache.x, y: uiCache.y, visible: uiCache.visible });
-            //},
         });
 
         return UserVariableSimple;
@@ -256,20 +203,13 @@ PocketCode.Model.merge({
 
         //methods
         UserVariableList.prototype.merge({
-            //toString: function () {
-            //    return this._value.join(' ');
-            //},
             append: function (value) {
                 this._value.push(this._toTypedValue(value));
-                //if (this._uiCache.visible)
-                //    this._onChange.dispatchEvent({ id: this._id });
             },
             _validateIndex: function (idx, length) {
-                idx = this._toTypedValue(idx);
+                idx = this._toTypedValue(idx);  //NaN -> 0
                 if (idx === true)   //false = isNaN
                     idx = 1;
-                if (isNaN(idx))
-                    return false;
                 idx = Math.floor(idx);  //to int like in Scratch
                 if (idx < 1 || idx > length)
                     return false;
@@ -281,12 +221,6 @@ PocketCode.Model.merge({
                     return this._value[idx - 1];
                 return undefined;
             },
-            //valueAsNumberAt: function (idx) {
-            //    var val = this.valueAt(idx);
-            //    if (typeof val === 'number')
-            //        return val;
-            //    return 0;
-            //},
             insertAt: function (idx, value) {
                 idx = this._validateIndex(idx, this._value.length + 1);
                 if (!idx)
@@ -294,9 +228,6 @@ PocketCode.Model.merge({
 
                 if (idx <= this._value.length)
                     this._value.insert(idx - 1, this._toTypedValue(value));
-                    //if (this._uiCache.visible)
-                    //    this._onChange.dispatchEvent({ id: this._id });
-                    //}
                 else
                     this.append(this._toTypedValue(value));
             },
@@ -304,17 +235,11 @@ PocketCode.Model.merge({
                 idx = this._validateIndex(idx, this._value.length);
                 if (idx) //{
                     this._value[idx - 1] = this._toTypedValue(value);
-                //if (this._uiCache.visible)
-                //    this._onChange.dispatchEvent({ id: this._id });
-                //}
             },
             deleteAt: function (idx) {
                 idx = this._validateIndex(idx, this._value.length);
                 if (idx) //{
                     this._value.splice(idx - 1, 1);
-                //if (this._uiCache.visible)
-                //    this._onChange.dispatchEvent({ id: this._id });
-                //}
             },
             contains: function (value) {
                 if (this._value.indexOf(this._toTypedValue(value)) !== -1)
@@ -322,17 +247,10 @@ PocketCode.Model.merge({
                 return false;
             },
             reset: function () {
-                //if (this._value.length === 0)
-                //    return;
                 this._value = [];
-                //if (this._uiCache.visible)
-                //    this._onChange.dispatchEvent({ id: this._id });
             },
         });
 
         return UserVariableList;
     })(),
-
 });
-
-
