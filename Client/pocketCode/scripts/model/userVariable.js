@@ -150,7 +150,7 @@ PocketCode.Model.merge({
                 },
                 set: function (value) {
                     value = this._toTypedValue(value);
-                    if (this._value == value)
+                    if (this._value === value)
                         return;
                     this._value = value;
                     this._onChange.dispatchEvent({ id: this._id, value: this._value });
