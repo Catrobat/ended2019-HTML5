@@ -7,10 +7,9 @@ PocketCode.PlayerViewportController = (function () {
 
     function PlayerViewportController() {
         PocketCode.BaseController.call(this, new PocketCode.Ui.PlayerViewportView());
+
         this._renderingSprite = [];
         this._renderingTexts = [];
-        this._redrawRequired = false;
-        this._redrawInProgress = false;
 
         //init default values
         this._projectScreenWidth = 200;

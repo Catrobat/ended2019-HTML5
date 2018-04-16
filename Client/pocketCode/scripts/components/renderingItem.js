@@ -1,4 +1,5 @@
-﻿/// <reference path="i18nProvider.js" />
+﻿/// <reference path="../core.js" />
+/// <reference path="i18nProvider.js" />
 'use strict';
 
 PocketCode.RenderingItem = (function () {
@@ -76,7 +77,9 @@ PocketCode.merge({
             propObject = propObject || {};
             this._value = '';
             this._UNDEFINED_TEXT = '';  //add a string to show if text (variable) is undefined/uninitialized
-            //^^ this may be a PocketCode.Core.I18nString Object to support i18n
+            this._BOOLEAN_TRUE_TEXT = new PocketCode.Core.I18nString('variableTrue');
+            this._BOOLEAN_FALSE_TEXT = new PocketCode.Core.I18nString('variableFalse');
+            this._NUMBER_INFINITY_TEXT = new PocketCode.Core.I18nString('variableInfinity');
 
             this._scopeId = propObject.scopeId;   //var ids not unique due to cloning: the id is the sprite (local scope) or project (global scope) id
             delete propObject.scopeId;
@@ -104,18 +107,28 @@ PocketCode.merge({
                 },
             },
             value: {
-                //get: function (value) {
-                //    return this._text;
-                //},
                 set: function (value) {
-                    var text = this._UNDEFINED_TEXT.toString();
-                    if (value != undefined)
-                        text = value.toString();
-
-                    if (this._value == text)
+                    if (this._value === value)
                         return;
-                    this._value = text;
+                    this._value = value;
                     this._redrawCache();
+                },
+            },
+            _text: {
+                get: function () {
+                    var value = this._value;
+                    if (value === undefined)
+                        return this._UNDEFINED_TEXT.toString();
+                    if (value === true)
+                        return this._BOOLEAN_TRUE_TEXT.toString();
+                    if (value === false)
+                        return this._BOOLEAN_FALSE_TEXT.toString();
+                    if (value === Infinity)
+                        return this._NUMBER_INFINITY_TEXT.toString();
+                    if (value === -Infinity)
+                        return '-' + this._NUMBER_INFINITY_TEXT.toString();
+
+                    return value.toString();
                 },
             },
             fontFamily: {
@@ -155,7 +168,7 @@ PocketCode.merge({
 
                 var ctx = this._cacheCtx,
                     maxLineWidth = this.maxLineWidth,
-                    textLines = this._value.split(/\r?\n/),
+                    textLines = this._text.split(/\r?\n/),
                     line,// = '',
                     metrics;
 
@@ -228,7 +241,7 @@ PocketCode.merge({
                 ctx.textBaseline = 'top';   //'hanging';
                 ctx.font = this.fontStyle + ' ' + this.fontWeight + ' ' + this.fontSize + 'px' + ' ' + this.fontFamily;
 
-                var dir = PocketCode.I18nProvider.getTextDirection(this._value);
+                var dir = PocketCode.I18nProvider.getTextDirection(this._text);
                 canvas.dir = dir;
                 if (dir == PocketCode.Ui.Direction.RTL) {
                     ctx.translate(textBlock.width, 0);
@@ -243,7 +256,7 @@ PocketCode.merge({
             },
             /* override */
             _draw: function (ctx, maxWidth) {
-                if (this._value === '')
+                if (this._text === '')
                     return;
 
                 var canvas = this._cacheCanvas;

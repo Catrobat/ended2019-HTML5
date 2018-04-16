@@ -40,12 +40,34 @@ PocketCode._I18nProvider = (function (propObject) {
             //TODO: only add strings required if i18n strings fail to load at startup
 
             //new: add new loc strings here until they are included in crowdin
-        };  
+            "variableTrue": "True",
+            "variableFalse": "False",
+            "variableInfinity": "Infinty",
+        };
 
         this._onLanguageChange = new SmartJs.Event.Event(this);
         this._onDirectionChange = new SmartJs.Event.Event(this);
         this._onError = new SmartJs.Event.Event(this);
     }
+
+    //events
+    Object.defineProperties(I18nProvider.prototype, {
+        onLanguageChange: {
+            get: function () {
+                return this._onLanguageChange;
+            }
+        },
+        onDirectionChange: {
+            get: function () {
+                return this._onDirectionChange;
+            }
+        },
+        onError: {
+            get: function () {
+                return this._onError;
+            }
+        },
+    });
 
     //properties
     Object.defineProperties(I18nProvider.prototype, {
@@ -66,25 +88,6 @@ PocketCode._I18nProvider = (function (propObject) {
             get: function () {
                 return this._supportedLanguages;
             },
-        },
-    });
-
-    //events
-    Object.defineProperties(I18nProvider.prototype, {
-        onLanguageChange: {
-            get: function () {
-                return this._onLanguageChange;
-            }
-        },
-        onDirectionChange: {
-            get: function () {
-                return this._onDirectionChange;
-            }
-        },
-        onError: {
-            get: function () {
-                return this._onError;
-            }
         },
     });
 
