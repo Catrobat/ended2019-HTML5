@@ -234,7 +234,7 @@ PocketCode.Model.Scene = (function () {
                 clones = [];
             for (var i = 0, l = sprites.length; i < l; i++)
                 if (sprites[i] instanceof PocketCode.Model.SpriteClone)
-                    clones.push(sprites[i]);    //do not edit indixes during iterating
+                    clones.push(sprites[i]);    //do not edit indices during iterating
 
             for (var i = 0, l = clones.length; i < l; i++)
                 this.deleteClone(clones[i].id);
@@ -242,6 +242,8 @@ PocketCode.Model.Scene = (function () {
             this._sprites = this._originalSpriteOrder;
             for (var i = 0, l = sprites.length; i < l; i++)
                 sprites[i].init();
+
+            this._executionState === PocketCode.ExecutionState.INITIALIZED;
         },
         start: function () {
             if (this._executionState === PocketCode.ExecutionState.RUNNING)
@@ -516,7 +518,7 @@ PocketCode.Model.Scene = (function () {
 
             this._sprites.insert(layer - 1, clone); //adding at position from original sprite
 
-            this._onUiChange.dispatchEvent();   //to include clone in rendering sprites
+            this._onUiChange.dispatchEvent();   //to include clone in rendering sprites and texts
             clone.onCloneStart.dispatchEvent();
             return true;
         },
@@ -538,7 +540,7 @@ PocketCode.Model.Scene = (function () {
             this._checkForOnExecuted();    //call executed handler: the clone may be the last running script
             clone.dispose(); //dispose results in an error: hanging project 965 (dispose will stop scripts- no broadcastWait callback?)
             //window.setTimeout(clone.dispose.bind(clone), 50);   //dispose with delay to make sure scripts are not stopped immediately
-            this._onUiChange.dispatchEvent();   //to remove clone from rendering sprites
+            this._onUiChange.dispatchEvent();   //to remove clone from rendering sprites and texts
         },
         //scene transition & start
         resumeOrStartOtherScene: function (sceneId) {

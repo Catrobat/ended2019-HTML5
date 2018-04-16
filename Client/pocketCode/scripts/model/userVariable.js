@@ -55,13 +55,13 @@ PocketCode.Model.merge({
                     switch (this._type) {
                         case PocketCode.UserVariableType.SIMPLE:
                             tmp = new PocketCode.Model.UserVariableSimple(variable.id, variable.name, variable.value ? variable.value : undefined);
-                            tmp.onChange.addEventListener(new SmartJs.Event.EventListener(function (e) { this._onVariableChange.dispatchEvent({ id: e.id }, e.target); }, this)); //target override
+                            tmp.onChange.addEventListener(new SmartJs.Event.EventListener(function (e) { this._onVariableChange.dispatchEvent({ id: e.id, value: e.value }, e.target); }, this)); //target override
                             this._variables[variable.id] = tmp;
                             break;
 
                         case PocketCode.UserVariableType.LIST:
                             tmp = new PocketCode.Model.UserVariableList(variable.id, variable.name, variable.value ? variable.value : undefined);
-                            tmp.onChange.addEventListener(new SmartJs.Event.EventListener(function (e) { this._onVariableChange.dispatchEvent({ id: e.id }, e.target); }, this));
+                            //tmp.onChange.addEventListener(new SmartJs.Event.EventListener(function (e) { this._onVariableChange.dispatchEvent({ id: e.id, value: e.value }, e.target); }, this));
                             this._variables[variable.id] = tmp;
                             break;
                     }
@@ -89,33 +89,69 @@ PocketCode.Model.merge({
         return UserVariableCollection;
     })(),
 
+    UserVariable: (function () {
 
-    UserVariableSimple: (function () {
-
-        function UserVariableSimple(id, name, value) {
+        function UserVariable(id, name) {
             this._id = id;
             this.name = name;
-            this._uiCache = {
-                visible: false,
-                x: 0,
-                y: 0,
-            };
+
+            //events
+            this._onChange = new SmartJs.Event.Event(this);
+        }
+
+        //events
+        Object.defineProperties(UserVariable.prototype, {
+            onChange: {
+                get: function () { return this._onChange; },
+            },
+        });
+
+        //methods
+        UserVariable.prototype.merge({
+            _toTypedValue: function (value) {
+                if (value === null || value === undefined)
+                    return undefined;
+                if (value instanceof PocketCode.Model.UserVariable) //for variables and lists
+                    return value.value;
+                //if (value instanceof PocketCode.Model.UserVariableList)    //assigning lists to valiables not allowed (ignored) in scratch- we support it using toString()
+                //    return this._toTypedValue(value.toString());
+                if (typeof value === 'string') { //convert numbers added as string
+                    var num = parseFloat(value);
+                    return (num.toString() === value ? num : value);
+                }
+                if (isNaN(value))   //false for bools and Infinity, true for e.g. Error
+                    return 0;   //like in Scratch
+                else    //boolean or number including +-Infinity
+                    return value;
+            },
+        });
+
+        return UserVariable;
+    })(),
+
+});
+
+PocketCode.Model.merge({
+
+    UserVariableSimple: (function () {
+        UserVariableSimple.extends(PocketCode.Model.UserVariable, false);
+
+        function UserVariableSimple(id, name, value) {
+            PocketCode.Model.UserVariable.call(this, id, name);
+            //this._uiCache = {
+            //    visible: false,
+            //    x: 0,
+            //    y: 0,
+            //};
             //this._defaultValue = 0.000001;
             //else
             //    this._value = 0.000001;   //prevent division by zero
-            this._onChange = new SmartJs.Event.Event(this);
+            //this._onChange = new SmartJs.Event.Event(this);
             //init
             this._value = 0;//undefined;
             if (value != undefined)
                 this._value = this._toTypedValue(value);
         }
-
-        //events
-        Object.defineProperties(UserVariableSimple.prototype, {
-            onChange: {
-                get: function () { return this._onChange; },
-            },
-        });
 
         //properties
         Object.defineProperties(UserVariableSimple.prototype, {
@@ -124,44 +160,32 @@ PocketCode.Model.merge({
                     return this._value;
                 },
                 set: function (value) {
-                    if (value === undefined)  //if a variable is set using e.g. an uninitialized list item
-                        return;
-                    value = this._toTypedValue(value);  //assigning lists to valiables not allowed (ignored) in scratch- we support it using toString()
+                    //if (value === undefined)  //if a variable is set using e.g. an uninitialized list item
+                    //    return;
+                    value = this._toTypedValue(value);
                     if (this._value == value)
                         return;
                     this._value = value;
-                    if (this._uiCache.visible)
-                        this._onChange.dispatchEvent({ id: this._id });
+                    //if (this._uiCache.visible)
+                    this._onChange.dispatchEvent({ id: this._id, value: this._value });
                 },
             },
-            valueAsNumber: {
-                get: function () {
-                    if (typeof this._value === 'number')
-                        return this._value;
-                    return 0;
-                },
-            },
+            //valueAsNumber: {
+            //    get: function () {
+            //        if (typeof this._value === 'number')
+            //            return this._value;
+            //        return 0;
+            //    },
+            //},
         });
 
         //methods
         UserVariableSimple.prototype.merge({
-            _toTypedValue: function (value) {
-                if (value instanceof PocketCode.Model.UserVariableSimple)
-                    return value.value;
-                else if (value instanceof PocketCode.Model.UserVariableList)    //assigning lists to valiables not allowed (ignored) in scratch- we support it using toString()
-                    return this._toTypedValue(value.toString());
-                else if (typeof value === 'string') {
-                    var num = parseFloat(value);
-                    return (num.toString() === value ? num : value);
-                }
-                else
-                    return value;
-            },
             toString: function () {
-                var val = this._value;
+                return this._value.toString();
                 //if (val === undefined)
                 //    return '';
-                return val.toString();  //we do not format variable values in any way
+                //return val.toString();  //we do not format variable values in any way
                 //if (typeof val != 'number')
                 //    return val.toString();
                 //if (parseInt(val) === val)
@@ -169,30 +193,29 @@ PocketCode.Model.merge({
                 //return Math.round(val * Math.pow(10, 8)) / Math.pow(10, 8);
             },
             reset: function () {
-                this._uiCache = {
-                    visible: false,
-                    x: 0,
-                    y: 0,
-                };
-
-                this.value = 0;
+                //this._uiCache = {
+                //    visible: false,
+                //    x: 0,
+                //    y: 0,
+                //};
+                this._value = 0;
             },
-            showAt: function (x, y) {
-                this._uiCache = {
-                    visible: true,
-                    x: x,
-                    y: y,
-                };
-                //TODO event?
-            },
-            hide: function () {
-                this._uiCache.visible = false;
-                //TODO event?
-            },
-            asRenderingText: function (objectId) {
-                var uiCache = this._uiCache;
-                return new PocketCode.RenderingText({ objectId: objectId, id: this._id, text: this.toString(), x: uiCache.x, y: uiCache.y, visible: uiCache.visible });
-            },
+            //showAt: function (x, y) {
+            //    this._uiCache = {
+            //        visible: true,
+            //        x: x,
+            //        y: y,
+            //    };
+            //    //TODO event?
+            //},
+            //hide: function () {
+            //    this._uiCache.visible = false;
+            //    //TODO event?
+            //},
+            //asRenderingText: function (scopeId) {
+            //    var uiCache = this._uiCache;
+            //    return new PocketCode.RenderingText({ scopeId: scopeId, id: this._id, value: this._value, x: uiCache.x, y: uiCache.y, visible: uiCache.visible });
+            //},
         });
 
         return UserVariableSimple;
@@ -201,14 +224,12 @@ PocketCode.Model.merge({
 
     /* please notice: this class does not represent a list of variables, but a user variable of type list */
     UserVariableList: (function () {
+        UserVariableList.extends(PocketCode.Model.UserVariable, false);
 
         function UserVariableList(id, name, value) {
-            this._id = id;
-            this.name = name;
+            PocketCode.Model.UserVariable.call(this, id, name);
 
             this._value = [];
-            this._onChange = new SmartJs.Event.Event(this);
-            //init
             if (value != undefined) {
                 if (!(value instanceof Array))
                     throw new Error('invalid argument: expected: value typeof array');
@@ -217,15 +238,15 @@ PocketCode.Model.merge({
             }
         }
 
-        //events
-        Object.defineProperties(UserVariableList.prototype, {
-            onChange: {
-                get: function () { return this._onChange; },
-            },
-        });
-
         //properties
         Object.defineProperties(UserVariableList.prototype, {
+            value: {
+                //as lists can be assigned to variables and used in formulas (at least in Scratch) we need
+                //to represent the list as single value as well
+                get: function () {
+                    return this._toTypedValue(this._value.join(''));
+                },
+            },
             length: {
                 get: function () {
                     return this._value.length;
@@ -235,62 +256,64 @@ PocketCode.Model.merge({
 
         //methods
         UserVariableList.prototype.merge({
-            _toTypedValue: function (value) {
-                if (value instanceof PocketCode.Model.UserVariableSimple)
-                    return this._toTypedValue(value.value);
-                else if (value instanceof PocketCode.Model.UserVariableList)
-                    return this._toTypedValue(value.toString());
-                else if (typeof value === 'string') {
-                    var num = parseFloat(value);
-                    return (num.toString() === value ? num : value);
-                }
-                return value;
-            },
-            toString: function () {
-                return this._value.join(' ');
-            },
+            //toString: function () {
+            //    return this._value.join(' ');
+            //},
             append: function (value) {
                 this._value.push(this._toTypedValue(value));
                 //if (this._uiCache.visible)
                 //    this._onChange.dispatchEvent({ id: this._id });
             },
-            _validIndex: function (idx) {
-                if (parseInt(idx) !== idx || idx < 1 || idx > this._value.length)
+            _validateIndex: function (idx, length) {
+                idx = this._toTypedValue(idx);
+                if (idx === true)   //false = isNaN
+                    idx = 1;
+                if (isNaN(idx))
                     return false;
-                return true;
+                idx = Math.floor(idx);  //to int like in Scratch
+                if (idx < 1 || idx > length)
+                    return false;
+                return idx;
             },
             valueAt: function (idx) {
-                if (this._validIndex(idx))
+                idx = this._validateIndex(idx, this._value.length);
+                if (idx)
                     return this._value[idx - 1];
                 return undefined;
             },
-            valueAsNumberAt: function (idx) {
-                var val = this.valueAt(idx);
-                if (typeof val === 'number')
-                    return val;
-                return 0;
-            },
+            //valueAsNumberAt: function (idx) {
+            //    var val = this.valueAt(idx);
+            //    if (typeof val === 'number')
+            //        return val;
+            //    return 0;
+            //},
             insertAt: function (idx, value) {
-                if (this._validIndex(idx)) //{
+                idx = this._validateIndex(idx, this._value.length + 1);
+                if (!idx)
+                    return;
+
+                if (idx <= this._value.length)
                     this._value.insert(idx - 1, this._toTypedValue(value));
                     //if (this._uiCache.visible)
                     //    this._onChange.dispatchEvent({ id: this._id });
-                //}
-                else if (idx == this._value.length + 1)
+                    //}
+                else
                     this.append(this._toTypedValue(value));
             },
             replaceAt: function (idx, value) {
-                if (this._validIndex(idx)) //{
+                idx = this._validateIndex(idx, this._value.length);
+                if (idx) //{
                     this._value[idx - 1] = this._toTypedValue(value);
-                    //if (this._uiCache.visible)
-                    //    this._onChange.dispatchEvent({ id: this._id });
+                //if (this._uiCache.visible)
+                //    this._onChange.dispatchEvent({ id: this._id });
                 //}
             },
             deleteAt: function (idx) {
-                if (this._validIndex(idx)) //{
+                idx = this._validateIndex(idx, this._value.length);
+                if (idx) //{
                     this._value.splice(idx - 1, 1);
-                    //if (this._uiCache.visible)
-                    //    this._onChange.dispatchEvent({ id: this._id });
+                //if (this._uiCache.visible)
+                //    this._onChange.dispatchEvent({ id: this._id });
                 //}
             },
             contains: function (value) {

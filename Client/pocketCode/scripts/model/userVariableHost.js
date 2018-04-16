@@ -27,11 +27,14 @@ PocketCode.Model.UserVariableHost = (function () {
         this.__variableLookupHost = globalLookupHost;
 
         this.__variablesSimple = new PocketCode.Model.UserVariableCollection(PocketCode.UserVariableType.SIMPLE, scope);
-        this.__variablesList = new PocketCode.Model.UserVariableCollection(PocketCode.UserVariableType.LIST, scope);
-
-        this._onVariableChange = new SmartJs.Event.Event(this);
         this.__variablesSimple.onVariableChange.addEventListener(new SmartJs.Event.EventListener(this._valueChangeHandler, this));
+        this.__variablesList = new PocketCode.Model.UserVariableCollection(PocketCode.UserVariableType.LIST, scope);
         //this.__variablesList.onVariableChange.addEventListener(new SmartJs.Event.EventListener(this._valueChangeHandler, this));
+
+        this._variableViewStates = {};
+
+        //events
+        this._onVariableChange = new SmartJs.Event.Event(this); //internal (protected) event used by sprites and gameEngine
     }
 
     //events
@@ -52,8 +55,15 @@ PocketCode.Model.UserVariableHost = (function () {
             },
         },
         _variables: {
-            set: function (value) {
-                this.__variablesSimple.initVariableList(value);
+            set: function (variables) {
+                this.__variablesSimple.initVariableList(variables);
+                this._variableViewStates = {};
+                //for (var i = 0, l = variables.length; i < l; i++)
+                //    this._variableViewStates[variables[i].id] = {
+                //        visible: false,
+                //        x: 0,
+                //        y: 0,
+                //    };
             },
         },
         _lists: {
@@ -65,13 +75,15 @@ PocketCode.Model.UserVariableHost = (function () {
 
     //methods
     UserVariableHost.prototype.merge({
-        _getRenderingVariables: function (objectId) {
+        _getRenderingVariables: function (scopeId) {
             var list = [],
-                vars = this.__variablesSimple.getVariables();
+                vars = this.__variablesSimple.getVariables(),
+                vs;
             for (var v in vars) {   //{[id]: {}}
-                if (vars.hasOwnProperty(v))
-                    list.push(vars[v].asRenderingText(objectId));
-                //list.push(new PocketCode.RenderingText({ objectId: objectId, id: v, text: vars[v].toString(), x: 0, y: 0, visible: false }));
+                //if (vars.hasOwnProperty(v))
+                //list.push(vars[v].asRenderingText(scopeId));
+                vs = this._variableViewStates[v] || {};
+                list.push(new PocketCode.RenderingText({ scopeId: scopeId, id: v, value: vars[v].value, x: vs.x || 0, y: vs.y || 0, visible: vs.visible || false }));
             }
             return list;
         },
@@ -100,7 +112,7 @@ PocketCode.Model.UserVariableHost = (function () {
             return tmp;
         },
         _valueChangeHandler: function (e) {
-            this._onVariableChange.dispatchEvent({ objectId: this._id, id: e.id, properties: { text: e.target.toString() } });
+            this._onVariableChange.dispatchEvent({ scopeId: this._id, variableId: e.id, value: e.value });//properties: { text: e.target.toString() } });
         },
         showVariableAt: function (id, positionX, positionY) {   //called as sprite.show.. from brick
             if (isNaN(positionX) || isNaN(positionY))
@@ -108,8 +120,9 @@ PocketCode.Model.UserVariableHost = (function () {
 
             var tmp = this.__variablesSimple.getVariableById(id);
             if (tmp) {
-                tmp.showAt(positionX, positionY);
-                this._onVariableChange.dispatchEvent({ objectId: this._id, id: id, properties: { text: tmp.toString(), visible: true, x: positionX, y: positionY } });
+                var viewState = { visible: true, x: positionX, y: positionY };  //important: always create a new object when setting the viewState
+                this._variableViewStates[id] = viewState;
+                this._onVariableChange.dispatchEvent({ scopeId: this._id, variableId: id, value: tmp.value, viewState: viewState });
             }
             else if (this.__variableLookupHost)
                 this.__variableLookupHost.showVariableAt(id, positionX, positionY);
@@ -119,8 +132,9 @@ PocketCode.Model.UserVariableHost = (function () {
         hideVariable: function (id) {    //called as sprite.hide.. from brick
             var tmp = this.__variablesSimple.getVariableById(id);
             if (tmp) {
-                tmp.hide();
-                this._onVariableChange.dispatchEvent({ objectId: this._id, id: id, properties: { visible: false } });
+                var viewState = { visible: false };  //important: always create a new object when setting the viewState
+                this._variableViewStates[id] = viewState;
+                this._onVariableChange.dispatchEvent({ scopeId: this._id, variableId: id, viewState: viewState });
             }
             else if (this.__variableLookupHost)
                 this.__variableLookupHost.hideVariable(id);
@@ -154,6 +168,15 @@ PocketCode.Model.UserVariableHost = (function () {
         _resetVariables: function () {
             this.__variablesSimple.reset();
             this.__variablesList.reset();
+
+            //reset stored viewStates
+            this._variableViewStates = {};
+            //for (var id in this._variableViewStates)
+            //    this._variableViewStates[id] = {
+            //        visible: false,
+            //        x: 0,
+            //        y: 0,
+            //    };
         },
         /* override */
         dispose: function () {

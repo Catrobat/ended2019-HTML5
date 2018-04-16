@@ -31,7 +31,7 @@ PocketCode.Model.Sprite = (function () {
         this._scene = scene;
         this._json = propObject;
         this._onChange = scene.onSpriteUiChange;    //mapping event (defined in scene)
-        this._onVariableChange.addEventListener(new SmartJs.Event.EventListener(function (e) { this._gameEngine.onVariableUiChange.dispatchEvent(e); }, this));
+        this._onVariableChange.addEventListener(new SmartJs.Event.EventListener(function (e) { this._gameEngine.onVariableUiChange.dispatchEvent(e, e.target); }, this));
 
         this._sounds = [];
         this._audioPlayer = new PocketCode.AudioPlayer(gameEngine.soundCollectionId);

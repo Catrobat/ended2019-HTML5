@@ -87,11 +87,23 @@ QUnit.test("UserVariableCollection", function (assert) {
 
 });
 
+QUnit.test("UserVariable", function (assert) {
+
+    var uv = new PocketCode.Model.UserVariable(1, "2");
+    assert.ok(uv instanceof PocketCode.Model.UserVariable, "instance check");
+    assert.ok(uv.onChange instanceof SmartJs.Event.Event, "onChange event accessor");
+
+    assert.ok(uv._id == 1 && uv.name === "2", "properties set correctly: value initialized");
+
+
+    assert.ok(false, "TODO");
+});
+
+
 QUnit.test("UserVariableSimple", function (assert) {
 
     var uv = new PocketCode.Model.UserVariableSimple(1, "2");
-    assert.ok(uv instanceof PocketCode.Model.UserVariableSimple, "instance check");
-    assert.ok(uv.onChange instanceof SmartJs.Event.Event, "onChange event accessor");
+    assert.ok(uv instanceof PocketCode.Model.UserVariableSimple && uv instanceof PocketCode.Model.UserVariable, "instance check");
 
     assert.ok(uv._id == 1 && uv.name === "2" && uv._value === 0, "properties set correctly: value initialized");
     var changeCount = 0;
@@ -155,7 +167,7 @@ QUnit.test("UserVariableSimple", function (assert) {
 QUnit.test("UserVariableList", function (assert) {
 
     var uv = new PocketCode.Model.UserVariableList(1, "2");
-    assert.ok(uv instanceof PocketCode.Model.UserVariableList, "instance check");
+    assert.ok(uv instanceof PocketCode.Model.UserVariableList && uv instanceof PocketCode.Model.UserVariable, "instance check");
     assert.ok(uv.onChange instanceof SmartJs.Event.Event, "onChange event check");
 
     assert.ok(uv._id == 1 && uv.name === "2" && uv.length === 0, "properties set correctly: value initialized");

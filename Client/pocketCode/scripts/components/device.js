@@ -173,11 +173,19 @@ PocketCode.Device = (function () {
                 return unsupported;
             },
         },
-        viewState: {
+        viewState: {    //used for pause/resume scene
             get: function () {
-                return {
-                    vibrate: this._features.VIBRATE.viewState,
-                };
+                var features = this._features,
+                    viewState = {};
+                for (var p in features)
+                    viewState[p] = features[p].viewState;
+                return viewState;
+            },
+            set: function (viewState) {
+                var features = this._features;
+                for (var p in viewState)
+                    features[p].viewState = viewState[p];
+                return viewState;
             },
         },
 
@@ -589,11 +597,15 @@ PocketCode.Device = (function () {
                     break;
                 case PocketCode.UserActionType.TOUCH_MOVE:
                     var e = this._touchEvents.active[id];
+                    if (!e)
+                        return;
                     e.x = x;
                     e.y = y;
                     break;
                 case PocketCode.UserActionType.TOUCH_END:
                     var e = this._touchEvents.active[id];
+                    if (!e)
+                        return;
                     e.active = false;
                     delete this._touchEvents.active[id];
                     break;
@@ -742,19 +754,6 @@ PocketCode.MediaDevice = (function () {
             },
         },
         /* override */
-        viewState: {    //used for pause/resume scene
-            get: function () {
-                var features = this._features;
-                return {
-                    vibrate: features.VIBRATE.viewState,
-                    camera: features.CAMERA.viewState,
-                    faceDetection: features.FACE_DETECTION.viewState,
-                };
-            },
-            set: function (viewState) {
-                //TODO: load viewState when scene is resumed
-            },
-        },
         initialized: {
             get: function () {
                 var features = this._features;

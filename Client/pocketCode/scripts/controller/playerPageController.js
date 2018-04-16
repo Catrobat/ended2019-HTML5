@@ -64,12 +64,11 @@ PocketCode.PlayerPageController = (function () {
         },
         project: {
             set: function (value) {
-                //console.log("setting project");
-                if (!(value instanceof PocketCode.GameEngine))      //TODO: change this as soon as project is available
+                if (!(value instanceof PocketCode.GameEngine))
                     throw new Error('invalid argumenent: project');
                 if (value === this._gameEngine)
                     return;
-                if (this._gameEngine) { //TODO: shouldn't we dispose an existing project before loading another?
+                if (this._gameEngine) {
                     //unbind existing project
                     this._gameEngine.onLoadingProgress.removeEventListener(new SmartJs.Event.EventListener(this._projectLoadingProgressHandler, this));
                     //this._gameEngine.onScenesInitialized.removeEventListener(new SmartJs.Event.EventListener(this._scenesInitializedHandler, this));
@@ -88,7 +87,7 @@ PocketCode.PlayerPageController = (function () {
                 this._gameEngine.onProgramExecuted.addEventListener(new SmartJs.Event.EventListener(this._projectExecutedHandler, this));
                 this._gameEngine.onSpriteUiChange.addEventListener(new SmartJs.Event.EventListener(this._uiUpdateHandler, this));
                 this._gameEngine.onVariableUiChange.addEventListener(new SmartJs.Event.EventListener(this._varUpdateHandler, this));
-                this._gameEngine.onCameraUsageChange.addEventListener(new SmartJs.Event.EventListener(this._cameraChangedHandler, this));
+                //this._gameEngine.onCameraUsageChange.addEventListener(new SmartJs.Event.EventListener(this._cameraChangedHandler, this));
             },
         },
     });
@@ -131,10 +130,10 @@ PocketCode.PlayerPageController = (function () {
             this._view.disabled = false;
         },
         _beforeProjectStartHandler: function (e) {    //on start event dispatched by gameEngine
-            if (e.reinit) {
+            //if (e.reinit) {
             //    //this.initOnLoad();
                 this._playerViewportController.clearViewport();
-            }
+            //}
             this._view.hideStartScreen();
         },
         _sceneChangedHandler: function (e) {    //on start event dispatched by gameEngine
@@ -156,7 +155,7 @@ PocketCode.PlayerPageController = (function () {
             this._playerViewportController.updateSprite(e.id, e.properties);
         },
         _varUpdateHandler: function (e) {
-            this._playerViewportController.updateVariable(e.objectId, e.id, e.properties);
+            this._playerViewportController.updateVariable(e.scopeId, e.variableId, e.value, e.viewState);
         },
         _cameraChangedHandler: function (e) {
             this._playerViewportController.updateCameraUse(e.on, e.src, e.width, e.height, e.transparency, e.orientation);

@@ -70,16 +70,16 @@ PocketCode.merge({
     RenderingText: (function () {
         RenderingText.extends(PocketCode.RenderingItem, false);
 
-        function RenderingText(propObject) {    //{ id: v, text: vars[v].toString(), x: 0, y: 0, visible: false }
+        function RenderingText(propObject) {    //{ scopeId: , id: , value: vars[v].toString(), x: 0, y: 0, visible: false }
             PocketCode.RenderingItem.call(this, propObject);
 
             propObject = propObject || {};
-            this._text = '';
+            this._value = '';
             this._UNDEFINED_TEXT = '';  //add a string to show if text (variable) is undefined/uninitialized
             //^^ this may be a PocketCode.Core.I18nString Object to support i18n
 
-            this._objectId = propObject.objectId;   //var ids not unique due to cloning: the id is the sprite (local scope) or project (global scope) id
-            delete propObject.objectId;
+            this._scopeId = propObject.scopeId;   //var ids not unique due to cloning: the id is the sprite (local scope) or project (global scope) id
+            delete propObject.scopeId;
             this._textAlign = propObject.textAlign || 'start';
             delete propObject.textAlign;
 
@@ -88,9 +88,9 @@ PocketCode.merge({
 
         //properties
         Object.defineProperties(RenderingText.prototype, {
-            objectId: {
+            scopeId: {
                 get: function () {
-                    return this._objectId;
+                    return this._scopeId;
                 },
             },
             width: {
@@ -103,18 +103,18 @@ PocketCode.merge({
                     return this._cacheCanvas.height;
                 },
             },
-            text: {
+            value: {
                 //get: function (value) {
                 //    return this._text;
                 //},
                 set: function (value) {
                     var text = this._UNDEFINED_TEXT.toString();
-                    if (value)
+                    if (value != undefined)
                         text = value.toString();
 
-                    if (this._text == text)
+                    if (this._value == text)
                         return;
-                    this._text = text;
+                    this._value = text;
                     this._redrawCache();
                 },
             },
@@ -155,7 +155,7 @@ PocketCode.merge({
 
                 var ctx = this._cacheCtx,
                     maxLineWidth = this.maxLineWidth,
-                    textLines = this._text.split(/\r?\n/),
+                    textLines = this._value.split(/\r?\n/),
                     line,// = '',
                     metrics;
 
@@ -228,7 +228,7 @@ PocketCode.merge({
                 ctx.textBaseline = 'top';   //'hanging';
                 ctx.font = this.fontStyle + ' ' + this.fontWeight + ' ' + this.fontSize + 'px' + ' ' + this.fontFamily;
 
-                var dir = PocketCode.I18nProvider.getTextDirection(this._text);
+                var dir = PocketCode.I18nProvider.getTextDirection(this._value);
                 canvas.dir = dir;
                 if (dir == PocketCode.Ui.Direction.RTL) {
                     ctx.translate(textBlock.width, 0);
@@ -243,7 +243,7 @@ PocketCode.merge({
             },
             /* override */
             _draw: function (ctx, maxWidth) {
-                if (this._text === '')
+                if (this._value === '')
                     return;
 
                 var canvas = this._cacheCanvas;
@@ -322,7 +322,7 @@ PocketCode.merge({
             text: {
                 //Todo:
                 set: function (value) {
-                    this._textObject.text = value;
+                    this._textObject.value = value;
                     this._redrawCache();
                     //if (!value)
                     //  this._text = this._UNDEFINED_TEXT.toString();
