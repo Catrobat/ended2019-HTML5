@@ -532,9 +532,9 @@ PocketCode.Model.merge({
         function CameraBrick(device, sprite,gameEngine, propObject) {
             PocketCode.Model.BaseBrick.call(this, device, sprite, propObject);
             this._turnOn = parseInt(propObject.selected) == 1;    //{0: off, 1: on}
-            gameEngine.onCanvasSizeUpdated.addEventListener(new SmartJs.Event.EventListener(function(e){
+            /*gameEngine.onCanvasSizeUpdated.addEventListener(new SmartJs.Event.EventListener(function(e){
                 this._device.startCamera(false, e.width, e.height);
-            }.bind(this)))  //call on ctr to notify our device this feature is in use without changing the setting
+            }.bind(this)))  //call on ctr to notify our device this feature is in use without changing the setting*/
         }
 
         CameraBrick.prototype.merge({
