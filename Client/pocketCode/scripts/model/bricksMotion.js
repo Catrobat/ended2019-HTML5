@@ -111,6 +111,49 @@ PocketCode.Model.merge({
         return ChangeYBrick;
     })(),
 
+    RotationSpeedLeftBrick: (function () {
+        RotationSpeedLeftBrick.extends(PocketCode.Model.BaseBrick, false);
+
+        function RotationSpeedLeftBrick(device, sprite, propObject) {
+            PocketCode.Model.BaseBrick.call(this, device, sprite, propObject);
+
+            this._degreesPerSecond = new PocketCode.Formula(device, sprite, propObject.degreesPerSec);
+        }
+
+        RotationSpeedLeftBrick.prototype._execute = function (scope) {
+            var degreesPerSecond = this._degreesPerSecond.calculate(scope);
+
+            if (isNaN(degreesPerSecond))
+                this._return();
+            else
+                this._return(this._sprite.setRotationSpeed(-degreesPerSecond));
+        };
+
+        return RotationSpeedLeftBrick;
+    })(),
+
+    RotationSpeedRightBrick: (function () {
+        RotationSpeedRightBrick.extends(PocketCode.Model.BaseBrick, false);
+
+        function RotationSpeedRightBrick(device, sprite, propObject) {
+            PocketCode.Model.BaseBrick.call(this, device, sprite, propObject);
+
+            this._degreesPerSecond = new PocketCode.Formula(device, sprite, propObject.degreesPerSec);
+        }
+
+        RotationSpeedRightBrick.prototype._execute = function (scope) {
+            var degreesPerSecond = this._degreesPerSecond.calculate(scope);
+
+            if (isNaN(degreesPerSecond))
+                this._return();
+            else
+                this._return(this._sprite.setRotationSpeed(degreesPerSecond));
+        };
+
+        return RotationSpeedRightBrick;
+    })(),
+
+
     SetRotationStyleBrick: (function () {
         SetRotationStyleBrick.extends(PocketCode.Model.BaseBrick, false);
 
@@ -231,7 +274,7 @@ PocketCode.Model.merge({
             if (isNaN(val))
                 this._return();
             else
-                this._return(this._sprite.turnLeft(val));
+                this._return(this._sprite.rotate(-val));
         };
 
         return TurnLeftBrick;
@@ -251,7 +294,7 @@ PocketCode.Model.merge({
             if (isNaN(val))
                 this._return();
             else
-                this._return(this._sprite.turnRight(val));
+                this._return(this._sprite.rotate(val));
         };
 
         return TurnRightBrick;
@@ -287,7 +330,7 @@ PocketCode.Model.merge({
         }
 
         SetDirectionToBrick.prototype._execute = function () {
-            this._return(this._sprite.SetDirectionTo(this._spriteId));
+            this._return(this._sprite.setDirectionTo(this._spriteId));
         };
 
         return SetDirectionToBrick;
@@ -382,8 +425,8 @@ PocketCode.Model.merge({
                     po = pos[id];
                     //if (po.paused) {
                     //    po.paused = false;
-                        if (po.animation)
-                            po.animation.resume();
+                    if (po.animation)
+                        po.animation.resume();
                     //}
                 }
                 PocketCode.Model.ThreadedBrick.prototype.resume.call(this);
@@ -528,48 +571,6 @@ PocketCode.Model.merge({
         return SetVelocityBrick;
     })(),
 
-    RotationSpeedLeftBrick: (function () {
-        RotationSpeedLeftBrick.extends(PocketCode.Model.BaseBrick, false);
-
-        function RotationSpeedLeftBrick(device, sprite, propObject) {
-            PocketCode.Model.BaseBrick.call(this, device, sprite, propObject);
-
-            this._degreesPerSecond = new PocketCode.Formula(device, sprite, propObject.degreesPerSec);
-        }
-
-        RotationSpeedLeftBrick.prototype._execute = function (scope) {
-            var degreesPerSecond = this._degreesPerSecond.calculate(scope);
-
-            if (!isNaN(degreesPerSecond))
-                this._sprite.turnNDegreePerSecond = -degreesPerSecond;
-            
-            this._return();
-        };
-
-        return RotationSpeedLeftBrick;
-    })(),
-
-    RotationSpeedRightBrick: (function () {
-        RotationSpeedRightBrick.extends(PocketCode.Model.BaseBrick, false);
-
-        function RotationSpeedRightBrick(device, sprite, propObject) {
-            PocketCode.Model.BaseBrick.call(this, device, sprite, propObject);
-
-            this._degreesPerSecond = new PocketCode.Formula(device, sprite, propObject.degreesPerSec);
-        }
-
-        RotationSpeedRightBrick.prototype._execute = function (scope) {
-            var degreesPerSecond = this._degreesPerSecond.calculate(scope);
-
-            if (!isNaN(degreesPerSecond))
-                this._sprite.turnNDegreePerSecond = degreesPerSecond;
-            
-            this._return();
-        };
-
-        return RotationSpeedRightBrick;
-    })(),
-
     SetGravityBrick: (function () {
         SetGravityBrick.extends(PocketCode.Model.BaseBrick, false);
 
@@ -587,7 +588,7 @@ PocketCode.Model.merge({
                     y = this._y.calculate(scope);
                 if (!isNaN(x) || !isNaN(y))
                     this._scene.setGravity(x, y);
-                
+
                 this._return();
             },
             dispose: function () {
@@ -633,7 +634,7 @@ PocketCode.Model.merge({
 
             if (!isNaN(bounceFactor))
                 this._sprite.bounceFactor = bounceFactor;
-            
+
             this._return();
         };
 
@@ -653,7 +654,7 @@ PocketCode.Model.merge({
             var friction = this._friction.calculate(scope);
             if (!isNaN(friction))
                 this._sprite.friction = friction;
-            
+
             this._return();
         };
 

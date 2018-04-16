@@ -24,6 +24,10 @@ PocketCode.Ui.PlayerViewportView = (function () {
         this._canvas = new PocketCode.Ui.Canvas();
         this._appendChild(this._canvas);
 
+        //rendering
+        this._redrawRequired = false;
+        SmartJs.AnimationFrame.addEventListener(new SmartJs.Event.EventListener(this._redrawCanvas, this));
+
         //TODO: check if handling is necessary twice
         //this.onResize.addEventListener(new SmartJs.Event.EventListener(this._updateCanvasSize, this));
         this._onResize.addEventListener(new SmartJs.Event.EventListener(function () {
@@ -257,22 +261,26 @@ PocketCode.Ui.PlayerViewportView = (function () {
         },
         render: function () {
             this._redrawRequired = true;
-            if (this._redrawInProgress)
-                return;
-            //this works because we have already defined the function in sj-animation.js globally
-            this._redrawInProgress = window.requestAnimationFrame(this._redrawCanvas.bind(this));
+            //if (this._redrawInProgress)
+            //    return;
+            ////this works because we have already defined the function in sj-animation.js globally
+            //this._redrawInProgress = window.requestAnimationFrame(this._redrawCanvas.bind(this));
         },
         _redrawCanvas: function () {
+            if (!this._redrawRequired)
+                return;
+
             this._redrawRequired = false;
             this._canvas.render();
-            this._redrawInProgress = false;
-            if (this._redrawRequired)
-                this.render();
+            //this._redrawInProgress = false;
+            //if (this._redrawRequired)
+            //    this.render();
         },
         //clear: function () {
         //    this._canvas.clear();
         //},
         dispose: function () {
+            SmartJs.AnimationFrame.removeEventListener(new SmartJs.Event.EventListener(this._redrawCanvas, this));
             SmartJs.Ui.Window.onResize.removeEventListener(new SmartJs.Event.EventListener(this._windowOrientationChangeHandler, this));
             this.onResize.dispose();
             SmartJs.Ui.Control.prototype.dispose.call(this);

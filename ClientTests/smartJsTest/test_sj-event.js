@@ -31,7 +31,7 @@ QUnit.test("SmartJs.Event.Event", function (assert) {
 				get: function () { return this._divClicked },
 				//value: function () { return this._divClicked }(),
 				//writable: false,
-				enumerable: false,
+				//enumerable: false,
 				configurable: true,
 			},
 		});
@@ -223,7 +223,7 @@ QUnit.test("SmartJs.Event.AsyncEventListener", function (assert) {
 
 	var hdl = function (e) {
 	    assert.ok(true, "async handler 1 called");
-	    assert.ok(e.dispatchedAt < Date.now(), "event including dispatchedAt property");
+	    assert.ok(e.dispatchedAt > Date.now() - 10 && e.dispatchedAt <= Date.now(), "event including dispatchedAt property");
 		done1();
 	};
 	var hdl2 = function (e) {

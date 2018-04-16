@@ -38,6 +38,8 @@ PocketCode.Model.Scene = (function () {
         this._spriteFactory.onSpriteLoaded.addEventListener(new SmartJs.Event.EventListener(this._spriteFactoryOnSpriteLoadedHandler, this));
         this._spriteFactory.onUnsupportedBricksFound.addEventListener(new SmartJs.Event.EventListener(this._spriteFactoryOnUnsupportedBricksFoundHandler, this));
 
+        //this._viewState = {};   //TODO store device settings + get the (global) variables from gameEngine as well
+
         //events
         this._onProgressChange = new SmartJs.Event.Event(this);
         this._onUnsupportedBricksFound = new SmartJs.Event.Event(this);

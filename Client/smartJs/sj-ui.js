@@ -6,7 +6,7 @@
 
 SmartJs.Ui = {};    //user interface namespace
 
-SmartJs.Ui.Window = (function () {  //static class
+SmartJs.Ui._Window = (function () {  //static class
     Window.extends(SmartJs.Core.EventTarget);
 
     //ctr
@@ -169,7 +169,7 @@ SmartJs.Ui.Window = (function () {  //static class
 })();
 
 //static class: constructor override (keeping code coverage enabled)
-SmartJs.Ui.Window = new SmartJs.Ui.Window();
+SmartJs.Ui.Window = new SmartJs.Ui._Window();
 
 
 SmartJs.Ui.merge({

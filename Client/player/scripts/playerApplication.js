@@ -558,5 +558,8 @@ PocketCode.merge({
 
             return Application;
         })(),
+
+        Ui: {},
     },
+
 });

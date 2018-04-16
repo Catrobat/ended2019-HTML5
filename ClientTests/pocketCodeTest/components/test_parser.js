@@ -25,22 +25,24 @@ QUnit.module("components/parser.js");
 
 QUnit.test("FormulaParser: operators", function (assert) {
 
-    assert.throws(function () { PocketCode.FormulaParser.getUiString(plus); }, Error, "ERROR: accessing uiString without providing variable names");
-    assert.throws(function () { PocketCode.FormulaParser.getUiString(plus, ""); }, Error, "ERROR: accessing uiString without providing variable names as object");
+    var testParser = new PocketCode._FormulaParser();  //recreate the static class to avoid side effects in test framework
 
-    assert.throws(function () { PocketCode.FormulaParser.getUiString(plus, {}); }, Error, "ERROR: accessing uiString without providing list names");
-    assert.throws(function () { PocketCode.FormulaParser.getUiString(plus, {}, ""); }, Error, "ERROR: accessing uiString without providing list names as object");
+    assert.throws(function () { testParser.getUiString(plus); }, Error, "ERROR: accessing uiString without providing variable names");
+    assert.throws(function () { testParser.getUiString(plus, ""); }, Error, "ERROR: accessing uiString without providing variable names as object");
 
-    assert.throws(function () { var parser = new PocketCode.FormulaParser(); }, Error, "ERROR: static, no class definition/constructor");
-    assert.throws(function () { PocketCode.FormulaParser instanceof PocketCode.FormulaParser }, Error, "ERROR: static class: no instanceof allowed");
+    assert.throws(function () { testParser.getUiString(plus, {}); }, Error, "ERROR: accessing uiString without providing list names");
+    assert.throws(function () { testParser.getUiString(plus, {}, ""); }, Error, "ERROR: accessing uiString without providing list names as object");
+
+    assert.throws(function () { var parser = new testParser(); }, Error, "ERROR: static, no class definition/constructor");
+    assert.throws(function () { testParser instanceof PocketCode.FormulaParser }, Error, "ERROR: static class: no instanceof allowed");
 
     //disposing without effect on the object
-    var isStatic = PocketCode.FormulaParser._isStatic;
-    PocketCode.FormulaParser.dispose();
-    assert.ok(PocketCode.FormulaParser._isStatic != undefined && PocketCode.FormulaParser._isStatic === isStatic, "dispose: no effect");
+    var isStatic = testParser._isStatic;
+    testParser.dispose();
+    assert.ok(testParser._isStatic != undefined && testParser._isStatic === isStatic, "dispose: no effect");
 
-    assert.notEqual((PocketCode.FormulaParser.parseJson(null)).calculate, undefined, "check created function on null value");
-    assert.equal((PocketCode.FormulaParser.parseJson(null)).calculate(), undefined, "return 'undefined' for null values (json)");
+    assert.notEqual((testParser.parseJson(null)).calculate, undefined, "check created function on null value");
+    assert.equal((testParser.parseJson(null)).calculate(), undefined, "return 'undefined' for null values (json)");
 
     var device = new PocketCode.MediaDevice();
     var gameEngine = new PocketCode.GameEngine();

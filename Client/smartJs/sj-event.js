@@ -3,11 +3,6 @@
 /// <reference path="sj-core.js" />
 'use strict';
 
-
-//https://github.com/kbjr/Events.js
-//see: _helpers/Events
-
-
 SmartJs.Event = {
     Event: (function () {
         Event.extends(SmartJs.Core.Component);

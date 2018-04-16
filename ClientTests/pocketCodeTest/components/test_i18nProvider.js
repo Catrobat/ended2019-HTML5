@@ -25,7 +25,7 @@ QUnit.test("I18nProvider", function (assert) {
     assert.throws(function () { var c = new PocketCode.I18nProvider(); }, Error, "ERROR: static, no class definition/constructor");
     assert.throws(function () { PocketCode.I18nProvider instanceof PocketCode.I18nProvider }, Error, "ERROR: static class: no instanceof allowed");
 
-    var i18n = PocketCode.I18nProvider; //short
+    var i18n = new PocketCode._I18nProvider();   //recreate the static class to avoid side effects in test framework
 
     //init
     assert.ok(i18n.onLanguageChange instanceof SmartJs.Event.Event && i18n.onDirectionChange instanceof SmartJs.Event.Event && i18n.onError instanceof SmartJs.Event.Event, "event getter and type");

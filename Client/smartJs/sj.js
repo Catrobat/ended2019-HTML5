@@ -241,15 +241,15 @@ var SmartJs = {
                 //};
                 var style = box.style;
                 style.position = 'absolute';
-                style.top = '-20px';
-                style.left = '-20px';
+                style.top = '-200px';
+                style.left = '-200px';
                 style.boxSizing = 'border-box';
-                style.border = 'solid 3px black';
-                style.height = '10px';
-                style.width = '10px';
+                style.border = 'solid 30px black';
+                style.height = '100px';
+                style.width = '100px';
 
                 document.body.appendChild(box);
-                var supported = box.offsetHeight == 10 && box.offsetWidth == 10;
+                var supported = box.offsetHeight == 100 && box.offsetWidth == 100;
                 document.body.removeChild(box);
                 box = undefined;
 

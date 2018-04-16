@@ -2,7 +2,7 @@
 'use strict';
 
 //RFC 3066 implementation: as singleton
-PocketCode.I18nProvider = (function (propObject) {
+PocketCode._I18nProvider = (function (propObject) {
 
     function I18nProvider() {
 
@@ -174,4 +174,4 @@ PocketCode.I18nProvider = (function (propObject) {
 })();
 
 //static class: constructor override (keeping code coverage enabled)
-PocketCode.I18nProvider = new PocketCode.I18nProvider();
+PocketCode.I18nProvider = new PocketCode._I18nProvider();
