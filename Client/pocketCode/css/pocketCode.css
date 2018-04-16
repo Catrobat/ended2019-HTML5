@@ -142,8 +142,7 @@
 
 .pc-pageHeader {
     height: 4.8em;
-    border-bottom: solid 1px #385F6E;
-    background-color: #003041;
+    border-bottom: solid 1px;
     /*display: table;
 	*/
     border-spacing: 0;

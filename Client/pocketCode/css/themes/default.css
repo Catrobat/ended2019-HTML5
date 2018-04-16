@@ -78,6 +78,11 @@
     fill: #A5A5A5;
 }
 
+.pc-pageHeader {
+    border-bottom-color: #385F6E;
+    background-color: #003041;
+}
+
 /* page */
 .pc-page {
     font-size: 10px;
