@@ -32,14 +32,14 @@ QUnit.test("DeviceEmulator UI: Expander tests", function (assert) {
     var dom = document.getElementById("qunit-fixture");
     dom.appendChild(deviceEmulator._dom);
 
-    deviceEmulator.dispose();
-    assert.ok(deviceEmulator._disposed, "deviceEmulator disposed");
+    // deviceEmulator.dispose();
+    // assert.ok(deviceEmulator._disposed, "deviceEmulator disposed");
 });
 
 QUnit.test("DeviceEmulator UI: Slider tests", function (assert) {
 
-    var soundmanager = new PocketCode.SoundManager();
-    var device = new PocketCode.DeviceEmulator(soundmanager);
+    var sm = new PocketCode.SoundManager();
+    var device = new PocketCode.DeviceEmulator(sm);
     var deviceEmulator = new PocketCode.Ui.DeviceEmulator(device);
     var accSlider = deviceEmulator._accSlider;
     var maxDegreeSlider = deviceEmulator._maxSlider;
@@ -70,8 +70,8 @@ QUnit.test("DeviceEmulator UI: Slider tests", function (assert) {
 
 QUnit.test("DeviceEmulator UI: image Transformation tests", function (assert) {
 
-    var soundmanager = new PocketCode.SoundManager();
-    var device = new PocketCode.DeviceEmulator(soundmanager);
+    var sm = new PocketCode.SoundManager();
+    var device = new PocketCode.DeviceEmulator(sm);
     var deviceEmulator = new PocketCode.Ui.DeviceEmulator(device);
 
     //imgTransformation test
@@ -79,7 +79,7 @@ QUnit.test("DeviceEmulator UI: image Transformation tests", function (assert) {
 
     var validateSingleKeyLeft = function () {
         deviceEmulator._updateImageTransformation();
-        assert.ok(deviceEmulator._device._keyPress, "image Transformation: key pressed");
+        assert.ok(deviceEmulator._device._keyDownDateTime, "image Transformation: key pressed");
         deviceEmulator._device._keyUp({keyCode: device._keyCode.LEFT});
         deviceEmulator._updateImageTransformation();
         assert.equal(deviceEmulator._device.inclinationX, 0, "reset image Transformation: key released");
@@ -87,4 +87,5 @@ QUnit.test("DeviceEmulator UI: image Transformation tests", function (assert) {
     }
     deviceEmulator._device._keyDown({keyCode: device._keyCode.LEFT});
     setTimeout(validateSingleKeyLeft, 20);
+
 });

@@ -137,70 +137,82 @@ QUnit.test("Device: Touch", function (assert) {
 });
 
 
-// QUnit.test("MediaDevice", function (assert) {
-//
-//     var dev = new PocketCode.MediaDevice();
-//
-//     assert.ok(dev instanceof PocketCode.Device && dev instanceof PocketCode.MediaDevice, "instance check");
+QUnit.test("MediaDevice", function (assert) {
 
-//dev._features.CAMERA.inUse = false;
-//assert.equal(dev.selectedCamera, PocketCode.CameraType.BACK, "selected camera: default selected");
-//assert.ok(dev._features.CAMERA.inUse, "camera inUser: after getter");
-//dev._features.CAMERA.inUse = false;
-//assert.throws(function () { dev.selectedCamera = "OTHER"; }, Error, "ERROR: camera setter: invalid value");
-//assert.notOk(dev._features.CAMERA.inUse, "camera inUser: after invalid setter");
-//dev._features.CAMERA.inUse = false;
-//dev.selectedCamera = PocketCode.CameraType.FRONT;
-//assert.ok(dev._features.CAMERA.inUse, "camera inUser: after setter");
-//assert.equal(dev.selectedCamera, PocketCode.CameraType.FRONT, "selected camera: getter/setter");
+    var dev = new PocketCode.MediaDevice();
 
-//assert.equal(dev.cameraOn, false, "cameraOn: default");
-//dev._features.CAMERA.inUse = false;
-//assert.throws(function () { dev.cameraOn = "OTHER"; }, Error, "ERROR: cameraOn setter: invalid value");
-//assert.notOk(dev._features.CAMERA.inUse, "cameraOn: camera inUser: after invalid setter");
-//dev._features.CAMERA.inUse = false;
-//dev.cameraOn = true;
-//assert.ok(dev._features.CAMERA.inUse, "camera inUser: after setter");
-//assert.ok(dev.cameraOn, "selected camera: getter/setter");
+    assert.ok(dev instanceof PocketCode.Device && dev instanceof PocketCode.MediaDevice, "instance check");
 
-//     dev._features.CAMERA.inUse = false;
-//     assert.ok(typeof dev.faceDetected === 'boolean', "faceDetected getter");
-//     //assert.ok(dev._features.CAMERA.inUse, "camera inUser: after getter");
-//     assert.ok(!isNaN(dev.faceSize), "faceSize getter");
-//     assert.ok(!isNaN(dev.facePositionX), "facePositionX getter");
-//     assert.ok(!isNaN(dev.facePositionY), "facePositionY getter");
-//
-//     assert.ok(false, "TODO");
-// });
+    dev._features.CAMERA.inUse = true;
+    // assert.equal(dev.selectedCamera, PocketCode.CameraType.BACK, "selected camera: default selected");
+    assert.ok(dev._features.CAMERA.inUse, "camera inUser: after getter");
+    dev._features.CAMERA.inUse = false;
+    //assert.equal(dev.selectedCamera,"OTHER","ERROR: camera setter: invalid value");
+    //assert.notOk(dev._features.CAMERA.inUse, "camera inUser: after invalid setter");
+    //dev._features.CAMERA.inUse = false;
+    // dev.selectedCamera = PocketCode.CameraType.FRONT;
+    // assert.ok(dev._features.CAMERA.inUse, "camera inUser: after setter");
+    // assert.equal(dev.selectedCamera, PocketCode.CameraType.FRONT, "selected camera: getter/setter");
+
+    // assert.equal(dev.cameraOn, false, "cameraOn: default");
+    // dev._features.CAMERA.inUse = false;
+    // assert.throws(function () {
+    //     dev.cameraOn = "OTHER";
+    // }, Error, "ERROR: cameraOn setter: invalid value");
+    // assert.notOk(dev._features.CAMERA.inUse, "cameraOn: camera inUser: after invalid setter");
+    // dev._features.CAMERA.inUse = false;
+    // dev.cameraOn = true;
+    // assert.ok(dev._features.CAMERA.inUse, "camera inUser: after setter");
+    // assert.ok(dev.cameraOn, "selected camera: getter/setter");
+
+    // dev._features.CAMERA.inUse = false;
+    // assert.ok(typeof dev.faceDetected === 'boolean', "faceDetected getter");
+    // //assert.ok(dev._features.CAMERA.inUse, "camera inUser: after getter");
+    // assert.ok(!isNaN(dev.faceSize), "faceSize getter");
+    // assert.ok(!isNaN(dev.facePositionX), "facePositionX getter");
+    // assert.ok(!isNaN(dev.facePositionY), "facePositionY getter");
+    //
+    // assert.ok(false, "TODO");
+});
 
 
 QUnit.test("DeviceEmulator", function (assert) {
 
     var sm = new PocketCode.SoundManager();
-    var dev = new PocketCode.DeviceEmulator(sm);
+    var devEm = new PocketCode.DeviceEmulator(sm);
 
-    assert.ok(dev instanceof PocketCode.Device && dev instanceof PocketCode.DeviceEmulator, "instance check");
-    assert.equal(dev.unsupportedFeatureDetected, false, "unsupported feature detected: initial = false");
-    assert.equal(dev.unsupportedFeatures.length, 0, "unsupported features: initial = []");
-    assert.equal(dev.emulationInUse, false, "emulationInUse getter: false on init")
-    assert.ok(!isNaN(dev.inclinationX), "inclinationX getter");
-    assert.ok(!isNaN(dev.inclinationY), "inclinationY getter");
-    assert.equal(dev.emulationInUse, true, "emulationInUse getter: true after inclination in use");
-    assert.ok(!isNaN(dev.inclinationX), "inclinationX getter");
-    assert.ok(!isNaN(dev.inclinationY), "inclinationY getter");
-    assert.equal(dev.emulationInUse, true, "emulationInUse getter: true after inclination in use");
-    assert.equal(dev.unsupportedFeatureDetected, false, "unsupported feature detected: inclination emulation = false");
-    assert.equal(dev.unsupportedFeatures.length, 0, "unsupported features: inclination emulation = []");
-    assert.ok(!isNaN(dev.accelerationX), "accelerationX getter");
-    assert.equal(dev.unsupportedFeatureDetected, true, "unsupported feature detected: acceleration");
-    assert.equal(dev.unsupportedFeatures.length, 1, "unsupported features: acceleration");
-    dev.unsupportedFeatures[0] = "deviceFeatureAccelerationNEW";
-    assert.equal(dev.unsupportedFeatures[0], "lblDeviceAcceleration", "property and access check");
 
+    assert.ok(devEm instanceof PocketCode.Device && devEm instanceof PocketCode.DeviceEmulator, "instance check");
+    assert.equal(devEm.unsupportedFeatureDetected, false, "unsupported feature detected: initial = false");
+    assert.equal(devEm.unsupportedFeatures.length, 0, "unsupported features: initial = []");
+    assert.equal(devEm.emulationInUse, false, "emulationInUse getter: false on init")
+    assert.ok(!isNaN(devEm.inclinationX), "inclinationX getter");
+    assert.ok(!isNaN(devEm.inclinationY), "inclinationY getter");
+    assert.equal(devEm.emulationInUse, true, "emulationInUse getter: true after inclination in use");
+    assert.ok(!isNaN(devEm.inclinationX), "inclinationX getter");
+    assert.ok(!isNaN(devEm.inclinationY), "inclinationY getter");
+    assert.equal(devEm.emulationInUse, true, "emulationInUse getter: true after inclination in use");
+    assert.equal(devEm.unsupportedFeatureDetected, false, "unsupported feature detected: inclination emulation = false");
+    assert.equal(devEm.unsupportedFeatures.length, 0, "unsupported features: inclination emulation = []");
+    assert.ok(!isNaN(devEm.accelerationX), "accelerationX getter");
+    assert.equal(devEm.unsupportedFeatureDetected, true, "unsupported feature detected: acceleration");
+    assert.equal(devEm.unsupportedFeatures.length, 1, "unsupported features: acceleration");
+    devEm.unsupportedFeatures[0] = "deviceFeatureAccelerationNEW";
+    assert.equal(devEm.unsupportedFeatures[0], "lblDeviceAcceleration", "property and access check");
+
+    assert.ok(devEm.timestamp == undefined);
+    devEm._keyDown({keyCode: devEm._keyCode.LEFT});
+    assert.ok(devEm.timestamp != 0);
+    devEm._resetInclination();
+    assert.ok(devEm.timestamp == undefined);
+    devEm._keyDown({keyCode: devEm._keyCode.LEFT});
+    assert.ok(devEm.timestamp != 0);
+    devEm._keyUp({keyCode: devEm._keyCode.LEFT});
+    assert.ok(devEm.timestamp == undefined);
 
     // //dispose
-    // dev.dispose();
-    // assert.equal(dev._disposed, true, "dispose");
+    // devEm.dispose();
+    // assert.equal(devEm._disposed, true, "dispose");
     // assert.notEqual(sm._disposed, true, "sound manager not disposed during dispose");
 
 });
@@ -209,7 +221,6 @@ QUnit.test("DeviceEmulator", function (assert) {
 QUnit.test("DeviceEmulator Key Events Left/Right", function (assert) {
 
     var done = assert.async();
-
     var sm = new PocketCode.SoundManager();
     var devEm = new PocketCode.DeviceEmulator(sm);
 
@@ -399,7 +410,7 @@ QUnit.test("DeviceEmulator Key Events Left/Right", function (assert) {
         }
         devEm.inclinationMinMax = 65;
         devEm._keyDown({keyCode: devEm._keyCode.LEFT});
-        setTimeout(waitForMaxInclination, 5000);
+        setTimeout(waitForMaxInclination, 1500);
     }
 
     function testInclinationMaxLeftAlt() {
@@ -410,7 +421,7 @@ QUnit.test("DeviceEmulator Key Events Left/Right", function (assert) {
             testInclinationMaxRight();
         }
         devEm._keyDown({keyCode: devEm._alternativeKeyCode.LEFT});
-        setTimeout(waitForMaxInclination, 5000);
+        setTimeout(waitForMaxInclination, 1500);
     }
 
     function testInclinationMaxRight() {
@@ -421,7 +432,7 @@ QUnit.test("DeviceEmulator Key Events Left/Right", function (assert) {
             testInclinationMaxRightAlt();
         }
         devEm._keyDown({keyCode: devEm._keyCode.RIGHT});
-        setTimeout(waitForMaxInclination, 5000);
+        setTimeout(waitForMaxInclination, 1500);
     }
 
     function testInclinationMaxRightAlt() {
@@ -429,11 +440,11 @@ QUnit.test("DeviceEmulator Key Events Left/Right", function (assert) {
             var tmpMaxIncl = devEm.inclinationX;
             assert.equal(tmpMaxIncl, -devEm.inclinationMinMaxRange.MAX, "Alternative Right: Max Inclination reached");
             devEm._keyUp({keyCode: devEm._alternativeKeyCode.RIGHT});
+            done();
         }
         devEm._keyDown({keyCode: devEm._alternativeKeyCode.RIGHT});
-        setTimeout(waitForMaxInclination, 5000);
+        setTimeout(waitForMaxInclination, 1500);
         //testDisposed();
-        done();
     }
 
 
@@ -539,7 +550,6 @@ QUnit.test("DeviceEmulator Key Events Up/Down", function (assert) {
     //Up(first) and Down pressed --> up released, reset of inclination
     function testFirstKeyDownUp() {
         var validateFirstKeyDown = function () {
-            devEm._keyDown({keyCode: devEm._keyCode.UP});
             var tmpIncl1 = devEm.inclinationY;
             devEm._keyDown({keyCode: devEm._keyCode.DOWN});
             assert.ok(tmpIncl1 < 0, "up and down key pressed");
@@ -557,7 +567,7 @@ QUnit.test("DeviceEmulator Key Events Up/Down", function (assert) {
                 testFirstKeyDownUpAlt();
             }
         }
-        devEm._keyDown({keyCode: devEm._alternativeKeyCode.UP});
+        devEm._keyDown({keyCode: devEm._keyCode.UP});
         setTimeout(validateFirstKeyDown, 1000);
     }
 
@@ -673,12 +683,12 @@ QUnit.test("DeviceEmulator Key Events Up/Down", function (assert) {
             var tmpMaxIncl = devEm.inclinationY;
             assert.equal(tmpMaxIncl, devEm.inclinationMinMaxRange.MAX, "Alternative Down: Max Inclination reached");
             devEm._keyUp({keyCode: devEm._alternativeKeyCode.DOWN});
+            done();
             //testSpace();
         }
         devEm._keyDown({keyCode: devEm._alternativeKeyCode.DOWN});
         setTimeout(waitForMaxInclination, 5000);
-        done();
-       // testDisposed();
+        // testDisposed();
     }
 
     // function testSpace() {
@@ -704,4 +714,110 @@ QUnit.test("DeviceEmulator Key Events Up/Down", function (assert) {
     // }
 
 });
+QUnit.test("DeviceEmulator Up,Down,Right,Left", function (assert) {
+    var done = assert.async();
+    var sm = new PocketCode.SoundManager();
+    var devEm = new PocketCode.DeviceEmulator(sm);
+//inclination values every press : left +  down +  right -  up -
+//Up(first)key and Right Key
+    var validateSingleKeyUpAndRight = function () {
+        assert.ok(devEm.inclinationX < 0, "inclinationX minus degree");
+        assert.ok(devEm.inclinationY < 0, "inclinationY minus degree");
+        assert.equal(devEm.inclinationY, -devEm.inclinationMinMaxRange.MAX, "inclination Max Value");//-65
+        assert.equal(devEm.inclinationX, -devEm.inclinationMinMaxRange.MAX, "inclination Max Value");//-65
+        devEm._keyUp({keyCode: devEm._keyCode.UP});
+        devEm._keyUp({keyCode: devEm._keyCode.RIGHT});
+        assert.equal(devEm.inclinationY, 0, "Up Key released: no inclination");
+        assert.equal(devEm.inclinationX, 0, "RIGHT Key released: no inclination");
+        goKeyUpAndLeft();
+    }
+    devEm._keyDown({keyCode: devEm._keyCode.UP});
+    devEm._keyDown({keyCode: devEm._keyCode.RIGHT});
+    setTimeout(validateSingleKeyUpAndRight, 1500);
+
+
+    //Up(first)key and Left Key
+    function goKeyUpAndLeft() {
+        var validateSingleKeyUpAndLeft = function () {
+            assert.ok(devEm.inclinationX > 0, "inclinationX plus degree");
+            assert.ok(devEm.inclinationY < 0, "inclinationY minus degree");
+            assert.equal(devEm.inclinationY, -devEm.inclinationMinMaxRange.MAX, "inclination Max Value");//-65
+            assert.equal(devEm.inclinationX, devEm.inclinationMinMaxRange.MAX, "inclination Max Value");//65
+            devEm._keyUp({keyCode: devEm._keyCode.UP});
+            devEm._keyUp({keyCode: devEm._keyCode.LEFT});
+            assert.equal(devEm.inclinationY, 0, "Up Key released: no inclination");
+            assert.equal(devEm.inclinationX, 0, "Right Key released: no inclination");
+            goValidateWholeKey();
+        }
+        devEm._keyDown({keyCode: devEm._keyCode.UP});
+        devEm._keyDown({keyCode: devEm._keyCode.LEFT});
+        setTimeout(validateSingleKeyUpAndLeft, 1500);
+    }
+
+
+    //tried press whole key and released Whole key then turn zero.
+    function goValidateWholeKey() {
+        var validateWholeKey = function () {
+            var holdInclinationX1 = devEm.inclinationX;
+            var holdInclinationY1 = devEm.inclinationY;
+            devEm._keyDown({keyCode: devEm._keyCode.DOWN});
+            devEm._keyDown({keyCode: devEm._keyCode.LEFT});
+            var holdInclinationX2 = devEm.inclinationX;
+            var holdInclinationY2 = devEm.inclinationY;
+            assert.equal(holdInclinationX1, holdInclinationX2, "inclinationX value nothing changed");
+            assert.equal(holdInclinationY1, holdInclinationY2, "inclinationY value nothing changed");
+            devEm._keyUp({keyCode: devEm._keyCode.UP});
+            devEm._keyUp({keyCode: devEm._keyCode.DOWN});
+            devEm._keyUp({keyCode: devEm._keyCode.LEFT});
+            devEm._keyUp({keyCode: devEm._keyCode.RIGHT});
+            assert.ok(devEm.inclinationX == 0, "true");
+            assert.equal(devEm.inclinationX, devEm.inclinationY, "inclination values turn zero");
+            goDownAndLeft();
+        }
+        devEm._keyDown({keyCode: devEm._keyCode.UP});
+        devEm._keyDown({keyCode: devEm._keyCode.RIGHT});
+        setTimeout(validateWholeKey, 300);
+    }
+
+
+    //Down(first)key and left keys pressed after released
+    function goDownAndLeft() {
+        var validateSingleKeyDownAndLeft = function () {
+            assert.ok(devEm.inclinationX > 0, "inclinationX plus degree");
+            assert.ok(devEm.inclinationY > 0, "inclinationY plus degree");
+            assert.equal(devEm.inclinationY, devEm.inclinationMinMaxRange.MAX, "inclination Max Value");//-65
+            assert.equal(devEm.inclinationX, devEm.inclinationMinMaxRange.MAX, "inclination Max Value");//65
+            devEm._keyUp({keyCode: devEm._keyCode.DOWN});
+            devEm._keyUp({keyCode: devEm._keyCode.LEFT});
+            assert.equal(devEm.inclinationY, 0, "Down Key released: no inclination");
+            assert.equal(devEm.inclinationX, 0, "Left Key released: no inclination");
+            goDownAndRight();
+        }
+        devEm._keyDown({keyCode: devEm._keyCode.DOWN});
+        devEm._keyDown({keyCode: devEm._keyCode.LEFT});
+        setTimeout(validateSingleKeyDownAndLeft, 1500);
+    }
+
+    //Down(first)key and left keys pressed after released
+    function goDownAndRight() {
+        var validateSingleKeyDownAndRight = function () {
+            assert.ok(devEm.inclinationX < 0, "inclinationX minus degree");
+            assert.ok(devEm.inclinationY > 0, "inclinationY plus degree");
+            assert.equal(devEm.inclinationY, devEm.inclinationMinMaxRange.MAX, "inclination Max Value");//-65
+            assert.equal(devEm.inclinationX, -devEm.inclinationMinMaxRange.MAX, "inclination Max Value");//65
+            devEm._keyUp({keyCode: devEm._keyCode.DOWN});
+            devEm._keyUp({keyCode: devEm._keyCode.RIGHT});
+            assert.equal(devEm.inclinationY, 0, "Down Key released: no inclination");
+            assert.equal(devEm.inclinationX, 0, "Right Key released: no inclination");
+            done();
+        }
+        devEm._keyDown({keyCode: devEm._keyCode.DOWN});
+        devEm._keyDown({keyCode: devEm._keyCode.RIGHT});
+        setTimeout(validateSingleKeyDownAndRight, 1500);
+    }
+
+});
+
+
+
 
