@@ -17,9 +17,6 @@ QUnit.test("RenderingItem", function (assert) {
     var ri = new PocketCode.RenderingItem({ id: "s01" });
     assert.ok(ri instanceof PocketCode.RenderingItem, "instance check");
 
-    assert.throws(function () { ri = new PocketCode.RenderingItem(); }, Error, "ERROR: cntr call without parameter");
-    assert.throws(function () { ri = new PocketCode.RenderingItem({ visible: true }); }, Error, "ERROR: cntr call without id");
-
     assert.ok(ri._id == "s01" && ri.x == 0.0 && ri.y == 0.0 && ri.visible == true, "cntr default args check");
     ri = new PocketCode.RenderingItem({ id: "s02", x: 10, y: 20, visible: false });
     assert.ok(ri._id == "s02" && ri.x == 10.0 && ri.y == 20.0 && ri.visible == false, "cntr args check");
@@ -34,7 +31,13 @@ QUnit.test("RenderingItem", function (assert) {
     assert.equal(ri.visible, true, "visible getter/setter");
 
     //draw
-    assert.throws(function () { ri.draw(); }, Error, "ERROR: calling draw() on base class");
+    try{
+        ri.draw();
+        assert.ok(true, "calling draw() on empty cache");
+    }
+    catch(e){
+        assert.ok(false, "calling draw() on empty cache");
+    }
     ri.visible = false;
 
     var called = 0, context;
@@ -161,6 +164,16 @@ QUnit.test("RenderingText", function (assert) {
     var top = Math.round(Math.sin(img.tl.angle) * img.tl.length),
         bottom = Math.round(Math.sin(img.bl.angle) * img.bl.length);
     assert.ok(Math.abs(top - bottom) <= 32, "rendering Text line height: based on screenshot (2016-07-11)");
+
+});
+
+
+QUnit.test("RenderingBubble", function (assert) {
+
+    var rb = new PocketCode.RenderingBubble({ id: "s01" });
+    assert.ok(rb instanceof PocketCode.RenderingBubble && rb instanceof PocketCode.RenderingItem, "instance check");
+
+    assert.ok(false, "TODO");
 
 });
 
@@ -705,17 +718,5 @@ QUnit.test("RenderingSprite", function (assert) {
         canvas.width = 80;
         canvas.height = 40;
     };
-
-});
-
-
-QUnit.test("RenderingBubble", function (assert) {
-
-    var rb = new PocketCode.RenderingBubble({ id: "s01" });
-    assert.ok(rb instanceof PocketCode.RenderingBubble && rb instanceof PocketCode.RenderingText, "instance check");
-
-    assert.throws(function () { new PocketCode.RenderingBubble(); }, Error, 'fail on missing constructor argument');
-
-    assert.ok(false, "TODO");
 
 });

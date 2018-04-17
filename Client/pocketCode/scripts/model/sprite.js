@@ -58,7 +58,7 @@ PocketCode.Model.Sprite = (function () {
         this._brightness = 100.0;
         this._colorEffect = 0.0;
 
-        this._bubbleVisible = false;
+        this._currentBubbleType = undefined;
 
         //pen
         this._penDown = false;
@@ -456,7 +456,7 @@ PocketCode.Model.Sprite = (function () {
                         properties.penY = this._positionY;
                     }
                     //add boundaries for bubbles if visible and roation has changed
-                    if (properties.rotation != undefined && this._bubbleVisible) {
+                    if (properties.rotation != undefined && this._currentBubbleType) {
                         var boundary = { top: 0, right: 0, bottom: 0, left: 0 };
                         if (this._currentLook && this._transparency < 100.0) {
                             var rotationCW = this.rotationStyle === PocketCode.RotationStyle.ALL_AROUND ? this._direction - 90.0 : 0.0,
@@ -590,7 +590,7 @@ PocketCode.Model.Sprite = (function () {
                 style = PocketCode.RotationStyle;
             this._direction = new_d;
 
-            if (this._rotationStyle ==style.DO_NOT_ROTATE)  //rotation == 0.0
+            if (this._rotationStyle == style.DO_NOT_ROTATE)  //rotation == 0.0
                 return false;
             else if (this._rotationStyle == style.LEFT_TO_RIGHT) {
                 if (previous_d < 0.0 && new_d >= 0.0 || previous_d >= 0.0 && new_d < 0.0)   //flipXChanged
@@ -622,7 +622,7 @@ PocketCode.Model.Sprite = (function () {
                 style = PocketCode.RotationStyle;;
             this._rotation.angle = degree;  //updates _direction
 
-            if (this._rotationStyle == style.DO_NOT_ROTATE || 
+            if (this._rotationStyle == style.DO_NOT_ROTATE ||
                 this._rotationStyle == style.LEFT_TO_RIGHT && (previous < 0.0 && this._direction < 0.0 || previous >= 0.0 && this._direction >= 0.0) ||
                 previous == this._direction)
                 return false;
@@ -832,12 +832,12 @@ PocketCode.Model.Sprite = (function () {
             });
         },
         hide: function () {
-            if (!this._visible && !this._bubbleVisible)
+            if (!this._visible/* && !this._currentBubbleType*/)
                 return false;
 
             this._visible = false;
-            this._bubbleVisible = false;
-            return this._triggerOnChange({ visible: false, bubble: { visible: false } });
+            //this._currentBubbleType = false;
+            return this._triggerOnChange({ visible: false });//, bubble: { visible: false } });
         },
         show: function () {
             if (this._visible)
@@ -1213,9 +1213,7 @@ PocketCode.Model.Sprite = (function () {
         },
 
         showBubble: function (type, text) {
-            //TODO validation: PocketCode.Ui.BubbleType.SPEECH/THINK
-            //console.log("show");
-            this._bubbleVisible = true;
+            this._currentBubbleType = type;
             var boundary = { top: 0, right: 0, bottom: 0, left: 0 };
             if (this._currentLook && this._transparency < 100.0) {
                 var rotationCW = this.rotationStyle === PocketCode.RotationStyle.ALL_AROUND ? this._direction - 90.0 : 0.0,
@@ -1224,12 +1222,10 @@ PocketCode.Model.Sprite = (function () {
             }
             return this._triggerOnChange({ boundary: boundary, bubble: { type: type, text: text, visible: true, screenSize: this._scene.screenSize } });
         },
-        hideBubble: function (type) {
-            //TODO validation: PocketCode.Ui.BubbleType.SPEECH/THINK
-            this._bubbleVisible = false;
+        hideBubble: function () {
+            this._currentBubbleType = undefined;
             return this._triggerOnChange({ bubble: { visible: false } });
         },
-
         clone: function (device, broadcastMgr) {
             if (!this._spriteFactory)
                 this._spriteFactory = new PocketCode.SpriteFactory(device, this._gameEngine);
@@ -1312,7 +1308,7 @@ PocketCode.Model.merge({
                 throw new Error('clone needs a defnition object to merge paroperties from original sprite');
 
             this._id = SmartJs.getNewId();
-            
+
             //looks: a sprite doesn't always have a look
             if (jsonSprite.looks != undefined)
                 this.looks = jsonSprite.looks;
@@ -1394,16 +1390,16 @@ PocketCode.Model.merge({
 
                     return this._handleDelete();
                 }
-        //        //this._gameEngine = undefined;   //make sure the game engine is not disposed
-        //        //this._scene = undefined;        //make sure the scene is not disposed
-        //        //this._onChange = undefined;     //make sure the scene event is not disposed (shared event)
-        //        //var script,
-        //        //    scripts = this._scripts;
-        //        //for (var i = 0, l = scripts.length; i < l; i++) {  //remove handlers
-        //        //    script = scripts[i];
-        //        //    if (script.onExecuted)  //supported by all (root container) scripts
-        //        //        script.onExecuted.removeEventListener(new SmartJs.Event.EventListener(this._checkSpriteExecutionState, this));
-        //        //}
+                //        //this._gameEngine = undefined;   //make sure the game engine is not disposed
+                //        //this._scene = undefined;        //make sure the scene is not disposed
+                //        //this._onChange = undefined;     //make sure the scene event is not disposed (shared event)
+                //        //var script,
+                //        //    scripts = this._scripts;
+                //        //for (var i = 0, l = scripts.length; i < l; i++) {  //remove handlers
+                //        //    script = scripts[i];
+                //        //    if (script.onExecuted)  //supported by all (root container) scripts
+                //        //        script.onExecuted.removeEventListener(new SmartJs.Event.EventListener(this._checkSpriteExecutionState, this));
+                //        //}
 
                 //call super
                 PocketCode.Model.Sprite.prototype.dispose.call(this);

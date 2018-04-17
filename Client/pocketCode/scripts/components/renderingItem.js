@@ -15,6 +15,7 @@ PocketCode.RenderingItem = (function () {
         this.visible = propObject.visible != undefined ? propObject.visible : true;
 
         this._cacheCanvas = document.createElement('canvas');
+        this._cacheCanvas.height = this._cacheCanvas.width = 0; //empty
         this._cacheCtx = this._cacheCanvas.getContext('2d');
     }
 
@@ -51,7 +52,7 @@ PocketCode.RenderingItem = (function () {
             if (!canvas)    //disposed
                 return;
             var width = canvas.width,
-            height = canvas.height;
+                height = canvas.height;
             if (width == 0 || height == 0)
                 return; //drawing a canvas with size = 0 will throw an error
 
@@ -69,7 +70,6 @@ PocketCode.RenderingItem = (function () {
     return RenderingItem;
 })();
 
-
 PocketCode.merge({
 
     RenderingText: (function () {
@@ -81,10 +81,11 @@ PocketCode.merge({
 
             propObject = propObject || {};
             this._value = undefined;
+            //this._maxLineWidth = 30;//TODO undefined;
 
             this._scopeId = propObject.scopeId;   //var ids not unique due to cloning: the id is the sprite (local scope) or project (global scope) id
             delete propObject.scopeId;
-            this._textAlign = propObject.textAlign || 'start';
+            this._textAlign = propObject.textAlign || 'left';
             delete propObject.textAlign;
 
             //event
@@ -175,8 +176,11 @@ PocketCode.merge({
                 writable: true,
             },
             maxLineWidth: {
-                value: undefined,
-                writable: true,
+                set: function (value) {
+                    this._maxLineWidth = value;
+                    if (this.width > value)
+                        this._redrawCache();
+                },
             },
         });
 
@@ -190,20 +194,16 @@ PocketCode.merge({
                 };
 
                 var ctx = this._cacheCtx,
-                    maxLineWidth = this.maxLineWidth,
+                    maxLineWidth = this._maxLineWidth,
                     textLines = this._text.split(/\r?\n/),
-                    line,// = '',
+                    line,
                     metrics;
-
-                //ctx.save();
-                ctx.textBaseline = 'top';   //'hanging';
-                ctx.font = this.fontStyle + ' ' + this.fontWeight + ' ' + this.fontSize + 'px' + ' ' + this.fontFamily;
 
                 if (!maxLineWidth) {
                     for (var i = 0, l = textLines.length; i < l; i++) {
                         line = textLines[i].trim();
                         metrics = ctx.measureText(line);
-                        block.lines.push(line);
+                        block.lines.push({ text: line, width: metrics.width });
                         block.width = Math.max(block.width, metrics.width);
                     }
                 }
@@ -245,35 +245,53 @@ PocketCode.merge({
                     }
                 }
 
-                //ctx.restore();
                 block.width = Math.ceil(block.width);
                 block.height = Math.ceil(block.lines.length * this.lineHeight);// - (this.lineHeight - this.fontSize) * 0.5);
                 return block;
             },
             _redrawCache: function () {
                 var canvas = this._cacheCanvas,
-                    ctx = this._cacheCtx;
+                    ctx = this._cacheCtx,
+                    dir = PocketCode.I18nProvider.getTextDirection(this._text),
+                    rtl = (dir == PocketCode.Ui.Direction.RTL),
+                    translation = 0,
+                    font = this.fontStyle + ' ' + this.fontWeight + ' ' + this.fontSize + 'px' + ' ' + this.fontFamily;
 
-                var textBlock = this._getTextBlock(); //{ width: ?, height: ?, lines: [] }
-                canvas.width = textBlock.width;
+                ctx.textBaseline = 'top';
+                ctx.font = font;
+                ctx.textAlign = this._textAlign;
+                var textBlock = this._getTextBlock();
+                canvas.width = textBlock.width;//resize sets ctx to default
                 canvas.height = textBlock.height;
 
                 ctx.save();
-                ctx.textBaseline = 'top';   //'hanging';
-                ctx.font = this.fontStyle + ' ' + this.fontWeight + ' ' + this.fontSize + 'px' + ' ' + this.fontFamily;
+                //apply settings again (due to canvas resize)
+                ctx.textBaseline = 'top';
+                ctx.font = font;
+                ctx.textAlign = this._textAlign;
 
-                var dir = PocketCode.I18nProvider.getTextDirection(this._text);
-                canvas.dir = dir;
-                if (dir == PocketCode.Ui.Direction.RTL) {
-                    ctx.translate(textBlock.width, 0);
-                    ctx.textAlign = 'end';
-                }
+                //text may be centered (for bubbles)
+                if (this._textAlign == 'center')
+                    ctx.translate(textBlock.width * 0.5, 0);
 
                 //draw
                 var textLines = textBlock.lines,
-                    yOffset;
-                for (var i = 0, l = textLines.length; i < l; i++)
-                    ctx.fillText(textLines[i], 0, this.lineHeight * i);
+                    line,
+                    text,
+                    offset = 0;
+                for (var i = 0, l = textLines.length; i < l; i++) {
+                    line = textLines[i];
+                    if (rtl) {
+                        //please notice: as our cache is not part of the DOM, rendering texts correctly is tricky
+                        text = '\u202E' + line.text;    //force to RTL text
+                        if (this._textAlign != 'center')
+                            offset = textBlock.width - line.width;  //make sure all texts are visible and aligned correctly
+                    }
+                    else
+                        text = line.text;
+
+                    ctx.fillText(text, offset, this.lineHeight * i);
+                }
                 ctx.restore();
                 this._onCacheUpdate.dispatchEvent({ size: { width: textBlock.width, height: textBlock.height } });
             },
@@ -286,18 +304,6 @@ PocketCode.merge({
                 PocketCode.I18nProvider.onLanguageChange.removeEventListener(new SmartJs.Event.EventListener(this._onLanguageChangeHandler, this));
                 PocketCode.RenderingItem.prototype.dispose.call(this);
             }
-            //_draw: function (ctx, maxWidth) {
-            //    if (this._text === '')
-            //        return;
-
-            //    PocketCode.RenderingItem.prototype._draw.call(this, ctx);
-            //var canvas = this._cacheCanvas;
-            //ctx.save();
-            //ctx.translate(this.x, -this.y);
-
-            //ctx.drawImage(canvas, 0, 0, canvas.width, canvas.height);
-            //ctx.restore();
-            //},
         });
 
         return RenderingText;
@@ -311,12 +317,10 @@ PocketCode.merge({
     },
 
     RenderingBubble: (function () {
-        RenderingBubble.extends(PocketCode.RenderingItem/*, false*/);
+        RenderingBubble.extends(PocketCode.RenderingItem);
 
         function RenderingBubble() {
-            //PocketCode.RenderingItem.call(this);
 
-            //definition
             this._lineWidth = 6,
             this._strokeStyle = '#a0a0a0',
             this._fillStyle = '#ffffff';
@@ -327,13 +331,8 @@ PocketCode.merge({
             this._minHeight = 50;
             this._minWidth = 75;
 
-            this._textSize = {
-                height: this._minHeight,
-                width: this._minWidth,
-            };
-
             this._textObject = new PocketCode.RenderingText({ fontWeight: 'normal', fontSize: 31, lineHeight: 36, textAlign: 'center', maxLineWidth: 270 });
-            this._textObject.onCacheUpdate.addEventListener(new SmartJs.Event.EventListener(this._textUpdateHandler, this));
+            this._textObject.onCacheUpdate.addEventListener(new SmartJs.Event.EventListener(this._redrawCache, this));
             //propObject = propObject || {};
             this._offsetX = 0;
             this._offsetY = 0;
@@ -445,13 +444,8 @@ PocketCode.merge({
 
         //methods
         RenderingBubble.prototype.merge({
-            _textUpdateHandler: function (e) {
-                this._textSize = e.size;
-                this._redrawCache();
-            },
             _redrawCache: function () {
-                //Todo: type Abfrage und think oder speak aufrufen
-                //var bType = this.bubbleType.get();
+
                 var type = this._type;
                 //var bX = this.bubblePositionX.get();
                 //var bY = this.bubblePositionY.get();
@@ -463,8 +457,8 @@ PocketCode.merge({
                     this._drawThinkBubble();
                 }
 
-                //Todo: leere Bubbles werden nicht angezeigt
-                //      bricksLook.js behandelt das
+                //Todo: empty bubbles not shown: this._textObject.width == 0 || this._textObject.height == 0
+                //      bricksLook.js handled in bubble bricks
 
 
             },
@@ -477,9 +471,9 @@ PocketCode.merge({
                     canvas = this._cacheCanvas,
                     ctx = this._cacheCtx;
 
-                var ts = this._textSize;
-                var bubbleHeight = ts.height;
-                var bubbleWidth = ts.width;
+                var to = this._textObject,
+                    bubbleHeight = to.height,
+                    bubbleWidth = to.width;
 
                 var height = Math.max(minHeight, bubbleHeight);
                 var width = Math.max(minWidth, bubbleWidth);
@@ -610,9 +604,9 @@ PocketCode.merge({
                     canvas = this._cacheCanvas,
                     ctx = this._cacheCtx;
 
-                var ts = this._textSize;
-                var bubbleHeight = ts.height;
-                var bubbleWidth = ts.width;
+                var to = this._textObject,
+                    bubbleHeight = to.height,
+                    bubbleWidth = to.width;
 
                 var height = Math.max(minHeight, bubbleHeight);
                 var width = Math.max(minWidth, bubbleWidth);

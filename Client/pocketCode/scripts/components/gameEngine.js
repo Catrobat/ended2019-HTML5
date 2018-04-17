@@ -372,7 +372,7 @@ PocketCode.GameEngine = (function () {
             //if reinit: all sprites properties have to be set to their default values (on restart): default true
             //currentScene = this._currentScene = this._startScene;
 
-            if (reinit || this.executionState !== PocketCode.ExecutionState.INITIALIZED) {
+            if (reinit || this.executionState !== PocketCode.ExecutionState.INITIALIZED) {  //check if terminated and restarted
                 this._device.reset();
                 this._resetVariables();  //global
                 this._viewStates = {};
@@ -391,7 +391,7 @@ PocketCode.GameEngine = (function () {
             //reinitSprites = reinitSprites || true;  //default = true
             this.stopProject();
             //this.projectTimer.stop();
-            window.setTimeout(this.runProject.bind(this, true), 100);   //some time needed to update callstack (running methods), as this method is called on a system (=click) event
+            window.setTimeout(this.runProject.bind(this, true), 50);   //some time needed to update callstack (running methods), as this method is called on a system (=click) event
         },
         pauseProject: function () {
             if (this._device)
