@@ -266,6 +266,7 @@ PocketCode.merge({
                 canvas.dir = dir;
                 if (dir == PocketCode.Ui.Direction.RTL) {
                     ctx.translate(textBlock.width, 0);
+                    ctx.textAlign = 'end';
                 }
 
                 //draw
