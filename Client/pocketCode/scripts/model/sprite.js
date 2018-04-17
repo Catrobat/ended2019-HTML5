@@ -1386,10 +1386,14 @@ PocketCode.Model.merge({
                 //alert('make sure clone is disposed and removed from lists including onExecuted handling');  //TODO
                 this._onReadyToDispose.dispatchEvent({ cloneId: this._id });
             },
-        //    /* override */
-        //    dispose: function () {
-        //        this.stopAllScripts();
+            /* override */
+            dispose: function () {
+                if (this._onReadyToDispose.listenersAttached) {
+                    this.stopAllScripts();
+                    this.hide();
 
+                    return this._handleDelete();
+                }
         //        //this._gameEngine = undefined;   //make sure the game engine is not disposed
         //        //this._scene = undefined;        //make sure the scene is not disposed
         //        //this._onChange = undefined;     //make sure the scene event is not disposed (shared event)
@@ -1401,9 +1405,9 @@ PocketCode.Model.merge({
         //        //        script.onExecuted.removeEventListener(new SmartJs.Event.EventListener(this._checkSpriteExecutionState, this));
         //        //}
 
-        //        //call super
-        //        PocketCode.Model.Sprite.prototype.dispose.call(this);
-        //    },
+                //call super
+                PocketCode.Model.Sprite.prototype.dispose.call(this);
+            },
         });
 
         return SpriteClone;

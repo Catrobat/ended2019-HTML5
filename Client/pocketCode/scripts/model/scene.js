@@ -560,6 +560,7 @@ PocketCode.Model.Scene = (function () {
             this.stop();
             //do not dispose device: handled by game engine
             this._device = undefined;
+            this._gameEngine = undefined;
 
             if (this._background)
                 this._background.onExecuted.removeEventListener(new SmartJs.Event.EventListener(this._checkForOnExecuted, this));
@@ -570,8 +571,7 @@ PocketCode.Model.Scene = (function () {
                 sprites[i].onExecuted.removeEventListener(new SmartJs.Event.EventListener(this._checkForOnExecuted, this));
             }
 
-            //call super
-            PocketCode.Model.UserVariableHost.prototype.dispose.call(this);
+            SmartJs.Core.Component.prototype.dispose.call(this);    //call super
         },
     });
 

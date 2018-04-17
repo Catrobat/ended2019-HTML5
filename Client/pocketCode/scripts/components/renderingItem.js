@@ -467,15 +467,18 @@ PocketCode.merge({
 
 
             },
-            _drawThinkBubble: function (canvas) {
+            _drawThinkBubble: function () {
 
                 var radius = this._radius,
                     minHeight = this._minHeight,
                     minWidth = this._minWidth,
-                    orientation = this._orientation;
+                    orientation = this._orientation,
+                    canvas = this._cacheCanvas,
+                    ctx = this._cacheCtx;
 
-                var bubbleHeight = canvas.height;
-                var bubbleWidth = canvas.width;
+                var ts = this._textSize;
+                var bubbleHeight = ts.height;
+                var bubbleWidth = ts.width;
 
                 var height = Math.max(minHeight, bubbleHeight);
                 var width = Math.max(minWidth, bubbleWidth);
@@ -487,8 +490,6 @@ PocketCode.merge({
                 if (orientation === PocketCode.BubbleOrientation.LEFT || orientation === PocketCode.BubbleOrientation.RIGHT) {
                     canvas.width = width;
                     canvas.height = height + offsetBottom;
-
-                    var ctx = canvas.getContext('2d');
 
                     if (orientation === PocketCode.BubbleOrientation.RIGHT) {
                         //Spiegeln
@@ -599,16 +600,18 @@ PocketCode.merge({
                     //ctx.fillText();
                 }
             },
-            _drawSpeechBubble: function (canvas) {
+            _drawSpeechBubble: function () {
 
                 var radius = this._radius,
                     minHeight = this._minHeight,
                     minWidth = this._minWidth,
-                    orientation = this._orientation;
+                    orientation = this._orientation,
+                    canvas = this._cacheCanvas,
+                    ctx = this._cacheCtx;
 
-
-                var bubbleHeight = canvas.height;
-                var bubbleWidth = canvas.width;
+                var ts = this._textSize;
+                var bubbleHeight = ts.height;
+                var bubbleWidth = ts.width;
 
                 var height = Math.max(minHeight, bubbleHeight);
                 var width = Math.max(minWidth, bubbleWidth);
@@ -620,8 +623,6 @@ PocketCode.merge({
                 if (orientation === PocketCode.BubbleOrientation.LEFT || orientation === PocketCode.BubbleOrientation.RIGHT) {
                     canvas.width = width;
                     canvas.height = height + offsetBottom;
-
-                    var ctx = canvas.getContext('2d');
 
                     if (orientation === PocketCode.BubbleOrientation.RIGHT) {
                         //Spiegeln

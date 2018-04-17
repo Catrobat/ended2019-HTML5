@@ -198,7 +198,8 @@ PocketCode.merge({
                     PocketCode.LoggingProvider.sendMessage(error, this._currentProjectId);
 
                     //stop gameEngine + loading
-                    this._project.dispose();
+                    if (this._project)
+                        this._project.dispose();
                     this._project = undefined;
                 },
                 _i18nControllerErrorHandler: function (e) {
