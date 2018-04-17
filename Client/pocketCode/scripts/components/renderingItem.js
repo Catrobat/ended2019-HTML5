@@ -81,7 +81,7 @@ PocketCode.merge({
 
             propObject = propObject || {};
             this._value = undefined;
-            //this._maxLineWidth = 30;//TODO undefined;
+            this._maxLineWidth = undefined;
 
             this._scopeId = propObject.scopeId;   //var ids not unique due to cloning: the id is the sprite (local scope) or project (global scope) id
             delete propObject.scopeId;
@@ -209,39 +209,49 @@ PocketCode.merge({
                 }
                 else {  //split lines and words to fit maxLineWidth
                     var words,
-                        testLine = '';
+                        testLine = '',
+                        width;
 
                     for (var i = 0, l = textLines.length; i < l; i++) {
                         line = textLines[i].trim();
-                        if (line.length == 0) { //empty lines
-                            block.lines.push(line);
-                            continue;
-                        }
+                        metrics = ctx.measureText(line),
+                        width = metrics.width;
 
-                        words = line.split(' ');
-                        for (var n = 0, wl = words.length; n < wl; n++) {
-                            testLine += words[n];
-                            metrics = ctx.measureText(testLine);
-                            if (metrics.width < maxLineWidth) {
-                                line = testLine;
-                                testLine += ' ';
-                            }
-                            else if (line == '') {  //word does not fit but line is empty: break word
-                                var chars = Math.floor(maxLineWidth / metrics.width * testLine.length) - 3, //-3 to make sure the resulting word fits
-                                    splitWord = testLine.substr(0, chars);
-                                block.lines.push(splitWord);
-                                metrics = ctx.measureText(splitWord);
-                                block.width = Math.max(block.width, metrics.width);
-                                words[n] = testLine.substring(chars + 1, testLine.length);
-                                n--;
-                                testLine = '';
-                            }
-                            else {
-                                block.lines.push(line);
-                                block.width = Math.max(block.width, metrics.width);
-                                testLine = '';
+                        if (width > maxLineWidth) {//else {  //line.width > maxLineWidth -> split
+                            words = line.split(/\s+/);
+                            line = '';
+                            width = 0;
+                            for (var n = 0, wl = words.length; n < wl; n++) {
+                                testLine += words[n];//.trim();
+                                metrics = ctx.measureText(testLine);
+                                if (metrics.width <= maxLineWidth) {
+                                    width = metrics.width;
+                                    line = testLine;
+                                    testLine += ' ';
+                                }
+                                else if (line == '') {  //word does not fit but line is empty: split word
+                                    var chars = Math.max(1, Math.floor(maxLineWidth / metrics.width * words[n].length * 0.97)), //-3% to make sure the resulting word fits
+                                        splitWord = words[n].substr(0, chars);
+                                    metrics = ctx.measureText(splitWord);
+                                    block.lines.push({ text: splitWord, width: metrics.width });
+                                    block.width = Math.max(block.width, metrics.width);
+                                    words[n] = words[n].substring(chars, testLine.length);  //store remaining chars
+                                    n--;
+                                    testLine = '';
+                                }
+                                else {
+                                    block.lines.push({ text: line, width: width });
+                                    block.width = Math.max(block.width, width);
+                                    n--;
+                                    testLine = line = '';
+                                    //testLine = words[n];
+                                }
                             }
                         }
+                        //add line
+                        block.lines.push({ text: line, width: width });
+                        block.width = Math.max(block.width, width);
+                        testLine = line = '';
                     }
                 }
 
@@ -259,7 +269,7 @@ PocketCode.merge({
 
                 ctx.textBaseline = 'top';
                 ctx.font = font;
-                ctx.textAlign = this._textAlign;
+                ctx.textAlign = 'left'; //always left even if set to 'center'
                 var textBlock = this._getTextBlock();
                 canvas.width = textBlock.width;//resize sets ctx to default
                 canvas.height = textBlock.height;
@@ -268,11 +278,7 @@ PocketCode.merge({
                 //apply settings again (due to canvas resize)
                 ctx.textBaseline = 'top';
                 ctx.font = font;
-                ctx.textAlign = this._textAlign;
-
-                //text may be centered (for bubbles)
-                if (this._textAlign == 'center')
-                    ctx.translate(textBlock.width * 0.5, 0);
+                ctx.textAlign = 'left';
 
                 //draw
                 var textLines = textBlock.lines,
@@ -289,6 +295,10 @@ PocketCode.merge({
                     }
                     else
                         text = line.text;
+
+                    //text may be centered (for bubbles)
+                    if (this._textAlign == 'center')
+                        offset = (textBlock.width - line.width) * 0.5;  //works much better (RTL) than ctx.translate(textBlock.width * 0.5, 0);
 
                     ctx.fillText(text, offset, this.lineHeight * i);
                 }

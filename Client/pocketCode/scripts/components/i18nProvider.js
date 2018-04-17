@@ -42,7 +42,7 @@ PocketCode._I18nProvider = (function (propObject) {
             //new: add new loc strings here until they are included in crowdin
             "variableTrue": "True",
             "variableFalse": "False",
-            "variableInfinity": "Infinty",
+            "variableInfinity": "Infinity",
         };
 
         this._onLanguageChange = new SmartJs.Event.Event(this);
