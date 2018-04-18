@@ -15,8 +15,8 @@ QUnit.test("WhenProgramStartBrick", function (assert) {
     var gameEngine = new PocketCode.GameEngine();
     gameEngine._collisionManager = new PocketCode.CollisionManager(400, 200);  //make sure collisionMrg is initialized before calling an onStart event
     var scene = new PocketCode.Model.Scene(gameEngine, undefined, []);
+    scene._id = "id";
     gameEngine._scenes["id"] = scene;   //necessary to stop scene
-    gameEngine._currentScene = scene; //set internal: tests only
     gameEngine._startScene = scene;
 
     scene._background = new PocketCode.Model.Sprite(gameEngine, scene, { id: "spriteId", name: "spriteName" });  //to avoid error on start

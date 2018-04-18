@@ -68,7 +68,7 @@ PocketCode.Model.merge({
 
                     var event = this._onActionEvents[action];
                     if (!(event instanceof SmartJs.Event.Event))
-                        throw new Error('unrecognized event: check if all events were registered in out parser');
+                        throw new Error('unrecognized event: check if all events were registered in our parser');
                     if (this._actionEvent)
                         this._actionEvent.removeEventListener(new SmartJs.Event.EventListener(this._onActionHandler, this));
 

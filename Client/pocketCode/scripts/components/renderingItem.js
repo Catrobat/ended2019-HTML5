@@ -244,7 +244,6 @@ PocketCode.merge({
                                     block.width = Math.max(block.width, width);
                                     n--;
                                     testLine = line = '';
-                                    //testLine = words[n];
                                 }
                             }
                         }

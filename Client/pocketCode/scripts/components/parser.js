@@ -347,7 +347,7 @@ PocketCode.merge({
                         //if (uiString)
                         formulaString = jsonFormula.value;
                         if (!uiString) {
-                            formulaString = jsonFormula.value.replace(/^0+(?!\.|$)/, '');   //remove leading zeros
+                            formulaString = jsonFormula.value.toString().replace(/^0+(?!\.|$)/, '');   //remove leading zeros
                             type = 'number';    //make sure to validate the data (usually stored as string)
                         }
 

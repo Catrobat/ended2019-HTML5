@@ -758,7 +758,7 @@ QUnit.test("BrickFactory", function (assert) {
     var sprite = new PocketCode.Model.Sprite(gameEngine, scene, { id: "spriteId", name: "spriteName" });
     var minLoopCycleTime = 14;
 
-    var bf = new PocketCode.BrickFactory(device, gameEngine, scene, broadcastMgr, minLoopCycleTime);  //TODO: check loadedCount
+    var bf = new PocketCode.BrickFactory(device, scene, broadcastMgr, minLoopCycleTime);  //TODO: check loadedCount
     assert.ok(bf instanceof PocketCode.BrickFactory, "instance created");
 
     assert.ok(bf._device === device && bf._gameEngine === gameEngine && bf._scene === scene && bf._broadcastMgr === broadcastMgr && bf._minLoopCycleTime === 14, "properties set correctly");
@@ -840,7 +840,7 @@ QUnit.test("BrickFactory", function (assert) {
     var scene = new PocketCode.Model.Scene(gameEngine, undefined, []);
     var sprite = new PocketCode.Model.Sprite(gameEngine, scene, { id: "spriteId", name: "spriteName" });
 
-    var bf = new PocketCode.BrickFactory(device, gameEngine, scene, broadcastMgr, 26);//allBricksProject.header.bricksCount, 26);
+    var bf = new PocketCode.BrickFactory(device, scene, broadcastMgr, 26);//allBricksProject.header.bricksCount, 26);
     assert.ok(bf instanceof PocketCode.BrickFactory, "instance created");
 
     assert.ok(bf._device === device && bf._gameEngine === gameEngine && bf._broadcastMgr === broadcastMgr && bf._minLoopCycleTime === 26, "properties set correctly");

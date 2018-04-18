@@ -230,7 +230,7 @@ QUnit.test("Sprite", function (assert) {
     // ********************* Constructor *********************
 
     var device = new PocketCode.MediaDevice();
-    gameEngine._brickFactory = new PocketCode.BrickFactory(device, gameEngine, gameEngine._broadcastMgr, gameEngine._soundManager, 20);
+    gameEngine._brickFactory = new PocketCode.BrickFactory(device, scene, gameEngine._broadcastMgr, 20);
 
     var jsonProject = JSON.parse(JSON.stringify(projectSounds));
     var jsonSprite = jsonProject.sprites[0];

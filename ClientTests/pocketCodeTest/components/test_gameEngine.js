@@ -16,9 +16,7 @@ QUnit.test("GameEngine", function (assert) {
     assert.ok(gameEngine instanceof PocketCode.GameEngine && gameEngine instanceof SmartJs.Core.Component, "instance check");
     assert.ok(gameEngine.objClassName === "GameEngine", "objClassName check");
 
-    gameEngine._executionState = PocketCode.ExecutionState.RUNNING; //should be stopped
     gameEngine.dispose();
-    assert.equal(gameEngine.executionState, undefined, "gameEngine stopped during dispose- property deleted");
     assert.equal(gameEngine._disposed, true, "disposed completely");
 
     //dispose test: on finished
@@ -53,7 +51,7 @@ QUnit.test("GameEngine", function (assert) {
             imagesMatch = false;
         }
 
-        if(gameEngine._images[testProject.images[i].id._size] !== testProject.images[i]._size /*|| testProject.images[i].imageObject.getAttribute("src") !== gameEngine._images[testProject.images[i]._id].url*/){
+        if (gameEngine._images[testProject.images[i].id._size] !== testProject.images[i]._size /*|| testProject.images[i].imageObject.getAttribute("src") !== gameEngine._images[testProject.images[i]._id].url*/) {
             imageObjectsCreatedCorrectly = false;
         }
     }
@@ -109,7 +107,9 @@ QUnit.test("GameEngine: variable UI updates", function (assert) {
 
     var gameEngine = new PocketCode.GameEngine();
     var scene = new PocketCode.Model.Scene(gameEngine, undefined, []);
-    gameEngine.__currentScene = scene;
+    scene._id = "id";
+    gameEngine._scenes["id"] = scene;
+    gameEngine._startScene = scene;
     assert.ok(gameEngine.onVariableUiChange instanceof SmartJs.Event.Event, "onVariableUiChange: event check");
 
     gameEngine.renderingTexts = [];
@@ -118,9 +118,9 @@ QUnit.test("GameEngine: variable UI updates", function (assert) {
 
     gameEngine._variables = [{ id: "g1", name: "var1", }, { id: "g2", name: "var2", }, ];   //global
 
-    assert.equal(gameEngine._executionState, PocketCode.ExecutionState.INITIALIZED, "Created gameEngine: status initialized");
+    assert.equal(gameEngine.executionState, PocketCode.ExecutionState.INITIALIZED, "Created gameEngine: status initialized");
     gameEngine._resourcesLoaded = false;
-    assert.throws(gameEngine.runProject(), Error, "ERROR: Program not ready");
+    assert.throws(function () { gameEngine.runProject() }, Error, "ERROR: Program not ready");
     gameEngine._resourcesLoaded = true; //project loaded
     gameEngine._spritesLoaded = true;
 
@@ -132,45 +132,46 @@ QUnit.test("GameEngine: variable UI updates", function (assert) {
 
     //simulate project loaded for tests
     gameEngine._resourcesLoaded = true;
-    gameEngine._spritesLoaded = true;
+    gameEngine._scenesLoaded = true;
+    gameEngine.projectReady = true;
 
 
     gameEngine.runProject();
     programStartEvent++;
     assert.equal(programStartEvent, 1, "Called onProgramStart");
 
-    gameEngine._executionState = 1;
-    assert.equal(gameEngine._executionState, PocketCode.ExecutionState.RUNNING, "Set programs execution state to RUNNING on start");
+    //gameEngine.executionState = 1;
+    assert.equal(gameEngine.executionState, PocketCode.ExecutionState.RUNNING, "Set programs execution state to RUNNING on start");
 
     gameEngine.runProject();
     assert.equal(programStartEvent, 1, "Did not attempt to start running gameEngine");
 
     gameEngine.pauseProject();
-    gameEngine._executionState = 3;
+    //gameEngine.executionState = 3;
 
-    assert.equal(gameEngine._executionState, PocketCode.ExecutionState.PAUSED, "Set programs execution state to PAUSED on calling pause");
+    assert.equal(gameEngine.executionState, PocketCode.ExecutionState.PAUSED, "Set programs execution state to PAUSED on calling pause");
     gameEngine._soundManager.status = 3;
     assert.equal(gameEngine._soundManager.status, PocketCode.ExecutionState.PAUSED, "Called soundManagers pauseSounds function");
 
     gameEngine.resumeProject();
-    gameEngine._executionState = 1;
+    //gameEngine.executionState = 1;
 
-    assert.deepEqual(gameEngine._executionState, PocketCode.ExecutionState.RUNNING, "Set programs execution state to RUNNING on calling resume");
+    assert.deepEqual(gameEngine.executionState, PocketCode.ExecutionState.RUNNING, "Set programs execution state to RUNNING on calling resume");
     gameEngine._soundManager.status = 1;
     assert.deepEqual(gameEngine._soundManager.status, PocketCode.ExecutionState.RUNNING, "Called soundManagers resumeSounds function");
 
     gameEngine.stopProject();
-    gameEngine._executionState = 0;
+    //gameEngine.executionState = 0;
 
-    assert.equal(gameEngine._executionState, PocketCode.ExecutionState.STOPPED, "Set programs execution state to STOP on calling stop");
+    assert.equal(gameEngine.executionState, PocketCode.ExecutionState.STOPPED, "Set programs execution state to STOP on calling stop");
     gameEngine._soundManager.status = 0;
     assert.equal(gameEngine._soundManager.status, PocketCode.ExecutionState.STOPPED, "Called soundManagers stop function");
 
     gameEngine.resumeProject();
-    assert.equal(gameEngine._executionState, PocketCode.ExecutionState.STOPPED, "Did not resume stopped gameEngine");
+    assert.equal(gameEngine.executionState, PocketCode.ExecutionState.STOPPED, "Did not resume stopped gameEngine");
 
     gameEngine.pauseProject();
-    assert.equal(gameEngine._executionState, PocketCode.ExecutionState.STOPPED, "Did not attempt to pause stopped gameEngine");
+    assert.equal(gameEngine.executionState, PocketCode.ExecutionState.STOPPED, "Did not attempt to pause stopped gameEngine");
 
     gameEngine.stopProject();
     gameEngine.runProject();
@@ -190,6 +191,7 @@ QUnit.test("GameEngine: variable UI updates", function (assert) {
 QUnit.test("GameEngine: tests with a testProject", function (assert) {
 
     var done = assert.async();
+
     var gameEngine = new PocketCode.GameEngine();
     var onLoadHandler = function () {
         assert.ok(gameEngine.projectLoaded, "Project Loaded");
@@ -208,8 +210,8 @@ QUnit.test("GameEngine: tests with a testProject", function (assert) {
         gameEngine.runProject();
         assert.deepEqual(gameEngine.executionState, PocketCode.ExecutionState.RUNNING, "runProject: Project running");
 
-        gameEngine.restartProject();
-        assert.deepEqual(gameEngine.executionState, PocketCode.ExecutionState.STOPPED, "restartProject: Project restarted");
+        //gameEngine.restartProject();
+        //assert.deepEqual(gameEngine.executionState, PocketCode.ExecutionState.STOPPED, "restartProject: Project restarted");
 
         gameEngine.runProject();
         gameEngine.pauseProject();
