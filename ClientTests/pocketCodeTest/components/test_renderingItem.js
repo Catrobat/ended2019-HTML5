@@ -72,10 +72,10 @@ QUnit.test("RenderingText", function (assert) {
     assert.ok(renderingText instanceof PocketCode.RenderingText, 'correct instance');
 
     // test default config
-    value = 5.333;
-    renderingText.value = value;
-    assert.equal(renderingText._text, value.toString(), "Text set correctly");
-    assert.ok(typeof renderingText._text == "string", "numbers are converted: typecheck");
+    //value = 5.333;
+    //renderingText.value = value;
+    //assert.equal(renderingText._text, value.toString(), "Text set correctly");
+    //assert.ok(typeof renderingText._text == "string", "numbers are converted: typecheck");
 
     //rendering
     var canvas = document.createElement("canvas");

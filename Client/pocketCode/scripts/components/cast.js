@@ -37,6 +37,9 @@ PocketCode._Cast = (function () {
         },
         toBoolean: function (value) {
             value = this.toValue(value);    //objects value
+            //if (typeof value === 'string') {
+            //    return false;   //!!'any string' == true, !!'' == false
+            //}
             return !!value;
         },
         toNumber: function (value) {
@@ -77,8 +80,8 @@ PocketCode._Cast = (function () {
                 var num = +value;   //convert to number
                 return (!isNaN(num) ? num : value);
             }
-            if (isNaN(value))   //false for bools and Infinity, true for e.g. Error
-                return 0;   //like in Scratch
+            //if (isNaN(value))   //false for bools and Infinity, true for e.g. Error
+            //    return 0;   //(like in Scratch?) we allow NaN as value -> it's casted when used
             else    //boolean or number including +-Infinity
                 return value;
         },

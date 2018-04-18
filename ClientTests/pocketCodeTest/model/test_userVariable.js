@@ -93,29 +93,6 @@ QUnit.test("UserVariable", function (assert) {
 
     assert.ok(uv._id == 1 && uv.name === "2", "properties set correctly: value initialized");
 
-    //typed values
-    assert.deepEqual(uv._toTypedValue(null), undefined, "to typed: null");
-    assert.deepEqual(uv._toTypedValue(undefined), undefined, "to typed: undefined");
-    assert.deepEqual(uv._toTypedValue(1.32), 1.32, "to typed: float");
-    assert.deepEqual(uv._toTypedValue(-13.4), -13.4, "to typed: negative float");
-    assert.deepEqual(uv._toTypedValue(2), 2, "to typed: int");
-    assert.deepEqual(uv._toTypedValue(-4), -4, "to typed: negative int");
-    assert.deepEqual(uv._toTypedValue("string"), "string", "to typed: string");
-    assert.deepEqual(uv._toTypedValue("1.23"), 1.23, "to typed: float as string");
-    assert.deepEqual(uv._toTypedValue("-3.14"), -3.14, "to typed: negative float as string");
-    assert.deepEqual(uv._toTypedValue("23"), 23, "to typed: int as string");
-    assert.deepEqual(uv._toTypedValue("-98"), -98, "to typed: negative int as string");
-    assert.deepEqual(uv._toTypedValue(1.7976931348623157E+10308), Infinity, "to typed: Infinity");
-    assert.deepEqual(uv._toTypedValue(-1.7976931348623157E+10308), -Infinity, "to typed: -Infinity");
-    assert.deepEqual(uv._toTypedValue(true), true, "to typed: boolean: true");
-    assert.deepEqual(uv._toTypedValue(false), false, "to typed: boolean: false");
-    assert.deepEqual(uv._toTypedValue("true"), "true", "to typed: boolean string: true");
-    assert.deepEqual(uv._toTypedValue("false"), "false", "to typed: boolean string: false");
-
-    var a, b;
-    assert.deepEqual(uv._toTypedValue(a*b), 0, "to typed: NaN");
-    var uv2 = new PocketCode.Model.UserVariableSimple(1, "name", "56");
-    assert.deepEqual(uv._toTypedValue(uv2), 56, "to typed: another variable");
 });
 
 
@@ -162,6 +139,7 @@ QUnit.test("UserVariableSimple", function (assert) {
     assert.equal(changeCount, 0, "reset: onChange not dispatched");
 
 });
+
 
 QUnit.test("UserVariableList", function (assert) {
 
