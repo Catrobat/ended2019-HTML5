@@ -165,9 +165,8 @@ QUnit.test("PlayerViewportController", function (assert) {
     variables = [];
 
     for (var i = 0; i < 5; i++) {
-        variables.push(new PocketCode.RenderingText({ id: "id" + i, x: i, y: i * 3, text: "placeholder", visible: true }));
+        variables.push(new PocketCode.RenderingText({ scopeId: "id", id: "id" + i, x: i, y: i * 3, text: "placeholder", visible: true }));
     }
-    variables[0]._objectId = "id";
     controller.renderingTexts = variables;
     assert.ok(controller._renderingTexts.length == 5, "Check rendering variables init");
 
@@ -180,7 +179,7 @@ QUnit.test("PlayerViewportController", function (assert) {
         }
     };
 
-    controller.updateVariable("id", "id0", { x: 5, y: 3 });
+    controller.updateVariable("id", "id0", "value", { x: 5, y: 3 });
 
     var testedVariable = getVariableById("id0");
     assert.equal(testedVariable.x, 5, "Updated Variable x position");

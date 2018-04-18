@@ -44,22 +44,23 @@ PocketCode.RenderingItem = (function () {
     RenderingItem.prototype.merge({
         draw: function (ctx) {
             if (!this.visible)
-                return;
-            this._draw(ctx);
+                return false;
+            return this._draw(ctx);
         },
         _draw: function (ctx) {
             var canvas = this._cacheCanvas;
             if (!canvas)    //disposed
-                return;
+                return false;
             var width = canvas.width,
                 height = canvas.height;
             if (width == 0 || height == 0)
-                return; //drawing a canvas with size = 0 will throw an error
+                return false; //drawing a canvas with size = 0 will throw an error
 
             ctx.save();
             ctx.translate(this.x, -this.y);
             ctx.drawImage(canvas, 0, 0, width, height);
             ctx.restore();
+            return true;
         },
         dispose: function () {
             this.visible = false;
@@ -265,6 +266,11 @@ PocketCode.merge({
                     rtl = (dir == PocketCode.Ui.Direction.RTL),
                     translation = 0,
                     font = this.fontStyle + ' ' + this.fontWeight + ' ' + this.fontSize + 'px' + ' ' + this.fontFamily;
+
+                if (this._text == '') {  //clear cache
+                    canvas.width = canvas.height = 0;
+                    return;
+                }
 
                 ctx.textBaseline = 'top';
                 ctx.font = font;

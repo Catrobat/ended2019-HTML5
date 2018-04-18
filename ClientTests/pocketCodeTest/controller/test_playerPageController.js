@@ -14,7 +14,6 @@ QUnit.test("PlayerPageController", function (assert) {
     var done1 = assert.async();
     var done2 = assert.async();
 
-
     var controller = new PocketCode.PlayerPageController();
     var gameEngine = new PocketCode.GameEngine();
 
@@ -47,12 +46,13 @@ QUnit.test("PlayerPageController", function (assert) {
 
     var scene = new PocketCode.Model.Scene(gameEngine2, undefined, []);
     scene._id = "1";
-    gameEngine2._scenes = ({ "1": scene });
+    gameEngine2._scenes = { "1": scene };
     gameEngine2._currentScene = scene;
 
     var dialog = new PocketCode.Ui.Dialog();
     var dialog2 = new PocketCode.Ui.Dialog();
     controller._dialogs = [dialog, dialog2];
+    controller._gameEngine = gameEngine2;
     controller._gameEngine._executionState = 1;
     controller._gameEngine._currentScene._executionState = 1;
 
@@ -94,13 +94,14 @@ QUnit.test("PlayerPageController", function (assert) {
     var param = { visible: false, reinit: false, screenSize: { width: 40, height: 50 }, renderingSprites: sprites, renderingTexts: variables, id: "1" };
 
     //_visibilityChangeHandler
-    scene._executionState = 5;
+    scene._executionState = PocketCode.ExecutionState.PAUSED_USERINTERACTION;   //make sure pause is executed (returns true)
+    gameEngine2._currentScene = scene;
     controller._visibilityChangeHandler(param);
-    assert.ok(controller._view.executionState == 3, "_visibilityChangeHandler: playerPageView executionState: paused");
+    assert.ok(controller._view.executionState == PocketCode.ExecutionState.PAUSED, "_visibilityChangeHandler: playerPageView executionState: paused");
 
     //_beforeProjectStartHandler
     controller._beforeProjectStartHandler(param);
-    assert.ok(controller._view._startScreen._dom.style.display == 'none', "_beforeProjectStartHandler: display: none");
+    assert.ok(controller._view._startScreen.hidden, "_beforeProjectStartHandler: display: none");
 
     //sceneChangedHandler
     controller._sceneChangedHandler(param);

@@ -22,6 +22,246 @@
 
 QUnit.module("components/parser.js");
 
+QUnit.test("SpriteFactory", function (assert) {
+
+    var allBricksProject = project1;    //using tests_testData.js
+    //^^ includes all types of bricks 
+
+    var broadcastMgr = new PocketCode.BroadcastManager([{ id: "s23" }]);
+    var device = new PocketCode.MediaDevice();
+    var gameEngine = new PocketCode.GameEngine(allBricksProject.id);
+    var scene = new PocketCode.Model.Scene(gameEngine, undefined, []);
+    //var sprite = new PocketCode.Model.Sprite(gameEngine, scene, { id: "spriteId", name: "spriteName" });
+
+    var sf = new PocketCode.SpriteFactory(device, gameEngine, 25);
+
+    assert.ok(sf instanceof PocketCode.SpriteFactory, "instance check");
+    assert.equal(sf._device, device, "device set correctly");
+    assert.equal(sf._gameEngine, gameEngine, "gameEngine set correctly");
+
+    //create
+    assert.throws(function () { sf.create("scene", broadcastMgr, {}); }, Error, "ERROR: create: invalid argument: scene");
+    assert.throws(function () { sf.create(scene, "broadcastMgr", {}); }, Error, "ERROR: create: invalid argument: broadcast manager");
+    assert.throws(function () { sf.create(scene, broadcastMgr, []); }, Error, "ERROR: create: invalid argument: array");
+    assert.throws(function () { sf.create(scene, broadcastMgr, ""); }, Error, "ERROR: create: invalid argument: no object");
+
+    sf.dispose();
+    assert.equal(sf.onProgressChange, undefined, "dispose: properties removed");
+    assert.equal(sf._disposed, true, "disposed: true");
+
+    //recreate after dispose
+    sf = new PocketCode.SpriteFactory(device, gameEngine, 18);
+
+    var sprite2 = sf.create(scene, broadcastMgr, spriteTest2);
+    assert.ok(sprite2 instanceof PocketCode.Model.Sprite, "Sprite successfully created");
+
+    //events
+    assert.ok(sf.onUnsupportedBricksFound instanceof SmartJs.Event.Event && sf.onSpriteLoaded instanceof SmartJs.Event.Event, "event check");
+    //allBricksProject.sprites = [];  //delete all sprites.. keep background
+    var spritesLoaded = 0,
+        bricksLoaded = 0,
+        onSpriteLoadedHandler = function (e) {
+            spritesLoaded++;
+            bricksLoaded += e.bricksLoaded;
+        },
+        spriteLoadedListener = new SmartJs.Event.EventListener(onSpriteLoadedHandler, this),
+        unsupportedBricks = 0,
+        unsupportedBricksFoundHandler = function (e) {
+            unsupportedBricks += e.unsupportedBricks.length;
+        },
+        unsupportedBricksFoundListener = new SmartJs.Event.EventListener(unsupportedBricksFoundHandler, this);
+
+    sf.onUnsupportedBricksFound.addEventListener(unsupportedBricksFoundListener);
+    sf.onSpriteLoaded.addEventListener(spriteLoadedListener);
+
+    var bg = sf.create(scene, broadcastMgr, spriteTest, true);
+    assert.ok(bg instanceof PocketCode.Model.BackgroundSprite, "background sprite created");
+    assert.equal(spritesLoaded, 1, "spritesLoaded event called including event args");
+    assert.equal(unsupportedBricks, 0, "no unsupported bricks found");
+
+    sprite2 = sf.create(scene, broadcastMgr, spriteTest_unsupported);
+    assert.equal(unsupportedBricks, 1, "unsuppoted event fired including args");
+
+    //createClone
+    bricksLoaded = 0;
+    unsupportedBricks = 0;
+
+    assert.throws(function () { sf.createClone("scene", broadcastMgr, {}); }, Error, "ERROR: create: invalid argument: scene");
+    assert.throws(function () { sf.createClone(scene, "broadcastMgr", {}); }, Error, "ERROR: create: invalid argument: broadcast manager");
+    assert.throws(function () { sf.createClone(scene, broadcastMgr, []); }, Error, "ERROR: create: invalid argument: array");
+    assert.throws(function () { sf.createClone(scene, broadcastMgr, ""); }, Error, "ERROR: create: invalid argument: no object");
+
+    var clone = sprite2.clone(device, broadcastMgr);
+    assert.ok(clone instanceof PocketCode.Model.SpriteClone, "clone created");
+    assert.ok(bricksLoaded == 0 && unsupportedBricks == 0, "no events dispatched");
+    clone.dispose();
+    assert.ok(!sprite2._disposed, "clone created without references");  //detaild tests for setting clone parameters can be found in the sprite tests
+
+});
+
+
+QUnit.test("BrickFactory", function (assert) {
+
+    var allBricksProject = project1;    //using _resources/testDataProjects.js
+    //^^ includes all types of bricks (once!!! take care if this is still correct)
+
+    var broadcastMgr = new PocketCode.BroadcastManager(allBricksProject.broadcasts);
+
+    var device = new PocketCode.MediaDevice();
+    var gameEngine = new PocketCode.GameEngine(allBricksProject.id);
+    gameEngine._variables = allBricksProject.variables;
+    var scene = new PocketCode.Model.Scene(gameEngine, undefined, []);
+    var sprite = new PocketCode.Model.Sprite(gameEngine, scene, { id: "spriteId", name: "spriteName" });
+    var minLoopCycleTime = 14;
+
+    var bf = new PocketCode.BrickFactory(device, scene, broadcastMgr, minLoopCycleTime);  //TODO: check loadedCount
+    assert.ok(bf instanceof PocketCode.BrickFactory, "instance created");
+
+    assert.ok(bf._device === device && bf._scene === scene && bf._broadcastMgr === broadcastMgr && bf._minLoopCycleTime === 14, "properties set correctly");
+
+    var unsupportedBricks = [];
+    var unsupportedCalled = 0;
+    var unsupportedHandler = function (e) {
+        unsupportedCalled++;
+        unsupportedBricks = e.unsupportedBricks;
+    };
+
+    assert.ok(bf.onUnsupportedBrickFound instanceof SmartJs.Event.Event, "event check");
+    bf.onUnsupportedBrickFound.addEventListener(new SmartJs.Event.EventListener(unsupportedHandler, this));
+
+    var controlBricks = [];
+    var soundBricks = [];
+    var motionBricks = [];
+    var lookBricks = [];
+    var dataBricks = [];
+    var otherBricks = [];
+
+    //background:
+    sprite._variables = allBricksProject.background.variables;
+
+    var count = 0;
+    var bricks = allBricksProject.background.scripts;
+    for (var i = 0, l = bricks.length; i < l; i++) {
+        controlBricks.push(bf.create(sprite, bricks[i]));
+        count++;
+    }
+
+    //all other sprites
+    //we add all bricks to the same sprite as this makes no difference in this bricks factory test
+    var currentSprite;
+    for (var i = 0, l = allBricksProject.sprites.length; i < l; i++) {
+        currentSprite = allBricksProject.sprites[i];
+        var bricks = otherBricks;
+        switch (i) {
+            case 0:
+                bricks = soundBricks;
+                break;
+            case 1:
+                bricks = motionBricks;
+                break;
+            case 2:
+                bricks = lookBricks;
+                break;
+            case 3:
+                bricks = dataBricks;
+                break;
+        }
+
+        for (var j = 0, k = currentSprite.scripts.length; j < k; j++) {
+            bricks.push(bf.create(sprite, currentSprite.scripts[j]));
+            count++;
+        }
+    }
+
+    assert.equal(bf._parsed, allBricksProject.header.bricksCount, "all bricks created");
+    assert.equal(unsupportedCalled, 0, "unsupported bricks not found, handler not called");
+    assert.equal(unsupportedBricks.length, 0, "no unsupported found");
+
+    //TEST INCLUDING UNSUPPORTED
+    var allBricksProject = project1;    //using tests_testData.js
+    //^^ includes all types of bricks 
+    //adding unsupported brick
+    //{"broadcastMsgId":"s50","type":"BroadcastAndWaitUnknown"} //client detect
+    //{"broadcastMsgId":"s50","type":"Unsupported"}             //server detect
+    var scene = new PocketCode.Model.Scene(gameEngine, undefined, []);
+    sprite = new PocketCode.Model.Sprite(gameEngine, scene, { id: "spriteId", name: "spriteName" });
+
+    allBricksProject.background.scripts.push({ "broadcastMsgId": "s50", "type": "BroadcastAndWaitUnknown" });
+    allBricksProject.background.scripts.push({ "broadcastMsgId": "s51", "type": "Unsupported" });
+    allBricksProject.header.bricksCount += 2;
+
+    var broadcastMgr = new PocketCode.BroadcastManager(allBricksProject.broadcasts);
+    var device = new PocketCode.MediaDevice();
+    var gameEngine = new PocketCode.GameEngine(allBricksProject.id);
+    var scene = new PocketCode.Model.Scene(gameEngine, undefined, []);
+    var sprite = new PocketCode.Model.Sprite(gameEngine, scene, { id: "spriteId", name: "spriteName" });
+
+    var bf = new PocketCode.BrickFactory(device, scene, broadcastMgr, 26);//allBricksProject.header.bricksCount, 26);
+    assert.ok(bf instanceof PocketCode.BrickFactory, "instance created");
+
+    assert.ok(bf._device === device && bf._broadcastMgr === broadcastMgr && bf._minLoopCycleTime === 26, "properties set correctly");
+
+    var unsupportedBricks = [];
+    var unsupportedCalled = 0;
+    var unsupportedHandler = function (e) {
+        unsupportedCalled++;
+        unsupportedBricks.push(e.unsupportedBricks);
+    };
+
+    //events
+    bf.onUnsupportedBrickFound.addEventListener(new SmartJs.Event.EventListener(unsupportedHandler, this));
+
+    var controlBricks = [];
+    var soundBricks = [];
+    var motionBricks = [];
+    var lookBricks = [];
+    var dataBricks = [];
+    var otherBricks = [];
+
+    //background:
+    var count = 0;
+    var bricks = allBricksProject.background.scripts;
+    for (var i = 0, l = bricks.length; i < l; i++) {
+        controlBricks.push(bf.create(sprite, bricks[i]));
+        count++;
+    }
+
+    //all other sprites
+    //we add all bricks to the same sprite as this makes no difference in this bricks factory test
+    var currentSprite;
+    for (var i = 0, l = allBricksProject.sprites.length; i < l; i++) {
+        currentSprite = allBricksProject.sprites[i];
+        var bricks = otherBricks;
+        switch (i) {
+            case 0:
+                bricks = soundBricks;
+                break;
+            case 1:
+                bricks = motionBricks;
+                break;
+            case 2:
+                bricks = lookBricks;
+                break;
+            case 3:
+                bricks = dataBricks;
+                break;
+        }
+
+        for (var j = 0, k = currentSprite.scripts.length; j < k; j++) {
+            bricks.push(bf.create(sprite, currentSprite.scripts[j]));
+            count++;
+        }
+    }
+
+    assert.equal(bf.bricksParsed, allBricksProject.header.bricksCount, "unsupported: all bricks created");
+    assert.equal(unsupportedCalled, 2, "unsupported: unsupported bricks found, handler called once");
+    assert.equal(unsupportedBricks.length, 2, "unsupported: 2 found");
+
+    bf.dispose();
+    assert.ok(bf._disposed, "disposed");
+    assert.ok(device && gameEngine && scene && broadcastMgr, "dispose without disposing other (shared) objects");
+});
+
 
 QUnit.test("FormulaParser: operators", function (assert) {
 
@@ -740,247 +980,6 @@ QUnit.test("FormulaParser: logic", function (assert) {
     assert.equal(f.isStatic, true, "GREATER_OR_EQUAL: isStatic");
     assert.equal(f.toString(), "6 ≥ 3", "GREATER_OR_EQUAL: toString");
 
-
-});
-
-
-QUnit.test("BrickFactory", function (assert) {
-
-    var allBricksProject = project1;    //using _resources/testDataProjects.js
-    //^^ includes all types of bricks (once!!! take care if this is still correct)
-
-    var broadcastMgr = new PocketCode.BroadcastManager(allBricksProject.broadcasts);
-
-    var device = new PocketCode.MediaDevice();
-    var gameEngine = new PocketCode.GameEngine(allBricksProject.id);
-    gameEngine._variables = allBricksProject.variables;
-    var scene = new PocketCode.Model.Scene(gameEngine, undefined, []);
-    var sprite = new PocketCode.Model.Sprite(gameEngine, scene, { id: "spriteId", name: "spriteName" });
-    var minLoopCycleTime = 14;
-
-    var bf = new PocketCode.BrickFactory(device, scene, broadcastMgr, minLoopCycleTime);  //TODO: check loadedCount
-    assert.ok(bf instanceof PocketCode.BrickFactory, "instance created");
-
-    assert.ok(bf._device === device && bf._gameEngine === gameEngine && bf._scene === scene && bf._broadcastMgr === broadcastMgr && bf._minLoopCycleTime === 14, "properties set correctly");
-
-    var unsupportedBricks = [];
-    var unsupportedCalled = 0;
-    var unsupportedHandler = function (e) {
-        unsupportedCalled++;
-        unsupportedBricks = e.unsupportedBricks;
-    };
-
-    assert.ok(bf.onUnsupportedBrickFound instanceof SmartJs.Event.Event, "event check");
-    bf.onUnsupportedBrickFound.addEventListener(new SmartJs.Event.EventListener(unsupportedHandler, this));
-
-    var controlBricks = [];
-    var soundBricks = [];
-    var motionBricks = [];
-    var lookBricks = [];
-    var dataBricks = [];
-    var otherBricks = [];
-
-    //background:
-    sprite._variables = allBricksProject.background.variables;
-
-    var count = 0;
-    var bricks = allBricksProject.background.scripts;
-    for (var i = 0, l = bricks.length; i < l; i++) {
-        controlBricks.push(bf.create(sprite, bricks[i]));
-        count++;
-    }
-
-    //all other sprites
-    //we add all bricks to the same sprite as this makes no difference in this bricks factory test
-    var currentSprite;
-    for (var i = 0, l = allBricksProject.sprites.length; i < l; i++) {
-        currentSprite = allBricksProject.sprites[i];
-        var bricks = otherBricks;
-        switch (i) {
-            case 0:
-                bricks = soundBricks;
-                break;
-            case 1:
-                bricks = motionBricks;
-                break;
-            case 2:
-                bricks = lookBricks;
-                break;
-            case 3:
-                bricks = dataBricks;
-                break;
-        }
-
-        for (var j = 0, k = currentSprite.scripts.length; j < k; j++) {
-            bricks.push(bf.create(sprite, currentSprite.scripts[j]));
-            count++;
-        }
-    }
-
-    assert.equal(bf._parsed, allBricksProject.header.bricksCount, "all bricks created");
-    assert.equal(unsupportedCalled, 0, "unsupported bricks not found, handler not called");
-    assert.equal(unsupportedBricks.length, 0, "no unsupported found");
-
-    //TEST INCLUDING UNSUPPORTED
-    var allBricksProject = project1;    //using tests_testData.js
-    //^^ includes all types of bricks 
-    //adding unsupported brick
-    //{"broadcastMsgId":"s50","type":"BroadcastAndWaitUnknown"} //client detect
-    //{"broadcastMsgId":"s50","type":"Unsupported"}             //server detect
-    var scene = new PocketCode.Model.Scene(gameEngine, undefined, []);
-    sprite = new PocketCode.Model.Sprite(gameEngine, scene, { id: "spriteId", name: "spriteName" });
-
-    allBricksProject.background.scripts.push({ "broadcastMsgId": "s50", "type": "BroadcastAndWaitUnknown" });
-    allBricksProject.background.scripts.push({ "broadcastMsgId": "s51", "type": "Unsupported" });
-    allBricksProject.header.bricksCount += 2;
-
-    var broadcastMgr = new PocketCode.BroadcastManager(allBricksProject.broadcasts);
-    var device = new PocketCode.MediaDevice();
-    var gameEngine = new PocketCode.GameEngine(allBricksProject.id);
-    var scene = new PocketCode.Model.Scene(gameEngine, undefined, []);
-    var sprite = new PocketCode.Model.Sprite(gameEngine, scene, { id: "spriteId", name: "spriteName" });
-
-    var bf = new PocketCode.BrickFactory(device, scene, broadcastMgr, 26);//allBricksProject.header.bricksCount, 26);
-    assert.ok(bf instanceof PocketCode.BrickFactory, "instance created");
-
-    assert.ok(bf._device === device && bf._gameEngine === gameEngine && bf._broadcastMgr === broadcastMgr && bf._minLoopCycleTime === 26, "properties set correctly");
-
-    var unsupportedBricks = [];
-    var unsupportedCalled = 0;
-    var unsupportedHandler = function (e) {
-        unsupportedCalled++;
-        unsupportedBricks.push(e.unsupportedBricks);
-    };
-
-    //events
-    bf.onUnsupportedBrickFound.addEventListener(new SmartJs.Event.EventListener(unsupportedHandler, this));
-
-    var controlBricks = [];
-    var soundBricks = [];
-    var motionBricks = [];
-    var lookBricks = [];
-    var dataBricks = [];
-    var otherBricks = [];
-
-    //background:
-    var count = 0;
-    var bricks = allBricksProject.background.scripts;
-    for (var i = 0, l = bricks.length; i < l; i++) {
-        controlBricks.push(bf.create(sprite, bricks[i]));
-        count++;
-    }
-
-    //all other sprites
-    //we add all bricks to the same sprite as this makes no difference in this bricks factory test
-    var currentSprite;
-    for (var i = 0, l = allBricksProject.sprites.length; i < l; i++) {
-        currentSprite = allBricksProject.sprites[i];
-        var bricks = otherBricks;
-        switch (i) {
-            case 0:
-                bricks = soundBricks;
-                break;
-            case 1:
-                bricks = motionBricks;
-                break;
-            case 2:
-                bricks = lookBricks;
-                break;
-            case 3:
-                bricks = dataBricks;
-                break;
-        }
-
-        for (var j = 0, k = currentSprite.scripts.length; j < k; j++) {
-            bricks.push(bf.create(sprite, currentSprite.scripts[j]));
-            count++;
-        }
-    }
-
-    assert.equal(bf.bricksParsed, allBricksProject.header.bricksCount, "unsupported: all bricks created");
-    assert.equal(unsupportedCalled, 2, "unsupported: unsupported bricks found, handler called once");
-    assert.equal(unsupportedBricks.length, 2, "unsupported: 2 found");
-
-    bf.dispose();
-    assert.ok(bf._disposed, "disposed");
-    assert.ok(device && gameEngine && scene && broadcastMgr, "dispose without disposing other (shared) objects");
-});
-
-
-QUnit.test("SpriteFactory", function (assert) {
-
-    var allBricksProject = project1;    //using tests_testData.js
-    //^^ includes all types of bricks 
-
-    var broadcastMgr = new PocketCode.BroadcastManager([{ id: "s23" } ]);
-    var device = new PocketCode.MediaDevice();
-    var gameEngine = new PocketCode.GameEngine(allBricksProject.id);
-    var scene = new PocketCode.Model.Scene(gameEngine, undefined, []);
-    //var sprite = new PocketCode.Model.Sprite(gameEngine, scene, { id: "spriteId", name: "spriteName" });
-
-    var sf = new PocketCode.SpriteFactory(device, gameEngine, 25);
-
-    assert.ok(sf instanceof PocketCode.SpriteFactory, "instance check");
-    assert.equal(sf._device, device, "device set correctly");
-    assert.equal(sf._gameEngine, gameEngine, "gameEngine set correctly");
-
-    //create
-    assert.throws(function () { sf.create("scene", broadcastMgr, {}); }, Error, "ERROR: create: invalid argument: scene");
-    assert.throws(function () { sf.create(scene, "broadcastMgr", {}); }, Error, "ERROR: create: invalid argument: broadcast manager");
-    assert.throws(function () { sf.create(scene, broadcastMgr, []); }, Error, "ERROR: create: invalid argument: array");
-    assert.throws(function () { sf.create(scene, broadcastMgr, ""); }, Error, "ERROR: create: invalid argument: no object");
-
-    sf.dispose();
-    assert.equal(sf.onProgressChange, undefined, "dispose: properties removed");
-    assert.equal(sf._disposed, true, "disposed: true");
-
-    //recreate after dispose
-    sf = new PocketCode.SpriteFactory(device, gameEngine, 18);
-
-    var sprite2 = sf.create(scene, broadcastMgr, spriteTest2);
-    assert.ok(sprite2 instanceof PocketCode.Model.Sprite, "Sprite successfully created");
-
-    //events
-    assert.ok(sf.onUnsupportedBricksFound instanceof SmartJs.Event.Event && sf.onSpriteLoaded instanceof SmartJs.Event.Event, "event check");
-    //allBricksProject.sprites = [];  //delete all sprites.. keep background
-    var spritesLoaded = 0,
-        bricksLoaded = 0,
-        onSpriteLoadedHandler = function (e) {
-            spritesLoaded++;
-            bricksLoaded += e.bricksLoaded;
-        },
-        spriteLoadedListener = new SmartJs.Event.EventListener(onSpriteLoadedHandler, this),
-        unsupportedBricks = 0,
-        unsupportedBricksFoundHandler = function (e) {
-            unsupportedBricks += e.unsupportedBricks.length;
-        },
-        unsupportedBricksFoundListener = new SmartJs.Event.EventListener(unsupportedBricksFoundHandler, this);
-
-    sf.onUnsupportedBricksFound.addEventListener(unsupportedBricksFoundListener);
-    sf.onSpriteLoaded.addEventListener(spriteLoadedListener);
-
-    var bg = sf.create(scene, broadcastMgr, spriteTest, true);
-    assert.ok(bg instanceof PocketCode.Model.BackgroundSprite, "background sprite created");
-    assert.equal(spritesLoaded, 1, "spritesLoaded event called including event args");
-    assert.equal(unsupportedBricks, 0, "no unsupported bricks found");
-
-    sprite2 = sf.create(scene, broadcastMgr, spriteTest_unsupported);
-    assert.equal(unsupportedBricks, 1, "unsuppoted event fired including args");
-
-    //createClone
-    bricksLoaded = 0;
-    unsupportedBricks = 0;
-
-    assert.throws(function () { sf.createClone("scene", broadcastMgr, {}); }, Error, "ERROR: create: invalid argument: scene");
-    assert.throws(function () { sf.createClone(scene, "broadcastMgr", {}); }, Error, "ERROR: create: invalid argument: broadcast manager");
-    assert.throws(function () { sf.createClone(scene, broadcastMgr, []); }, Error, "ERROR: create: invalid argument: array");
-    assert.throws(function () { sf.createClone(scene, broadcastMgr, ""); }, Error, "ERROR: create: invalid argument: no object");
-
-    var clone = sprite2.clone(device, broadcastMgr);
-    assert.ok(clone instanceof PocketCode.Model.SpriteClone, "clone created");
-    assert.ok(bricksLoaded == 0 && unsupportedBricks == 0, "no events dispatched");
-    clone.dispose();
-    assert.ok(!sprite2._disposed, "clone created without references");  //detaild tests for setting clone parameters can be found in the sprite tests
 
 });
 

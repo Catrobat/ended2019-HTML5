@@ -55,6 +55,7 @@ QUnit.test("WhenProgramStartBrick", function (assert) {
     //simulate project loaded for tests
     gameEngine._resourcesLoaded = true;
     gameEngine._scenesLoaded = true;
+    gameEngine._device = new PocketCode.MediaDevice();
     gameEngine.runProject();
 
 

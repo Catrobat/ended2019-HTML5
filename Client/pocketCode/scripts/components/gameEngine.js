@@ -16,7 +16,7 @@ PocketCode.GameEngine = (function () {
     function GameEngine(minLoopCycleTime) {
         PocketCode.Model.UserVariableHost.call(this, PocketCode.UserVariableScope.GLOBAL);
 
-        //this._executionState = PocketCode.ExecutionState.INITIALIZED;
+        this._executionState = PocketCode.ExecutionState.INITIALIZED;
         this._minLoopCycleTime = minLoopCycleTime || 20; //ms
         this._resourceTotalSize = 0;
         this._resourceLoadedSize = 0;
@@ -131,7 +131,7 @@ PocketCode.GameEngine = (function () {
             get: function () {
                 if (this._currentScene)
                     return this._currentScene._executionState;
-                return PocketCode.ExecutionState.INITIALIZED;
+                return this._executionState;
             },
         },
         projectLoaded: {
@@ -354,9 +354,7 @@ PocketCode.GameEngine = (function () {
                 cs.onSpriteTappedAction.dispatchEvent({ sprite: cs.background });
         },
         //project interaction
-        runProject: function (reinit) {//reinitSprites) {
-            //reinitSprites = reinitSprites === false ? reinitSprites : true;  //default = true
-            //var currentScene = this._currentScene;
+        runProject: function () {
             if (this.executionState === PocketCode.ExecutionState.RUNNING)
                 return;
             if (!this.projectLoaded)
@@ -365,33 +363,20 @@ PocketCode.GameEngine = (function () {
             if (this.executionState === PocketCode.ExecutionState.PAUSED)
                 return this.resumeProject();
 
-            //if (this._device)   //not defined if project not loaded
-            //    this._device.reset();
-            //if (reinitSprites !== false)
-            //    reinitSprites = true;
-            //if reinit: all sprites properties have to be set to their default values (on restart): default true
-            //currentScene = this._currentScene = this._startScene;
-
-            if (reinit || this.executionState !== PocketCode.ExecutionState.INITIALIZED) {  //check if terminated and restarted
+            if (this.executionState !== PocketCode.ExecutionState.INITIALIZED) {  //check if terminated and restarted
                 this._device.reset();
                 this._resetVariables();  //global
                 this._viewStates = {};
                 for (var id in this._scenes)
                     this._scenes[id].reinitializeSprites();
-                //this._onBeforeProgramStart.dispatchEvent({ reinit: true });
             }
-            //else
-                this._onBeforeProgramStart.dispatchEvent();  //indicates the project was loaded and rendering objects can be generated
+            this._onBeforeProgramStart.dispatchEvent();  //indicates the project was loaded and rendering objects can be generated
 
-            //this._dispatchOnSceneChange();
-            //currentScene.start();
             this.startScene(this._startScene.id);
         },
-        restartProject: function (){//reinitSprites) {
-            //reinitSprites = reinitSprites || true;  //default = true
+        restartProject: function () {
             this.stopProject();
-            //this.projectTimer.stop();
-            window.setTimeout(this.runProject.bind(this, true), 50);   //some time needed to update callstack (running methods), as this method is called on a system (=click) event
+            window.setTimeout(this.runProject.bind(this), 50);   //some time needed to update callstack (running methods), as this method is called on a system (=click) event
         },
         pauseProject: function () {
             if (this._device)
@@ -411,6 +396,7 @@ PocketCode.GameEngine = (function () {
             for (var id in this._scenes)
                 this._scenes[id].stop();
             this._viewStates = {};
+            this._executionState = PocketCode.ExecutionState.STOPPED;
             this._currentScene = undefined;
         },
         getLookImage: function (id) {
@@ -426,28 +412,6 @@ PocketCode.GameEngine = (function () {
             //notifies the UI to reinit sprites and texts
             var scene = this._currentScene,
                 globalVars = this._getRenderingVariables(this._id);
-            //    vs = this._viewStates[scene.id];//,
-            //    //globalVars = vs.variables;
-
-            //if (globalVars) {
-            //    //variable values may have changed- update
-            //    var tmp;
-            //    for (var i = 0, l = globalVars.length; i < l; i++) {
-            //        tmp = globalVars[i];
-            //        tmp.text = this.getVariable(tmp.id).toString();
-            //    }
-            //}
-            //else {
-            //    globalVars = this._getRenderingVariables(this._id);
-            //    vs[scene.id] = globalVars;
-
-            //    var tmp;
-            //    for (var i = 0, l = globalVars.length; i < l; i++) {
-            //        tmp = globalVars[i];
-            //        //override internal visibility cache
-            //        tmp.visible = false;
-            //    }
-            //}
 
             this._onSceneChange.dispatchEvent({
                 id: scene.id,
@@ -494,8 +458,10 @@ PocketCode.GameEngine = (function () {
                 scene = this._getSceneById(sceneId);
             if (scene.executionState != PocketCode.ExecutionState.PAUSED)
                 return this.startScene(sceneId);
-            if (cs && cs.id == sceneId)
-                return false;   //already  running
+            if (cs && cs.id == sceneId) {
+                scene.resume();
+                return false;   //already running
+            }
 
             if (cs) {
                 cs.pause();
@@ -508,21 +474,11 @@ PocketCode.GameEngine = (function () {
 
             this._currentScene = scene;
             var vs = this._viewStates[scene.id];
-            //if (vs) {
-                this._variableViewStates = vs.variables;
-                this._device.viewState = vs.device;
-            //}
-            //if (scene.executionState == PocketCode.ExecutionState.PAUSED) {
-                this._dispatchOnSceneChange(false);
-                scene.resume();
-            //}
-            //else { //if (scene.executionState !== PocketCode.ExecutionState.RUNNING) {
-            //    this._dispatchOnSceneChange(false);
-            //    scene.start();
-            //}
-            //else    //undefined state?
-            //    return false;
+            this._variableViewStates = vs.variables;
+            this._device.viewState = vs.device;
+            this._dispatchOnSceneChange(false);
 
+            scene.resume();
             return true;
         },
 

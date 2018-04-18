@@ -14,6 +14,13 @@ QUnit.module("components/renderingItem.js");
 
 QUnit.test("RenderingItem", function (assert) {
 
+    //test infrastructur
+    var canvas = document.createElement("canvas");
+    canvas.width = 200;
+    canvas.height = 100;
+    var ctx = canvas.getContext("2d");
+
+    //tests
     var ri = new PocketCode.RenderingItem({ id: "s01" });
     assert.ok(ri instanceof PocketCode.RenderingItem, "instance check");
 
@@ -31,28 +38,18 @@ QUnit.test("RenderingItem", function (assert) {
     assert.equal(ri.visible, true, "visible getter/setter");
 
     //draw
-    try{
-        ri.draw();
-        assert.ok(true, "calling draw() on empty cache");
-    }
-    catch(e){
-        assert.ok(false, "calling draw() on empty cache");
-    }
+    assert.notOk(ri.draw(ctx), "draw() on empty cache");
+    //define cache
+    ri._cacheCanvas.width = ri._cacheCanvas.height = 1;
     ri.visible = false;
-
-    var called = 0, context;
-    ri._draw = function (ctx) {
-        called++;
-        context = ctx;
-    };
-
-    var testCtx = { context: "test" };  //we define an object to assert.equal the output
-    ri.draw(testCtx);  //no error if not visible
-    assert.equal(called, 0, "_draw not called on invisisble items");
-
+    assert.notOk(ri.draw(ctx), "draw(): invisible");
     ri.visible = true;
-    ri.draw(testCtx);
-    assert.equal(testCtx, context, "context passed to private render method");
+    assert.ok(ri.draw(ctx), "draw(): including cache");
+
+    ri.dispose();
+    assert.equal(ri._cacheCanvas, undefined, "dispose(): cache cleared");
+    ri.visible = true;
+    assert.notOk(ri.draw(ctx), "draw() on disposed RI: not successfull");
 });
 
 
@@ -61,23 +58,23 @@ QUnit.test("RenderingText", function (assert) {
     var rt = new PocketCode.RenderingText({ id: "s01" });
     assert.ok(rt instanceof PocketCode.RenderingText && rt instanceof PocketCode.RenderingItem, "instance check");
 
-    assert.throws(function () { new PocketCode.RenderingText(); }, Error, 'fail on missing constructor argument');
     // underlying vars are defined in uservariablehost
-    var id = 'id0',
+    var scopeId = "scopeId",
+        id = 'id0',
         x = 20,
         y = 16,
-        text = 'Hello, world!',
+        value = 'Hello, world!',
         visible = true;
 
-    var props = { id: id, text: text, x: x, y: y, visible: visible };
+    var props = { scopeId: scopeId, id: id, value: value, x: x, y: y, visible: visible };
     var renderingText = new PocketCode.RenderingText(props);
 
     assert.ok(renderingText instanceof PocketCode.RenderingText, 'correct instance');
 
     // test default config
-    text = 5.333;
-    renderingText.text = text;
-    assert.equal(renderingText._text, text.toString(), "Text set correctly");
+    value = 5.333;
+    renderingText.value = value;
+    assert.equal(renderingText._text, value.toString(), "Text set correctly");
     assert.ok(typeof renderingText._text == "string", "numbers are converted: typecheck");
 
     //rendering
@@ -87,27 +84,34 @@ QUnit.test("RenderingText", function (assert) {
     var ctx = canvas.getContext("2d");
 
     var fillTextCalled = 0;
-    ctx.fillText = function () {    //overide fillText to assert number of calls
+    renderingText._cacheCtx.fillText = function () {    //overide internal fillText to assert number of calls
         fillTextCalled++;
     };
 
-    renderingText.text = "";
+    renderingText.value = "";
     renderingText.draw(ctx);
     assert.ok(!fillTextCalled, "No text drawn on canvas if text is empty");
     fillTextCalled = 0;
 
     var numberOfNewlines = 5;
-    text = "Hello world";
+    value = "Hello world";
 
     for (var i = 0, l = numberOfNewlines; i < l; i++) {
-        text = text + "\n test";
+        value = value + "\n test";
     }
 
-    renderingText.text = text;
-    renderingText.visible = true;
-    renderingText.draw(ctx);
-    assert.equal(fillTextCalled, numberOfNewlines + 1, "Create Text on Canvas with fillText for each line of text");
+    renderingText.value = value;
+    assert.equal(fillTextCalled, 6, "cache rerendered on value update");
+    renderingText.value = value;
+    assert.equal(fillTextCalled, 6, "cache NOT rerendered if value does not change");
 
+    //fillTextCalled = 0;
+    //renderingText.visible = true;
+    //renderingText.draw(ctx);
+    //assert.equal(fillTextCalled, numberOfNewlines + 1, "Create Text on Canvas with fillText for each line of text");
+
+    //recreate RT (without fillText override)
+    renderingText = new PocketCode.RenderingText(props);
     //rendering and font size
     canvas = document.createElement("canvas");
     canvas.width = 200;
@@ -118,7 +122,7 @@ QUnit.test("RenderingText", function (assert) {
     //canvas.style.position = "absolute";
 
     ctx.clearRect(0, 0, 200, 100);
-    renderingText.text = 42;
+    renderingText.value = 42;
     renderingText.x = 0;
     renderingText.y = 0;
     renderingText.draw(ctx);
@@ -127,7 +131,7 @@ QUnit.test("RenderingText", function (assert) {
     assert.equal(img.canvas.height, 33, "rendering Text original height (numbers): based on screenshot (2016-07-06)");
 
     ctx.clearRect(0, 0, 200, 100);
-    renderingText.text = "ÖÄÜ";
+    renderingText.value = "ÖÄÜ";
     renderingText.draw(ctx);
 
     img = PocketCode.ImageHelper.adjustCenterAndTrim(canvas, true);
@@ -155,16 +159,17 @@ QUnit.test("RenderingText", function (assert) {
     ctx.clearRect(0, 0, 200, 100);
     canvas.with = 400;
     canvas.height = 400;
-    renderingText.text = "This is my ...\n\nThis is my ...";
+    renderingText.value = "This is my ...\n\nThis is my ...";
     renderingText.x = 10;
     renderingText.y = 10;
     renderingText.draw(ctx);
 
-    img = PocketCode.ImageHelper.adjustCenterAndTrim(canvas, true);
-    var top = Math.round(Math.sin(img.tl.angle) * img.tl.length),
-        bottom = Math.round(Math.sin(img.bl.angle) * img.bl.length);
-    assert.ok(Math.abs(top - bottom) <= 32, "rendering Text line height: based on screenshot (2016-07-11)");
+    //img = PocketCode.ImageHelper.adjustCenterAndTrim(canvas, true);
+    //var top = Math.round(Math.sin(img.tl.angle) * img.tl.length),
+    //    bottom = Math.round(Math.sin(img.bl.angle) * img.bl.length);
+    //assert.ok(Math.abs(top - bottom) <= 32, "rendering Text line height: based on screenshot (2016-07-11)");
 
+    assert.ok(false, "TODO");
 });
 
 
