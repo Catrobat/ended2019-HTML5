@@ -104,18 +104,6 @@ PocketCode.merge({
 
         //properties
         Object.defineProperties(RenderingText.prototype, {
-            _UNDEFINED_TEXT: {
-                value: '',  //add a string to show if text (variable) is undefined/uninitialized
-            },
-            _BOOLEAN_TRUE_TEXT: {
-                value: new PocketCode.Core.I18nString('variableTrue'),
-            },
-            _BOOLEAN_FALSE_TEXT: {
-                value: new PocketCode.Core.I18nString('variableFalse'),
-            },
-            _NUMBER_INFINITY_TEXT: {
-                value: new PocketCode.Core.I18nString('variableInfinity'),
-            },
             scopeId: {
                 get: function () {
                     return this._scopeId;
@@ -137,23 +125,6 @@ PocketCode.merge({
                         return;
                     this._value = value;
                     this._redrawCache();
-                },
-            },
-            _text: {
-                get: function () {
-                    var value = this._value;
-                    if (value === undefined)
-                        return this._UNDEFINED_TEXT.toString();
-                    if (value === true)
-                        return this._BOOLEAN_TRUE_TEXT.toString();
-                    if (value === false)
-                        return this._BOOLEAN_FALSE_TEXT.toString();
-                    if (value === Infinity)
-                        return this._NUMBER_INFINITY_TEXT.toString();
-                    if (value === -Infinity)
-                        return '-' + this._NUMBER_INFINITY_TEXT.toString();
-
-                    return value.toString();
                 },
             },
             fontFamily: {
@@ -187,7 +158,7 @@ PocketCode.merge({
 
         //methods
         RenderingText.prototype.merge({
-            _getTextBlock: function () {
+            _getTextBlock: function (string) {
                 var block = {
                     width: 0,
                     height: 0,
@@ -196,7 +167,7 @@ PocketCode.merge({
 
                 var ctx = this._cacheCtx,
                     maxLineWidth = this._maxLineWidth,
-                    textLines = this._text.split(/\r?\n/),
+                    textLines = string.split(/\r?\n/),
                     line,
                     metrics;
 
@@ -262,12 +233,13 @@ PocketCode.merge({
             _redrawCache: function () {
                 var canvas = this._cacheCanvas,
                     ctx = this._cacheCtx,
-                    dir = PocketCode.I18nProvider.getTextDirection(this._text),
+                    string = PocketCode.Cast.toString(this._value),
+                    dir = PocketCode.I18nProvider.getTextDirection(string),
                     rtl = (dir == PocketCode.Ui.Direction.RTL),
                     translation = 0,
                     font = this.fontStyle + ' ' + this.fontWeight + ' ' + this.fontSize + 'px' + ' ' + this.fontFamily;
 
-                if (this._text == '') {  //clear cache
+                if (string == '') {  //clear cache
                     canvas.width = canvas.height = 0;
                     return;
                 }
@@ -275,7 +247,7 @@ PocketCode.merge({
                 ctx.textBaseline = 'top';
                 ctx.font = font;
                 ctx.textAlign = 'left'; //always left even if set to 'center'
-                var textBlock = this._getTextBlock();
+                var textBlock = this._getTextBlock(string);
                 canvas.width = textBlock.width;//resize sets ctx to default
                 canvas.height = textBlock.height;
 

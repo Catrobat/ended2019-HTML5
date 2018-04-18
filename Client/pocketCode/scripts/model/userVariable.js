@@ -106,24 +106,6 @@ PocketCode.Model.merge({
             },
         });
 
-        //methods
-        UserVariable.prototype.merge({
-            _toTypedValue: function (value) {
-                if (value === null || value === undefined)
-                    return undefined;
-                if (value instanceof PocketCode.Model.UserVariable) //for variables and lists
-                    return value.value;
-                if (typeof value === 'string') { //convert numbers added as string
-                    var num = parseFloat(value);
-                    return (num.toString() === value ? num : value);
-                }
-                if (isNaN(value))   //false for bools and Infinity, true for e.g. Error
-                    return 0;   //like in Scratch
-                else    //boolean or number including +-Infinity
-                    return value;
-            },
-        });
-
         return UserVariable;
     })(),
 
@@ -139,7 +121,7 @@ PocketCode.Model.merge({
 
             this._value = 0;
             if (value != undefined)
-                this._value = this._toTypedValue(value);
+                this._value = PocketCode.Cast.toTypedValue(value);
         }
 
         //properties
@@ -149,7 +131,7 @@ PocketCode.Model.merge({
                     return this._value;
                 },
                 set: function (value) {
-                    value = this._toTypedValue(value);
+                    value = PocketCode.Cast.toTypedValue(value);
                     if (this._value === value)
                         return;
                     this._value = value;
@@ -191,7 +173,7 @@ PocketCode.Model.merge({
                 //as lists can be assigned to variables and used in formulas (at least in Scratch) we need
                 //to represent the list as single value as well
                 get: function () {
-                    return this._toTypedValue(this._value.join(''));
+                    return PocketCode.Cast.toTypedValue(this._value.join(''));
                 },
             },
             length: {
@@ -204,10 +186,10 @@ PocketCode.Model.merge({
         //methods
         UserVariableList.prototype.merge({
             append: function (value) {
-                this._value.push(this._toTypedValue(value));
+                this._value.push(PocketCode.Cast.toTypedValue(value));
             },
             _validateIndex: function (idx, length) {
-                idx = this._toTypedValue(idx);  //NaN -> 0
+                idx = PocketCode.Cast.toTypedValue(idx);  //NaN -> 0
                 if (idx === true)   //false = isNaN
                     idx = 1;
                 idx = Math.floor(idx);  //to int like in Scratch
@@ -227,14 +209,14 @@ PocketCode.Model.merge({
                     return;
 
                 if (idx <= this._value.length)
-                    this._value.insert(idx - 1, this._toTypedValue(value));
+                    this._value.insert(idx - 1, PocketCode.Cast.toTypedValue(value));
                 else
-                    this.append(this._toTypedValue(value));
+                    this.append(PocketCode.Cast.toTypedValue(value));
             },
             replaceAt: function (idx, value) {
                 idx = this._validateIndex(idx, this._value.length);
                 if (idx) //{
-                    this._value[idx - 1] = this._toTypedValue(value);
+                    this._value[idx - 1] = PocketCode.Cast.toTypedValue(value);
             },
             deleteAt: function (idx) {
                 idx = this._validateIndex(idx, this._value.length);
@@ -242,7 +224,7 @@ PocketCode.Model.merge({
                     this._value.splice(idx - 1, 1);
             },
             contains: function (value) {
-                if (this._value.indexOf(this._toTypedValue(value)) !== -1)
+                if (this._value.indexOf(PocketCode.Cast.toTypedValue(value)) !== -1)
                     return true;
                 return false;
             },

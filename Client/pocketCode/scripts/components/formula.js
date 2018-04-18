@@ -64,40 +64,6 @@ PocketCode.Formula = (function () {
         _log10: function (val) {
             return Math.log(val) / Math.LN10;
         },
-        _toValue: function (value) {
-            if (value instanceof PocketCode.Model.UserVariable)
-                return value.value;    //objects value
-            return value;
-        },
-        _toBoolean: function (value) {
-            if (value instanceof PocketCode.Model.UserVariable)
-                value = value.value;    //objects value
-            return !!value;
-        },
-        _toNumber: function (value) {
-            if (value instanceof PocketCode.Model.UserVariable)
-                value = value.value;    //objects value
-            if (!isNaN(value) && isFinite(value))
-                return value;
-            if (value === true)
-                return 1;
-
-            //try to parse string to number
-            if (typeof value == 'string') {
-                value = value.replace(/^0+(?!\.|$)/, '');   //remove leading zeros
-                var number = parseFloat(value);
-                if (number.toString() == value)
-                    return number;
-            }
-            return 0;   //false, undefined, null, other strings, ..
-        },
-        _toString: function (value) {
-            if (value instanceof PocketCode.Model.UserVariable)
-                value = value.value;    //objects value
-            if (typeof value != 'string' && (value === null || isNaN(value)))
-                return '';
-            return value.toString();    //string, number, bool
-        },
         _validateFormula: function () {
             try {
                 var formula = new PocketCode.Formula(this._device, this._sprite);

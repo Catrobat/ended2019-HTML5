@@ -176,9 +176,13 @@ PocketCode.Device = (function () {
         viewState: {    //used for pause/resume scene
             get: function () {
                 var features = this._features,
-                    viewState = {};
-                for (var p in features)
-                    viewState[p] = features[p].viewState;
+                    viewState = {},
+                    featureVS;
+                for (var p in features) {
+                    featureVS = features[p].viewState;
+                    if (featureVS)  //do not generate undefined properties
+                        viewState[p] = features[p].viewState;
+                }
                 return viewState;
             },
             set: function (viewState) {

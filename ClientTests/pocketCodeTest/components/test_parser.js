@@ -349,9 +349,9 @@ QUnit.test("FormulaParser: operators", function (assert) {
     assert.equal(f.isStatic, true, "calc mult: isStatic");
     assert.equal(f.toString(), "0.5 x 2", "string mult");
 
-    f.json = mult2;
+    f.json = mult2; //here, a number is embedded as string which leads to converion inside of the JSON on influencing the string as well
     assert.equal(f.calculate(), 1.5, "calc mult with brackets");
-    assert.equal(f.toString(), "0.5 x (-1 + 2.0 x 2)", "string mult with brackets");
+    assert.equal(f.toString(), "0.5 x (-1 + 2 x 2)", "string mult with brackets");
 
 });
 
@@ -441,7 +441,7 @@ QUnit.test("FormulaParser: functions", function (assert) {
     val = f.calculate();
     assert.ok(val >= 1 && val <= 1.01, "calc random (float)");
     assert.equal(f.isStatic, false, "calc random (float): isStatic");
-    assert.equal(f.toString(), "random(1.0, 1.01)", "string random (float)");
+    assert.equal(f.toString(), "random(1, 1.01)", "string random (float)");
 
     f.json = randomCombined;
     val = f.calculate();
@@ -655,7 +655,7 @@ QUnit.test("FormulaParser: object (sprite)", function (assert) {
     f.json = object_x;
     assert.equal(f.calculate(), 6, "OBJECT_X: formula");
     assert.equal(f.isStatic, false, "OBJECT_X: isStatic");
-    assert.equal(f.toString(), "position_x x (1 + 1.00)", "OBJECT_X: toString");
+    assert.equal(f.toString(), "position_x x (1 + 1)", "OBJECT_X: toString");
 
     f.json = object_y;
     assert.equal(f.calculate(), 6, "OBJECT_Y: formula");
@@ -730,22 +730,22 @@ QUnit.test("FormulaParser: sensors", function (assert) {
     f.json = compass;
     assert.ok(typeof f.calculate() === 'number', "COMPASS_DIRECTION: formula return type");
     assert.equal(f.isStatic, false, "COMPASS_DIRECTION: isStatic");
-    assert.equal(f.toString(), "compass_direction x 1.0", "COMPASS_DIRECTION: toString");
+    assert.equal(f.toString(), "compass_direction x 1", "COMPASS_DIRECTION: toString");
 
     f.json = inclination_x;
     assert.ok(typeof f.calculate() === 'number', "X_INCLINATION: formula return type");
     assert.equal(f.isStatic, false, "X_INCLINATION: isStatic");
-    assert.equal(f.toString(), "inclination_x x 1.0 + 2", "X_INCLINATION: toString");
+    assert.equal(f.toString(), "inclination_x x 1 + 2", "X_INCLINATION: toString");
 
     f.json = inclination_y;
     assert.ok(typeof f.calculate() === 'number', "Y_INCLINATION: formula return type");
     assert.equal(f.isStatic, false, "Y_INCLINATION: isStatic");
-    assert.equal(f.toString(), "inclination_y x (1.0 + 2.5)", "Y_INCLINATION: toString");
+    assert.equal(f.toString(), "inclination_y x (1 + 2.5)", "Y_INCLINATION: toString");
 
     f.json = loudness;
     assert.ok(typeof f.calculate() === 'number', "LOUDNESS: formula return type");
     assert.equal(f.isStatic, false, "LOUDNESS: isStatic");
-    assert.equal(f.toString(), "loudness x (1.0 - 0.5)", "LOUDNESS: toString");
+    assert.equal(f.toString(), "loudness x (1 - 0.5)", "LOUDNESS: toString");
 
     //face detection
     f.json = face_detect;
@@ -756,12 +756,12 @@ QUnit.test("FormulaParser: sensors", function (assert) {
     f.json = face_size;
     assert.ok(typeof f.calculate() === 'number', "FACE_SIZE: formula return type");
     assert.equal(f.isStatic, false, "FACE_SIZE: isStatic");
-    assert.equal(f.toString(), "face_size x 1.0", "FACE_SIZE: toString");
+    assert.equal(f.toString(), "face_size x 1", "FACE_SIZE: toString");
 
     f.json = face_pos_x;
     assert.ok(typeof f.calculate() === 'number', "FACE_X_POSITION: formula return type");
     assert.equal(f.isStatic, false, "FACE_X_POSITION: isStatic");
-    assert.equal(f.toString(), "face_x_position x 1.0", "FACE_X_POSITION: toString");
+    assert.equal(f.toString(), "face_x_position x 1", "FACE_X_POSITION: toString");
 
     f.json = face_pos_y;
     assert.ok(typeof f.calculate() === 'number', "FACE_Y_POSITION: formula return type");
@@ -958,7 +958,7 @@ QUnit.test("FormulaParser: logic", function (assert) {
     f.json = smallerOrEqual;
     assert.equal(f.calculate(), true, "SMALLER_OR_EQUAL: formula");
     assert.equal(f.isStatic, true, "SMALLER_OR_EQUAL: isStatic");
-    assert.equal(f.toString(), "0.0 ≤ 0", "SMALLER_OR_EQUAL: toString");
+    assert.equal(f.toString(), "0 ≤ 0", "SMALLER_OR_EQUAL: toString");
 
     f.json = logicalAnd;
     assert.equal(f.calculate(), false, "LOGICAL_AND: formula");
@@ -980,6 +980,4 @@ QUnit.test("FormulaParser: logic", function (assert) {
     assert.equal(f.isStatic, true, "GREATER_OR_EQUAL: isStatic");
     assert.equal(f.toString(), "6 ≥ 3", "GREATER_OR_EQUAL: toString");
 
-
 });
-

@@ -321,124 +321,120 @@ PocketCode.merge({
                     calculate: new Function(
                         'uvh',
                         'uvh || (uvh = this._sprite); ' +
+                        'var cast = PocketCode.Cast; ' +
                         'return ' + formulaString + ';'),
                     isStatic: this._isStatic,
                 };
             },
 
             _parseJsonType: function (jsonFormula, uiString, type) {
-                if (jsonFormula === null)
-                    return '';
+                var formulaString = uiString ? '' : undefined; //default if null
 
-                var formulaString = '';
-                /* package org.catrobat.catroid.formulaeditor: class FormulaElement: enum ElementType
-                *  OPERATOR, FUNCTION, NUMBER, SENSOR, USER_VARIABLE, BRACKET, STRING, COLLISION_FORMULA
-                */
-                switch (jsonFormula.type) {
-                    case 'OPERATOR':
-                        formulaString = this._parseJsonOperator(jsonFormula, uiString);
-                        break;
+                if (jsonFormula !== null) {
+                    /* package org.catrobat.catroid.formulaeditor: class FormulaElement: enum ElementType
+                    *  OPERATOR, FUNCTION, NUMBER, SENSOR, USER_VARIABLE, BRACKET, STRING, COLLISION_FORMULA
+                    */
+                    switch (jsonFormula.type) {
+                        case 'OPERATOR':
+                            formulaString = this._parseJsonOperator(jsonFormula, uiString);
+                            break;
 
-                    case 'FUNCTION':
-                        formulaString = this._parseJsonFunction(jsonFormula, uiString);
-                        break;
+                        case 'FUNCTION':
+                            formulaString = this._parseJsonFunction(jsonFormula, uiString);
+                            break;
 
-                    case 'NUMBER':
-                        //if (uiString)
-                        formulaString = jsonFormula.value;
-                        if (!uiString) {
-                            formulaString = jsonFormula.value.toString().replace(/^0+(?!\.|$)/, '');   //remove leading zeros
-                            type = 'number';    //make sure to validate the data (usually stored as string)
-                        }
+                        case 'NUMBER':
+                            //make sure it's a number: replace JSON property to make sure there will not be errors in our UI (code view)
+                            if (typeof jsonFormula.value != 'number')
+                                jsonFormula.value = PocketCode.Cast.toNumber(jsonFormula.value);
+                            formulaString = jsonFormula.value;
+                            if (uiString)
+                                formulaString = PocketCode.Cast.toString(formulaString);
+                            break;
 
-                        //var num = Number(jsonFormula.value);
-                        //if (isNaN(num))
-                        //    throw new Error('invalid operator/type \'number\': string to number conversion failed');
-                        //formulaString = num;
-                        break;
-
-                    case 'SENSOR':
-                        this._isStatic = false;
-                        formulaString = this._parseJsonSensor(jsonFormula, uiString);
-                        break;
-
-                    case 'USER_VARIABLE':
-                        if (uiString) {
-                            var variable = this._variableNames[PocketCode.UserVariableScope.PROCEDURE][jsonFormula.value] ||
-                                this._variableNames[PocketCode.UserVariableScope.LOCAL][jsonFormula.value] ||
-                                this._variableNames[PocketCode.UserVariableScope.GLOBAL][jsonFormula.value];
-                            formulaString = '"' + variable.name + '"';
-                        }
-                        else {
+                        case 'SENSOR':
                             this._isStatic = false;
-                            formulaString = 'uvh.getVariable("' + jsonFormula.value + '")';//.value';
-                        }
-                        break;
+                            formulaString = this._parseJsonSensor(jsonFormula, uiString);
+                            break;
 
-                    case 'USER_LIST':
-                        if (uiString) {
-                            var list = this._listNames[PocketCode.UserVariableScope.PROCEDURE][jsonFormula.value] ||
-                                this._listNames[PocketCode.UserVariableScope.LOCAL][jsonFormula.value] ||
-                                this._listNames[PocketCode.UserVariableScope.GLOBAL][jsonFormula.value];
-                            formulaString = '*' + list.name + '*';
-                        }
-                        else {
+                        case 'USER_VARIABLE':
+                            if (uiString) {
+                                var variable = this._variableNames[PocketCode.UserVariableScope.PROCEDURE][jsonFormula.value] ||
+                                    this._variableNames[PocketCode.UserVariableScope.LOCAL][jsonFormula.value] ||
+                                    this._variableNames[PocketCode.UserVariableScope.GLOBAL][jsonFormula.value];
+                                formulaString = '"' + variable.name + '"';
+                            }
+                            else {
+                                this._isStatic = false;
+                                formulaString = 'uvh.getVariable("' + jsonFormula.value + '")';
+                            }
+                            break;
+
+                        case 'USER_LIST':
+                            if (uiString) {
+                                var list = this._listNames[PocketCode.UserVariableScope.PROCEDURE][jsonFormula.value] ||
+                                    this._listNames[PocketCode.UserVariableScope.LOCAL][jsonFormula.value] ||
+                                    this._listNames[PocketCode.UserVariableScope.GLOBAL][jsonFormula.value];
+                                formulaString = '*' + list.name + '*';
+                            }
+                            else {
+                                this._isStatic = false;
+                                formulaString = 'uvh.getList("' + jsonFormula.value + '")';
+                            }
+                            break;
+
+                        case 'BRACKET':
+                            formulaString = '(' + this._parseJsonType(jsonFormula.right, uiString) + ')';
+                            break;
+
+                        case 'STRING':
+                            formulaString = '\'' + jsonFormula.value.replace(/(')/g, '\\$1').replace(/(\n)/g, '\\n') + '\'';
+                            break;
+
+                        case 'COLLISION_FORMULA':
+                            //    if (uiString) //TODO
+                            //        formulaString = 'touches_object(' + jsonFormula.value + ')';
+
                             this._isStatic = false;
-                            formulaString = 'uvh.getList("' + jsonFormula.value + '")';
-                        }
-                        break;
+                            //changed backend to deliver ids instead of names
+                            formulaString = 'this._sprite.collidesWithSprite(\'' + jsonFormula.value + '\')';
 
-                    case 'BRACKET':
-                        formulaString = '(' + this._parseJsonType(jsonFormula.right, uiString) + ')';
-                        break;
+                            //var params = jsonFormula.value.split(' touches ');  //either 'sp1 touches sp2' (v0.992= or 'sp1' (v0.993 - ?)
+                            //if (params.length == 1) { //v0.993
+                            //    if (uiString)
+                            //        return 'touches_object(' + jsonFormula.value + ')';
 
-                    case 'STRING':
-                        formulaString = '\'' + jsonFormula.value.replace(/(')/g, '\\$1').replace(/(\n)/g, '\\n') + '\'';
-                        break;
+                            //    return 'this._sprite.collidesWithSprite(\'' + params[0] + '\')';
+                            //}
+                            //else if (params.length == 2) { //v0.992
+                            //    if (uiString)
+                            //        return '\'' + jsonFormula.value + '\'';
 
-                    case 'COLLISION_FORMULA':
-                        //    if (uiString) //TODO
-                        //        formulaString = 'touches_object(' + jsonFormula.value + ')';
+                            //    return 'this._sprite.collidesWithSprite(\'' + params[1] + '\')';
+                            //}
+                            //else { //not supported
+                            //    if (uiString)
+                            //        return '\'' + jsonFormula.value + '\'';
+                            //    return 'false';
+                            //}
+                            break;
 
-                        this._isStatic = false;
-                        //changed backend to deliver ids instead of names
-                        formulaString = 'this._sprite.collidesWithSprite(\'' + jsonFormula.value + '\')';
-
-                        //var params = jsonFormula.value.split(' touches ');  //either 'sp1 touches sp2' (v0.992= or 'sp1' (v0.993 - ?)
-                        //if (params.length == 1) { //v0.993
-                        //    if (uiString)
-                        //        return 'touches_object(' + jsonFormula.value + ')';
-
-                        //    return 'this._sprite.collidesWithSprite(\'' + params[0] + '\')';
-                        //}
-                        //else if (params.length == 2) { //v0.992
-                        //    if (uiString)
-                        //        return '\'' + jsonFormula.value + '\'';
-
-                        //    return 'this._sprite.collidesWithSprite(\'' + params[1] + '\')';
-                        //}
-                        //else { //not supported
-                        //    if (uiString)
-                        //        return '\'' + jsonFormula.value + '\'';
-                        //    return 'false';
-                        //}
-                        break;
-
-                    default:
-                        throw new Error('formula parser: unknown type: ' + jsonFormula.type);     //TODO: do we need an onError event? -> new and unsupported operators?
+                        default:
+                            throw new Error('formula parser: unknown type: ' + jsonFormula.type);     //TODO: do we need an onError event? -> new and unsupported operators?
+                    }
                 }
-
-                //add casts
+                //add casts: var cast = PocketCode.Cast; injected in each formula   
+                //null should not be called: but if the formula contains missing entries we add them here by casting null to the expected type
                 if (!type)
                     return formulaString;
                 if (type == 'value')
-                    return 'this._toValue(' + formulaString + ')';
+                    return 'cast.toValue(' + formulaString + ')';
                 if (type == 'string')
-                    return 'this._toString(' + formulaString + ')';
+                    return 'cast.toString(' + formulaString + ')';
                 if (type == 'boolean')
-                    return 'this._toBoolean(' + formulaString + ')';
+                    return 'cast.toBoolean(' + formulaString + ')';
                 if (type == 'number')
-                    return 'this._toNumber(' + formulaString + ')';
+                    return 'cast.toNumber(' + formulaString + ')';
             },
 
             _concatOperatorFormula: function (jsonFormula, operator, uiString, type) {
@@ -673,9 +669,7 @@ PocketCode.merge({
                         if (uiString)
                             return 'length(' + this._parseJsonType(jsonFormula.left, uiString) + ')';
 
-                        if (jsonFormula.left)
-                            return this._parseJsonType(jsonFormula.left, uiString, 'string') + '.length';
-                        return 0;
+                        return this._parseJsonType(jsonFormula.left, uiString, 'string') + '.length';
 
                     case 'LETTER':
                         if (uiString)

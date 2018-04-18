@@ -55,7 +55,10 @@ QUnit.test("Formula", function (assert) {
         json = JSON.parse('{"type":"NUMBER","value":"500","right":{"type":"NUMBER","value":"500","right":null,"left":null},"left":null}');
         assert.throws(function () { var f = new PocketCode.Formula(undefined, undefined, json); }, Error, "ERROR: formula parsing error detection");
     */
-    assert.throws(function () { f.json = JSON.parse('{"type":"NUMBER","value":"X","right":null,"left":null}'); }, Error, "setter validation check");
+    //old: assert.throws(function () { f.json = JSON.parse('{"type":"NUMBER","value":"X","right":null,"left":null}'); }, Error, "ERROR: setter validation check");
+    f.json = JSON.parse('{"type":"NUMBER","value":"X","right":null,"left":null}');
+    assert.equal(f.calculate(), 0, "invalid number property was replaced by 0");
+    assert.equal(f.json.value, 0, "the JSON itself was corrected");
 
     //dispose
     f.dispose();
