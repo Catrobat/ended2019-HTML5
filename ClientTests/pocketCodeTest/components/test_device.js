@@ -422,8 +422,9 @@ QUnit.test("DeviceEmulator Key Events Left/Right", function (assert) {
             testInclinationMaxLeftAlt();
         }
         devEm.inclinationMinMax = 65;
+        devEm._keyDownDateTime.LEFT=60;
         devEm._keyDown({keyCode: devEm._keyCode.LEFT});
-        setTimeout(waitForMaxInclination, 1500);
+        setTimeout(waitForMaxInclination, 200);
     }
 
     function testInclinationMaxLeftAlt() {
@@ -433,8 +434,9 @@ QUnit.test("DeviceEmulator Key Events Left/Right", function (assert) {
             devEm._keyUp({keyCode: devEm._alternativeKeyCode.LEFT});
             testInclinationMaxRight();
         }
+        devEm._keyDownDateTime.LEFT=60;
         devEm._keyDown({keyCode: devEm._alternativeKeyCode.LEFT});
-        setTimeout(waitForMaxInclination, 1500);
+        setTimeout(waitForMaxInclination, 200);
     }
 
     function testInclinationMaxRight() {
@@ -444,8 +446,9 @@ QUnit.test("DeviceEmulator Key Events Left/Right", function (assert) {
             devEm._keyUp({keyCode: devEm._keyCode.RIGHT});
             testInclinationMaxRightAlt();
         }
+        devEm._keyDownDateTime.RIGHT=-60;
         devEm._keyDown({keyCode: devEm._keyCode.RIGHT});
-        setTimeout(waitForMaxInclination, 1500);
+        setTimeout(waitForMaxInclination, 200);
     }
 
     function testInclinationMaxRightAlt() {
@@ -455,8 +458,9 @@ QUnit.test("DeviceEmulator Key Events Left/Right", function (assert) {
             devEm._keyUp({keyCode: devEm._alternativeKeyCode.RIGHT});
             done();
         }
+        devEm._keyDownDateTime.RIGHT=-60;
         devEm._keyDown({keyCode: devEm._alternativeKeyCode.RIGHT});
-        setTimeout(waitForMaxInclination, 1500);
+        setTimeout(waitForMaxInclination, 200);
         //testDisposed();
     }
 
@@ -665,8 +669,9 @@ QUnit.test("DeviceEmulator Key Events Up/Down", function (assert) {
             testInclinationMaxUpAlt();
         }
         devEm.inclinationMinMax = 65;
+        devEm._keyDownDateTime.UP=-60;
         devEm._keyDown({keyCode: devEm._keyCode.UP});
-        setTimeout(waitForMaxInclination, 5000);
+        setTimeout(waitForMaxInclination, 200);
     }
 
     function testInclinationMaxUpAlt() {
@@ -676,8 +681,9 @@ QUnit.test("DeviceEmulator Key Events Up/Down", function (assert) {
             devEm._keyUp({keyCode: devEm._alternativeKeyCode.UP});
             testInclinationMaxDown();
         }
+        devEm._keyDownDateTime.UP=-60;
         devEm._keyDown({keyCode: devEm._alternativeKeyCode.UP});
-        setTimeout(waitForMaxInclination, 5000);
+        setTimeout(waitForMaxInclination, 200);
     }
 
     function testInclinationMaxDown() {
@@ -687,8 +693,10 @@ QUnit.test("DeviceEmulator Key Events Up/Down", function (assert) {
             devEm._keyUp({keyCode: devEm._keyCode.DOWN});
             testInclinationMaxDownAlt();
         }
+        devEm._keyDownDateTime.DOWN=60;
+
         devEm._keyDown({keyCode: devEm._keyCode.DOWN});
-        setTimeout(waitForMaxInclination, 5000);
+        setTimeout(waitForMaxInclination, 200);
     }
 
     function testInclinationMaxDownAlt() {
@@ -699,8 +707,9 @@ QUnit.test("DeviceEmulator Key Events Up/Down", function (assert) {
             done();
             //testSpace();
         }
+        devEm._keyDownDateTime.DOWN=60;
         devEm._keyDown({keyCode: devEm._alternativeKeyCode.DOWN});
-        setTimeout(waitForMaxInclination, 5000);
+        setTimeout(waitForMaxInclination, 200);
         // testDisposed();
     }
 
@@ -744,9 +753,11 @@ QUnit.test("DeviceEmulator Up,Down,Right,Left", function (assert) {
         assert.equal(devEm.inclinationX, 0, "RIGHT Key released: no inclination");
         goKeyUpAndLeft();
     }
+    devEm._keyDownDateTime.RIGHT=-60;
+    devEm._keyDownDateTime.UP=-60;
     devEm._keyDown({keyCode: devEm._keyCode.UP});
     devEm._keyDown({keyCode: devEm._keyCode.RIGHT});
-    setTimeout(validateSingleKeyUpAndRight, 1500);
+    setTimeout(validateSingleKeyUpAndRight, 200);
 
 
     //Up(first)key and Left Key
@@ -762,9 +773,11 @@ QUnit.test("DeviceEmulator Up,Down,Right,Left", function (assert) {
             assert.equal(devEm.inclinationX, 0, "Right Key released: no inclination");
             goValidateWholeKey();
         }
+        devEm._keyDownDateTime.LEFT=60;
+        devEm._keyDownDateTime.UP=-60;
         devEm._keyDown({keyCode: devEm._keyCode.UP});
         devEm._keyDown({keyCode: devEm._keyCode.LEFT});
-        setTimeout(validateSingleKeyUpAndLeft, 1500);
+        setTimeout(validateSingleKeyUpAndLeft, 200);
     }
 
 
@@ -806,9 +819,11 @@ QUnit.test("DeviceEmulator Up,Down,Right,Left", function (assert) {
             assert.equal(devEm.inclinationX, 0, "Left Key released: no inclination");
             goDownAndRight();
         }
+        devEm._keyDownDateTime.LEFT=60;
+        devEm._keyDownDateTime.DOWN=60;
         devEm._keyDown({keyCode: devEm._keyCode.DOWN});
         devEm._keyDown({keyCode: devEm._keyCode.LEFT});
-        setTimeout(validateSingleKeyDownAndLeft, 1500);
+        setTimeout(validateSingleKeyDownAndLeft, 200);
     }
 
     //Down(first)key and left keys pressed after released
@@ -824,9 +839,11 @@ QUnit.test("DeviceEmulator Up,Down,Right,Left", function (assert) {
             assert.equal(devEm.inclinationX, 0, "Right Key released: no inclination");
             done();
         }
+        devEm._keyDownDateTime.RIGHT=-60;
+        devEm._keyDownDateTime.DOWN=60;
         devEm._keyDown({keyCode: devEm._keyCode.DOWN});
         devEm._keyDown({keyCode: devEm._keyCode.RIGHT});
-        setTimeout(validateSingleKeyDownAndRight, 1500);
+        setTimeout(validateSingleKeyDownAndRight, 200);
     }
 
 });
