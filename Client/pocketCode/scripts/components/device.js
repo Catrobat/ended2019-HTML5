@@ -63,6 +63,9 @@ PocketCode.Device = (function () {
             },
         };
 
+        //attach device feature handler
+        this._features.VIBRATE.onInactive.addEventListener(new SmartJs.Event.EventListener(this._featureInactiveHandler, this));
+
         this._sensorData = {
             X_ACCELERATION: 0.0,  //we make sure no null-values are returned as this may break our formula calculations
             Y_ACCELERATION: 0.0,
@@ -105,6 +108,7 @@ PocketCode.Device = (function () {
 
         //events
         this._onInit = new SmartJs.Event.Event(this);
+        this._onInactive = new SmartJs.Event.Event(this);
         this._onSpaceKeyDown = new SmartJs.Event.Event(this);
         //this._onSupportChange = new SmartJs.Event.Event(this);  //this event is triggered if a sensor is used that is not supported
     }
@@ -114,6 +118,11 @@ PocketCode.Device = (function () {
         onInit: {   //used for onLoad event
             get: function () {
                 return this._onInit;
+            },
+        },
+        onInactive: {   //used for onExecuted event
+            get: function () {
+                return this._onInactive;
             },
         },
         onSpaceKeyDown: {
@@ -128,6 +137,15 @@ PocketCode.Device = (function () {
         initialized: {
             get: function () {
                 return (!this._features.GEO_LOCATION.inUse || this._geoLocationData.initialized);
+            },
+        },
+        hasActiveFeatures: {
+            get: function () {
+                for (var f in this._features) {
+                    if (this._features[f].isActive)
+                        return true;
+                }
+                return false;
             },
         },
         isMobile: {
@@ -435,6 +453,10 @@ PocketCode.Device = (function () {
             if (this.initialized)
                 this._onInit.dispatchEvent();
         },
+        _featureInactiveHandler: function (e) {  //note: reused by derived classes
+            if (!this.hasActiveFeatures)
+                this._onInactive.dispatchEvent();
+        },
         _getInclinationX: function (beta, gamma) {
             var x;
             if (this._windowOrientation == 0 || this._windowOrientation == -180) {
@@ -677,8 +699,10 @@ PocketCode.Device = (function () {
         },
         /* override */
         dispose: function () {
-            //stop vibration
-            this._features.VIBRATE.reset();
+            //dispose features (stop them)
+            for (var f in this._features)
+                if (this._features[f].dispose)
+                    this._features[f].dispose();
 
             if (this._initDeviceOrientationListener)
                 this._removeDomListener(window, 'deviceorientation', this._initDeviceOrientationListener);
@@ -858,12 +882,13 @@ PocketCode.MediaDevice = (function () {
         dispose: function () {
             this._removeDomListener(window, 'orientationchange', this._orientationListener);
 
-            this._fd.dispose();
-            this._fd = undefined;
-            this._cam.onInit.removeEventListener(new SmartJs.Event.EventListener(this._featureInitializedHandler, this));
-            this._cam.onChange.removeEventListener(new SmartJs.Event.EventListener(this._cameraChangeHandler, this));
-            this._cam.dispose();
-            this._cam = undefined;
+            //not necessary- disposing features handled in base class
+            //this._fd.dispose();
+            //this._fd = undefined;
+            //this._cam.onInit.removeEventListener(new SmartJs.Event.EventListener(this._featureInitializedHandler, this));
+            //this._cam.onChange.removeEventListener(new SmartJs.Event.EventListener(this._cameraChangeHandler, this));
+            //this._cam.dispose();
+            //this._cam = undefined;
 
             PocketCode.Device.prototype.dispose.call(this);
         },

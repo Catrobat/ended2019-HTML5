@@ -16,11 +16,12 @@ PocketCode.DeviceFeature = (function () {
         this._supported = supported != undefined ? !!supported : false;
         this._inUse = false;
         this._initialized = false;
+        this._isActive = false;
         this._indistinguishableCameras = false;
 
         //events
         this._onInit = new SmartJs.Event.Event(this);
-        this._onIndistinguishableCameras = new SmartJs.Event.Event(this);
+        this._onInactive = new SmartJs.Event.Event(this);
     }
 
     //events
@@ -28,6 +29,11 @@ PocketCode.DeviceFeature = (function () {
         onInit: {   //used for onLoad event
             get: function () {
                 return this._onInit;
+            },
+        },
+        onInactive: {   //used for onExecuted event
+            get: function () {
+                return this._onInactive;
             },
         },
     });
@@ -52,6 +58,11 @@ PocketCode.DeviceFeature = (function () {
         initialized: {
             get: function () {
                 return !this.inUse || this._initialized ? true : false;
+            },
+        },
+        isActive: {
+            get: function () {
+                return this._isActive;
             },
         },
         viewState: {
@@ -90,6 +101,9 @@ PocketCode.DeviceFeature = (function () {
             //this method should be overridden in the inherited classes
             throw new Error('abstract: missing override');
         },
+        dispose: function () {
+            this.reset();
+        },
     });
 
     return DeviceFeature;
@@ -106,10 +120,17 @@ PocketCode.merge({
             PocketCode.DeviceFeature.call(this, 'lblDeviceVibrate', supported);
 
             this._timer = new SmartJs.Components.Timer();
+            this._timer.onExpire.addEventListener(new SmartJs.Event.EventListener(this._timerExpiredHandler, this));
         }
 
         //methods
         DeviceVibration.prototype.merge({
+            _timerExpiredHandler: function () {
+                if (!this._isActive)   //notifies device that vibration has stopped (not called if vibrate is not supported)
+                    return;
+                this._isActive = false;
+                this._onInactive.dispatchEvent();
+            },
             _vibrate: function () {
                 return true;    //add an empty method to avoid errors and keep testability
             },
@@ -137,6 +158,7 @@ PocketCode.merge({
                 if (this._vibrate(timespan)) {    //started
                     this._timer.delay = timespan;
                     this._timer.start();
+                    this._isActive = true;
                     return true;
                 }
                 return false;
@@ -153,6 +175,7 @@ PocketCode.merge({
             reset: function () {
                 this._vibrate(0);
                 this._timer.stop();
+                this._isActive = false;
             },
             _getViewState: function () {
                 var timespan = this._timer.remainingTime;
@@ -166,11 +189,11 @@ PocketCode.merge({
                     this.start(viewState.remainingTime);
                 }
             },
-            dispose: function () {
-                this.reset();
-                this._timer.dispose();
-                PocketCode.DeviceFeature.prototype.dispose.call(this);
-            }
+            //dispose: function () {
+            //    this.reset();
+            //    this._timer.dispose();
+            //    PocketCode.DeviceFeature.prototype.dispose.call(this);
+            //}
         });
 
         return DeviceVibration;
@@ -223,6 +246,7 @@ PocketCode.merge({
             this._videoInitializedListener = this._addDomListener(this._video, 'loadedmetadata', this._videoInitializedHandler);
 
             this._onChange = new SmartJs.Event.Event(this);
+            //this._onIndistinguishableCameras = new SmartJs.Event.Event(this);
         }
 
         //events
@@ -237,11 +261,11 @@ PocketCode.merge({
                     return this._onChange;
                 },
             },
-            onIndistinguishableCameras: {
-                get: function () {
-                    return this._onIndistinguishableCameras;
-                },
-            },
+            //onIndistinguishableCameras: {
+            //    get: function () {
+            //        return this._onIndistinguishableCameras;
+            //    },
+            //},
         });
 
         //properties

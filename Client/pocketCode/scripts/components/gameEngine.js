@@ -226,6 +226,7 @@ PocketCode.GameEngine = (function () {
                 this._device.dispose();
             this._device = SmartJs.Device.isMobile ? new PocketCode.MediaDevice() : new PocketCode.DeviceEmulator();
 
+            this._device.onInactive.addEventListener(new SmartJs.Event.EventListener(this._deviceOnInactiveHandler, this));
             this._device.onSpaceKeyDown.addEventListener(new SmartJs.Event.EventListener(this._deviceOnSpaceKeyDownHandler, this));
             this._device.onCameraChange.addEventListener(new SmartJs.Event.EventListener(this._deviceOnCameraChangeHandler, this));
 
@@ -285,7 +286,8 @@ PocketCode.GameEngine = (function () {
             if (e.target == this._currentScene) {
                 this._viewStates = {};
                 this._currentScene = undefined;
-                this._onProgramExecuted.dispatchEvent();
+                if (!this._device.hasActiveFeatures)
+                    this._onProgramExecuted.dispatchEvent();
             }
         },
         _resourceProgressChangeHandler: function (e) {
@@ -311,10 +313,6 @@ PocketCode.GameEngine = (function () {
             if (this._scenesLoaded && this._device.initialized) {
                 this._handleLoadingComplete();
             }
-        },
-        _deviceInitHandler: function () {
-            if (this._scenesLoaded && this._resourcesLoaded)
-                this._handleLoadingComplete();
         },
         _handleLoadingComplete: function () {
             //init scene sprites
@@ -345,13 +343,21 @@ PocketCode.GameEngine = (function () {
                 this._onLoadingError.dispatchEvent({ files: [e.file] });
         },
         //device
-        _deviceOnCameraChangeHandler: function (e) {
-            this._onCameraUsageChange.dispatchEvent(e);
+        _deviceInitHandler: function () {
+            if (this._scenesLoaded && this._resourcesLoaded)
+                this._handleLoadingComplete();
+        },
+        _deviceOnInactiveHandler: function () {
+            if (!this._currentScene)
+                this._onProgramExecuted.dispatchEvent();
         },
         _deviceOnSpaceKeyDownHandler: function (e) {
             var cs = this._currentScene;
             if (cs.executionState === PocketCode.ExecutionState.RUNNING && cs.background)
                 cs.onSpriteTappedAction.dispatchEvent({ sprite: cs.background });
+        },
+        _deviceOnCameraChangeHandler: function (e) {
+            this._onCameraUsageChange.dispatchEvent(e);
         },
         //project interaction
         runProject: function () {
@@ -490,6 +496,7 @@ PocketCode.GameEngine = (function () {
             this.stopProject();
 
             if (this._device) {
+                this._device.onInactive.removeEventListener(new SmartJs.Event.EventListener(this._deviceOnInactiveHandler, this));
                 this._device.onSpaceKeyDown.removeEventListener(new SmartJs.Event.EventListener(this._deviceOnSpaceKeyDownHandler, this));
                 this._device.onCameraChange.removeEventListener(new SmartJs.Event.EventListener(this._deviceOnCameraChangeHandler, this));
             }
