@@ -244,7 +244,7 @@ PocketCode.merge({
                     return;
                 }
 
-                ctx.textBaseline = 'top';
+                ctx.textBaseline = 'middle';
                 ctx.font = font;
                 ctx.textAlign = 'left'; //always left even if set to 'center'
                 var textBlock = this._getTextBlock(string);
@@ -253,7 +253,7 @@ PocketCode.merge({
 
                 ctx.save();
                 //apply settings again (due to canvas resize)
-                ctx.textBaseline = 'top';
+                ctx.textBaseline = 'middle';
                 ctx.font = font;
                 ctx.textAlign = 'left';
 
@@ -277,7 +277,7 @@ PocketCode.merge({
                     if (this._textAlign == 'center')
                         offset = (textBlock.width - line.width) * 0.5;  //works much better (RTL) than ctx.translate(textBlock.width * 0.5, 0);
 
-                    ctx.fillText(text, offset, this.lineHeight * i);
+                    ctx.fillText(text, offset, this.lineHeight * (i + 0.5));
                 }
                 ctx.restore();
                 this._onCacheUpdate.dispatchEvent({ size: { width: textBlock.width, height: textBlock.height } });
