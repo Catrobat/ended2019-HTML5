@@ -97,8 +97,8 @@ PocketCode.Math.merge({
             toNumber: function (value) {
                 value = this.toValue(value);    //objects value
 
-                if (typeof value == 'string')   //try to replace localized comma with '.'
-                    value.replace((1.1).toLocaleString().substring(1, 2), '.');
+                //if (typeof value == 'string')   //try to replace localized comma with '.'
+                //    value = value.replace((1.1).toLocaleString().substring(1, 2), '.');
                 //try to parse string or bool to number: including Infinity as string
                 value = +value; //returns NaN if not possible
                 if (value != null && !isNaN(value))

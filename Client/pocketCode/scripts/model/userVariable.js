@@ -91,9 +91,10 @@ PocketCode.Model.merge({
 
     UserVariable: (function () {
 
-        function UserVariable(id, name) {
+        function UserVariable(id, name, value) {
             this._id = id;
-            this.name = name;
+            this._name = name;
+            this._value = value;
 
             //events
             this._onChange = new SmartJs.Event.Event(this);
@@ -104,6 +105,39 @@ PocketCode.Model.merge({
             onChange: {
                 get: function () { return this._onChange; },
             },
+        });
+
+        //properties
+        Object.defineProperties(UserVariable.prototype, {
+            name: {
+                get: function () {
+                    return this._name;
+                },
+            },
+            value: {
+                get: function () {
+                    return this._getValue();
+                },
+                set: function (value) {
+                    this._setValue(value);
+                },
+            },
+        });
+
+        //methods
+        UserVariable.prototype.merge({
+            _getValue: function () {
+                //this method should be overridden in the inherited classes
+                return this._value;
+            },
+            _setValue: function (value) {
+                //this method should be overridden in the inherited classes
+                throw new Error('setter not supported for this variable type');
+            },
+
+            /*
+             * this class is going to be extended as soon we continue our work on code view
+             */
         });
 
         return UserVariable;
@@ -117,31 +151,21 @@ PocketCode.Model.merge({
         UserVariableSimple.extends(PocketCode.Model.UserVariable, false);
 
         function UserVariableSimple(id, name, value) {
-            PocketCode.Model.UserVariable.call(this, id, name);
+            PocketCode.Model.UserVariable.call(this, id, name, 0);
 
-            this._value = 0;
             if (value != undefined)
                 this._value = PocketCode.Math.Cast.toValue(value);
         }
 
-        //properties
-        Object.defineProperties(UserVariableSimple.prototype, {
-            value: {
-                get: function () {
-                    return this._value;
-                },
-                set: function (value) {
-                    value = PocketCode.Math.Cast.toValue(value);
-                    if (this._value === value)
-                        return;
-                    this._value = value;
-                    this._onChange.dispatchEvent({ id: this._id, value: this._value });
-                },
-            },
-        });
-
         //methods
         UserVariableSimple.prototype.merge({
+            _setValue: function (value) {
+                value = PocketCode.Math.Cast.toValue(value);
+                if (this._value === value)
+                    return;
+                this._value = value;
+                this._onChange.dispatchEvent({ id: this._id, value: this._value });
+            },
             reset: function () {
                 this._value = 0;
             },
@@ -156,9 +180,8 @@ PocketCode.Model.merge({
         UserVariableList.extends(PocketCode.Model.UserVariable, false);
 
         function UserVariableList(id, name, value) {
-            PocketCode.Model.UserVariable.call(this, id, name);
+            PocketCode.Model.UserVariable.call(this, id, name, []);
 
-            this._value = [];
             if (value != undefined) {
                 if (!(value instanceof Array))
                     throw new Error('invalid argument: expected: value typeof array');
@@ -169,14 +192,6 @@ PocketCode.Model.merge({
 
         //properties
         Object.defineProperties(UserVariableList.prototype, {
-            value: {
-                //as lists can be assigned to variables and used in formulas (at least in Scratch) we need
-                //to represent the list as single value as well
-                get: function () {
-                    return this._value.join('');
-                    //return PocketCode.Math.Cast.toTypedValue(this._value.join(''));
-                },
-            },
             length: {
                 get: function () {
                     return this._value.length;
@@ -186,13 +201,16 @@ PocketCode.Model.merge({
 
         //methods
         UserVariableList.prototype.merge({
+            _getValue: function () {
+                //as lists can be assigned to variables and used in formulas (at least in Scratch) we need
+                //to represent the list as single value as well
+                return this._value.join('');
+            },
             append: function (value) {
                 this._value.push(PocketCode.Math.Cast.toValue(value));
             },
             _validateIndex: function (idx, length) {
                 idx = PocketCode.Math.Cast.toNumber(idx);  //NaN -> 0
-                //if (idx === true)   //false = isNaN
-                //    idx = 1;
                 idx = Math.floor(idx);  //to int like in Scratch
                 if (idx < 1 || idx > length)
                     return false;
@@ -216,17 +234,15 @@ PocketCode.Model.merge({
             },
             replaceAt: function (idx, value) {
                 idx = this._validateIndex(idx, this._value.length);
-                if (idx) //{
+                if (idx)
                     this._value[idx - 1] = PocketCode.Math.Cast.toValue(value);
             },
             deleteAt: function (idx) {
                 idx = this._validateIndex(idx, this._value.length);
-                if (idx) //{
+                if (idx)
                     this._value.splice(idx - 1, 1);
             },
             contains: function (value) {
-                //if (this._value.indexOf(value /*PocketCode.Math.Cast.toTypedValue(value)*/) !== -1)  //TODO: match???? case insensitive
-                //    return true;
                 var array = this._value;
                 for (var i = 0, l = array.length; i < l; i++)
                     if (PocketCode.Math.isEqual(array[i], PocketCode.Math.Cast.toValue(value)))

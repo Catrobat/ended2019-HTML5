@@ -87,12 +87,13 @@ QUnit.test("UserVariableCollection", function (assert) {
 
 QUnit.test("UserVariable", function (assert) {
 
-    var uv = new PocketCode.Model.UserVariable(1, "2");
+    var uv = new PocketCode.Model.UserVariable(1, "2", 2);
     assert.ok(uv instanceof PocketCode.Model.UserVariable, "instance check");
     assert.ok(uv.onChange instanceof SmartJs.Event.Event, "onChange event accessor");
 
     assert.ok(uv._id == 1 && uv.name === "2", "properties set correctly: value initialized");
-
+    assert.equal(uv.value, 2, "value accessor");
+    assert.throws(function () { uv.value = 3; }, Error, "ERROR: value setter in base class");
 });
 
 
@@ -120,7 +121,7 @@ QUnit.test("UserVariableSimple", function (assert) {
     assert.equal(uv.value, 2, "2 (string) as number = 2");
 
     uv = new PocketCode.Model.UserVariableSimple(1, "2", "3.4");
-    assert.ok(uv._id == 1 && uv.name === "2" && uv._value === 3.4 && uv.value === 3.4, "properties set correctly: including value");
+    assert.ok(uv._id == 1 && uv.name === "2" && uv.value === "3.4", "properties set correctly: including value: any value type can be stored");
 
     var uv2 = new PocketCode.Model.UserVariableSimple(1, "2", uv);
     assert.equal(uv.value, 3.4, "assign user variable");
@@ -162,14 +163,14 @@ QUnit.test("UserVariableList", function (assert) {
     //uv.onChange.addEventListener(new SmartJs.Event.EventListener(changeHandler, this));         //currently disabled for lists: we cannot show them
 
     assert.ok(uv._id == 1 && uv.name === "2" && uv.length === 4, "properties set: check for list length");
-    assert.deepEqual(uv._value, [3.4, 3.5, 3.6, "string"], "properties set: check on equal");
+    assert.deepEqual(uv._value, [3.4, 3.5, "3.6", "string"], "properties set: check on equal");
 
     //length
     assert.equal(uv.length, 4, "length");
 
     //value at
     assert.equal(uv.valueAt(2), 3.5, "value at: 2");
-    assert.equal(uv.valueAt(3), 3.6, "value at: 3");
+    assert.equal(uv.valueAt(3), "3.6", "value at: 3");
     assert.equal(uv.valueAt(0), undefined, "value at: 0");
     assert.equal(uv.valueAt(-1), undefined, "value at: < 0");
     assert.equal(uv.valueAt(uv.length + 1), undefined, "value at: length + 1");
@@ -178,54 +179,54 @@ QUnit.test("UserVariableList", function (assert) {
     assert.equal(uv.valueAt(5.1), undefined, "value at: invalid float index - like in Scratch");
     assert.equal(uv.valueAt(true), 3.4, "value at boolean true: returns 1st - like in Scratch");
     var a, b;
-    assert.equal(uv.valueAt(a*b), undefined, "value at NaN: returns undefined- like in Scratch");
+    assert.equal(uv.valueAt(a * b), undefined, "value at NaN: returns undefined- like in Scratch");
 
     //append
-    uv.append("12");
-    assert.deepEqual(uv._value, [3.4, 3.5, 3.6, "string", 12], "append()");
+    uv.append(12);
+    assert.deepEqual(uv._value, [3.4, 3.5, "3.6", "string", 12], "append()");
     //assert.ok(latestChange.id === uv._id && latestChange.target === uv && changeCount == 1, "update event on append");         //currently disabled for lists: we cannot show them
     //latestChange = undefined;
     //changeCount = 0;
 
     //insertAt
     uv.insertAt(2, true);
-    assert.deepEqual(uv._value, [3.4, true, 3.5, 3.6, "string", 12], "insertAt(): simple");
+    assert.deepEqual(uv._value, [3.4, true, 3.5, "3.6", "string", 12], "insertAt(): simple");
     uv.insertAt(0, "invalidindex");
-    assert.deepEqual(uv._value, [3.4, true, 3.5, 3.6, "string", 12], "insertAt(): position 0 - not allowed");
+    assert.deepEqual(uv._value, [3.4, true, 3.5, "3.6", "string", 12], "insertAt(): position 0 - not allowed");
     uv.insertAt(-1, "invalidindex");
-    assert.deepEqual(uv._value, [3.4, true, 3.5, 3.6, "string", 12], "insertAt(): negative position - not allowed");
+    assert.deepEqual(uv._value, [3.4, true, 3.5, "3.6", "string", 12], "insertAt(): negative position - not allowed");
     //assert.equal(changeCount, 1, "change event only dispatched if list has changed");
     //changeCount = 0;
 
     uv.insertAt(7, "invalidindex?");
-    assert.deepEqual(uv._value, [3.4, true, 3.5, 3.6, "string", 12, "invalidindex?"], "insertAt(): length + 1 - allowed (appended)");
+    assert.deepEqual(uv._value, [3.4, true, 3.5, "3.6", "string", 12, "invalidindex?"], "insertAt(): length + 1 - allowed (appended)");
     //assert.equal(changeCount, 1, "change event on insert at [length+1] = append");
     //changeCount = 0;
 
     uv.insertAt(9, "validIndex");
-    assert.deepEqual(uv._value, [3.4, true, 3.5, 3.6, "string", 12, "invalidindex?"], "insertAt(): > length + 1 - not allowed");
+    assert.deepEqual(uv._value, [3.4, true, 3.5, "3.6", "string", 12, "invalidindex?"], "insertAt(): > length + 1 - not allowed");
     //assert.ok(latestChange.id === uv._id && latestChange.target === uv && changeCount == 0, "update event: no insert");         //currently disabled for lists: we cannot show them
     //latestChange = undefined;
     //changeCount = 0;
 
     //replaceAt
     uv.replaceAt(2, false);
-    assert.deepEqual(uv._value, [3.4, false, 3.5, 3.6, "string", 12, "invalidindex?"], "replaceAt(): valid index");
+    assert.deepEqual(uv._value, [3.4, false, 3.5, "3.6", "string", 12, "invalidindex?"], "replaceAt(): valid index");
     uv.replaceAt(0, false);
-    assert.deepEqual(uv._value, [3.4, false, 3.5, 3.6, "string", 12, "invalidindex?"], "replaceAt(): invalid index: 0");
+    assert.deepEqual(uv._value, [3.4, false, 3.5, "3.6", "string", 12, "invalidindex?"], "replaceAt(): invalid index: 0");
     uv.replaceAt(8, false);
-    assert.deepEqual(uv._value, [3.4, false, 3.5, 3.6, "string", 12, "invalidindex?"], "replaceAt(): invalid index: > length");
+    assert.deepEqual(uv._value, [3.4, false, 3.5, "3.6", "string", 12, "invalidindex?"], "replaceAt(): invalid index: > length");
     //assert.ok(latestChange.id === uv._id && latestChange.target === uv && changeCount == 1, "update event on replace");         //currently disabled for lists: we cannot show them
     //latestChange = undefined;
     //changeCount = 0;
 
     //deleteAt
     uv.deleteAt(7);
-    assert.deepEqual(uv._value, [3.4, false, 3.5, 3.6, "string", 12], "deleeteAt(): valid index");
+    assert.deepEqual(uv._value, [3.4, false, 3.5, "3.6", "string", 12], "deleteAt(): valid index");
     uv.deleteAt(0);
-    assert.deepEqual(uv._value, [3.4, false, 3.5, 3.6, "string", 12], "deleteAt(): invalid index: 0");
+    assert.deepEqual(uv._value, [3.4, false, 3.5, "3.6", "string", 12], "deleteAt(): invalid index: 0");
     uv.deleteAt(7);
-    assert.deepEqual(uv._value, [3.4, false, 3.5, 3.6, "string", 12], "deleteAt(): invalid index: > length");
+    assert.deepEqual(uv._value, [3.4, false, 3.5, "3.6", "string", 12], "deleteAt(): invalid index: > length");
     //assert.ok(latestChange.id === uv._id && latestChange.target === uv && changeCount == 1, "update event on delete");         //currently disabled for lists: we cannot show them
     //latestChange = undefined;
     //changeCount = 0;
@@ -253,7 +254,7 @@ QUnit.test("UserVariableList", function (assert) {
     //lists: one test is enough as all setters are checked already
     var uv2 = new PocketCode.Model.UserVariableList(2, "new", [3.4]);
     uv.append(uv2);
-    assert.ok(uv.valueAt(uv.length) === 3.4, "append: user list: added and casted");
+    assert.equal(uv.valueAt(uv.length), "3.4", "append: user list: added and casted (as string)");
 
     //reset
     //changeCount = 0;         //currently disabled for lists: we cannot show them
