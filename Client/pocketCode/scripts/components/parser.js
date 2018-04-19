@@ -321,8 +321,8 @@ PocketCode.merge({
                     calculate: new Function(
                         'uvh',
                         'uvh || (uvh = this._sprite); ' +
-                        'var cast = PocketCode.Cast; ' +
-                        'return ' + formulaString + ';'),
+                        'var cast = PocketCode.Math.Cast; ' +
+                        'return cast.toValue(' + formulaString + ');'),
                     isStatic: this._isStatic,
                 };
             },
@@ -346,10 +346,10 @@ PocketCode.merge({
                         case 'NUMBER':
                             //make sure it's a number: replace JSON property to make sure there will not be errors in our UI (code view)
                             if (typeof jsonFormula.value != 'number')
-                                jsonFormula.value = PocketCode.Cast.toNumber(jsonFormula.value);
+                                jsonFormula.value = PocketCode.Math.Cast.toNumber(jsonFormula.value);
                             formulaString = jsonFormula.value;
                             if (uiString)
-                                formulaString = PocketCode.Cast.toString(formulaString);
+                                formulaString = PocketCode.Math.Cast.toString(formulaString);
                             break;
 
                         case 'SENSOR':
@@ -423,7 +423,7 @@ PocketCode.merge({
                             throw new Error('formula parser: unknown type: ' + jsonFormula.type);     //TODO: do we need an onError event? -> new and unsupported operators?
                     }
                 }
-                //add casts: var cast = PocketCode.Cast; injected in each formula   
+                //add casts: var cast = PocketCode.Math.Cast; injected in each formula   
                 //null should not be called: but if the formula contains missing entries we add them here by casting null to the expected type
                 if (!type)
                     return formulaString;
@@ -460,12 +460,12 @@ PocketCode.merge({
                     case 'EQUAL':
                         if (uiString)
                             return this._concatOperatorFormula(jsonFormula, ' = ', uiString);
-                        return this._concatOperatorFormula(jsonFormula, ' == ');
+                        return 'PocketCode.Math.isEqual(' + this._parseJsonType(jsonFormula.left) + ', ' + this._parseJsonType(jsonFormula.right) + ')';
 
                     case 'NOT_EQUAL':
                         if (uiString)
                             return this._concatOperatorFormula(jsonFormula, ' ≠ ', uiString);
-                        return this._concatOperatorFormula(jsonFormula, ' != ');
+                        return '(!PocketCode.Math.isEqual(' + this._parseJsonType(jsonFormula.left) + ', ' + this._parseJsonType(jsonFormula.right) + '))';
 
                     case 'SMALLER_OR_EQUAL':
                         if (uiString)
@@ -504,7 +504,7 @@ PocketCode.merge({
                     case 'LOGICAL_NOT':
                         if (uiString)
                             return ' NOT ' + this._parseJsonType(jsonFormula.right, uiString);
-                        return '!' + this._parseJsonType(jsonFormula.right, uiString, 'boolean');
+                        return '(!' + this._parseJsonType(jsonFormula.right, uiString, 'boolean') + ')';
 
                     default:
                         throw new Error('formula parser: unknown operator: ' + jsonFormula.value);  //TODO: do we need an onError event? -> new and unsupported operators?
@@ -560,8 +560,8 @@ PocketCode.merge({
                         //at runtime to determine which one to use
                         //if both partial results are integers, the random number will be a number without decimal places
                         //for calculation we need the scope of the formula itself! To solve this, the whole logic is included in our dynamic function
-                        var lString = '(' + this._parseJsonType(jsonFormula.left) + ')';
-                        var rString = '(' + this._parseJsonType(jsonFormula.right) + ')';
+                        var lString = '(' + this._parseJsonType(jsonFormula.left, uiString, 'number') + ')';
+                        var rString = '(' + this._parseJsonType(jsonFormula.right, uiString, 'number') + ')';
 
                         var stmt = '((' + lString + ' <= ' + rString + ') ? ';
                         stmt += '((' + lString + ' % 1 === 0 && ' + rString + ' % 1 === 0) ? (Math.floor(Math.random() * (' + rString + '+ 1 -' + lString + ') + ' + lString + ')) : (Math.random() * (' + rString + '-' + lString + ') + ' + lString + ')) : ';

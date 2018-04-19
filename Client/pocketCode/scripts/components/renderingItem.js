@@ -233,7 +233,7 @@ PocketCode.merge({
             _redrawCache: function () {
                 var canvas = this._cacheCanvas,
                     ctx = this._cacheCtx,
-                    string = PocketCode.Cast.toString(this._value),
+                    string = PocketCode.Math.Cast.toI18nString(this._value, PocketCode.I18nProvider.currentLanguage),
                     dir = PocketCode.I18nProvider.getTextDirection(string),
                     rtl = (dir == PocketCode.Ui.Direction.RTL),
                     translation = 0,

@@ -121,7 +121,7 @@ PocketCode.Model.merge({
 
             this._value = 0;
             if (value != undefined)
-                this._value = PocketCode.Cast.toTypedValue(value);
+                this._value = PocketCode.Math.Cast.toValue(value);
         }
 
         //properties
@@ -131,7 +131,7 @@ PocketCode.Model.merge({
                     return this._value;
                 },
                 set: function (value) {
-                    value = PocketCode.Cast.toTypedValue(value);
+                    value = PocketCode.Math.Cast.toValue(value);
                     if (this._value === value)
                         return;
                     this._value = value;
@@ -173,7 +173,8 @@ PocketCode.Model.merge({
                 //as lists can be assigned to variables and used in formulas (at least in Scratch) we need
                 //to represent the list as single value as well
                 get: function () {
-                    return PocketCode.Cast.toTypedValue(this._value.join(''));
+                    return this._value.join('');
+                    //return PocketCode.Math.Cast.toTypedValue(this._value.join(''));
                 },
             },
             length: {
@@ -186,12 +187,12 @@ PocketCode.Model.merge({
         //methods
         UserVariableList.prototype.merge({
             append: function (value) {
-                this._value.push(PocketCode.Cast.toTypedValue(value));
+                this._value.push(PocketCode.Math.Cast.toValue(value));
             },
             _validateIndex: function (idx, length) {
-                idx = PocketCode.Cast.toTypedValue(idx);  //NaN -> 0
-                if (idx === true)   //false = isNaN
-                    idx = 1;
+                idx = PocketCode.Math.Cast.toNumber(idx);  //NaN -> 0
+                //if (idx === true)   //false = isNaN
+                //    idx = 1;
                 idx = Math.floor(idx);  //to int like in Scratch
                 if (idx < 1 || idx > length)
                     return false;
@@ -209,14 +210,14 @@ PocketCode.Model.merge({
                     return;
 
                 if (idx <= this._value.length)
-                    this._value.insert(idx - 1, PocketCode.Cast.toTypedValue(value));
+                    this._value.insert(idx - 1, PocketCode.Math.Cast.toValue(value));
                 else
-                    this.append(PocketCode.Cast.toTypedValue(value));
+                    this.append(PocketCode.Math.Cast.toValue(value));
             },
             replaceAt: function (idx, value) {
                 idx = this._validateIndex(idx, this._value.length);
                 if (idx) //{
-                    this._value[idx - 1] = PocketCode.Cast.toTypedValue(value);
+                    this._value[idx - 1] = PocketCode.Math.Cast.toValue(value);
             },
             deleteAt: function (idx) {
                 idx = this._validateIndex(idx, this._value.length);
@@ -224,8 +225,12 @@ PocketCode.Model.merge({
                     this._value.splice(idx - 1, 1);
             },
             contains: function (value) {
-                if (this._value.indexOf(PocketCode.Cast.toTypedValue(value)) !== -1)
-                    return true;
+                //if (this._value.indexOf(value /*PocketCode.Math.Cast.toTypedValue(value)*/) !== -1)  //TODO: match???? case insensitive
+                //    return true;
+                var array = this._value;
+                for (var i = 0, l = array.length; i < l; i++)
+                    if (PocketCode.Math.isEqual(array[i], PocketCode.Math.Cast.toValue(value)))
+                        return true;
                 return false;
             },
             reset: function () {

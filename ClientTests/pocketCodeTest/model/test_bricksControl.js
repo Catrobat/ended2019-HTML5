@@ -827,7 +827,7 @@ QUnit.test("DeleteCloneBrick", function (assert) {
         sprite = scene._sprites[0];
 
         scene.start();
-        setTimeout(validateClone, 10);
+        setTimeout(validateClone, 100);
     }
 
     function validateClone() {
@@ -841,7 +841,7 @@ QUnit.test("DeleteCloneBrick", function (assert) {
             window.setTimeout(function () {
                 assert.ok(clone._disposed, "disposed on delete (with delay)");
                 done3();
-            }, 100);
+            }, 300);
             //assert.equal(typeof e.loopDelay, "boolean", "loopDelay received");
             assert.equal(scene._sprites.length, 1, "clone deleted from list");
             done2();

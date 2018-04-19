@@ -40,9 +40,8 @@ PocketCode._I18nProvider = (function (propObject) {
             //TODO: only add strings required if i18n strings fail to load at startup
 
             //new: add new loc strings here until they are included in crowdin
-            "variableTrue": "True",
-            "variableFalse": "False",
-            "variableInfinity": "Infinity",
+            "variableTrue": "richtig",  //true
+            "variableFalse": "falsch",  //false
         };
 
         this._onLanguageChange = new SmartJs.Event.Event(this);

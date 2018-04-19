@@ -141,7 +141,7 @@ QUnit.test("RenderingText", function (assert) {
     };
 
     assert.ok(topLeft.x < 2, "rendered to left (center)");
-    assert.ok(topLeft.y < 2, "rendered to top (center)");
+    assert.ok(topLeft.y <= 2, "rendered to top (center)");
 
     ctx.clearRect(0, 0, 200, 100);
     renderingText.x = 10;
@@ -154,7 +154,7 @@ QUnit.test("RenderingText", function (assert) {
         y: 50 - Math.round(Math.sin(img.tl.angle) * img.tl.length),
     };
     assert.ok(topLeft.x > 10 && topLeft.x < 12, "rendered to left (x offset)");
-    assert.ok(topLeft.y > 10 && topLeft.y < 12, "rendered to top (y offset)");
+    assert.ok(topLeft.y > 10 && topLeft.y <= 12, "rendered to top (y offset)");
 
     ctx.clearRect(0, 0, 200, 100);
     canvas.with = 400;
