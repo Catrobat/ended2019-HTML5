@@ -17,7 +17,6 @@ PocketCode.DeviceFeature = (function () {
         this._inUse = false;
         this._initialized = false;
         this._isActive = false;
-        this._indistinguishableCameras = false;
 
         //events
         this._onInit = new SmartJs.Event.Event(this);
@@ -103,6 +102,7 @@ PocketCode.DeviceFeature = (function () {
         },
         dispose: function () {
             this.reset();
+            SmartJs.Core.EventTarget.prototype.dispose.call(this);
         },
     });
 
@@ -233,6 +233,7 @@ PocketCode.merge({
             };
             this._selected = PocketCode.CameraType.FRONT;   //default
             this._constraints = { video: true, audio: false };
+            //this._indistinguishableCameras = true;
             //    initFaceDetection: false,   //set to true if faceDetection is called before cameraOn (wait for initalization until we know a camera is used)
             //this._initialized = false;  //if true: do not dispatch onInit
 
@@ -341,10 +342,10 @@ PocketCode.merge({
 
                         }
 
-                        if (!this._front.deviceId && !this._back.deviceId) {
-                            this._indistinguishableCameras = true;
+                        //if (!this._front.deviceId && !this._back.deviceId) {
+                        //    this._indistinguishableCameras = true;
 
-                        }
+                        //}
                         this._mediaDevices.devices = devices;
 
                         if (devices.length == 0) {
@@ -606,7 +607,7 @@ PocketCode.merge({
             },
             dispose: function () {
                 //this.stop();
-                this._stopStream();
+                //this._stopStream();
                 this._removeDomListener(this._video, 'loadedmetadata', this._videoInitializedListener);
                 //this._removeDomListener(window, 'orientationchange', this._orientationListener);
 
@@ -1470,6 +1471,9 @@ PocketCode.merge({
             },
 
             /*override*/
+            reset: function () {
+                  //TODO: faceDetection 
+            },
             _getViewState: function () {
                 return {};  //TODO: faceDetection on/off?
             },

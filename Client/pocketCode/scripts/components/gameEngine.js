@@ -286,8 +286,10 @@ PocketCode.GameEngine = (function () {
             if (e.target == this._currentScene) {
                 this._viewStates = {};
                 this._currentScene = undefined;
-                if (!this._device.hasActiveFeatures)
+                if (!this._device.hasActiveFeatures) {
+                    this._executionState = PocketCode.ExecutionState.STOPPED;
                     this._onProgramExecuted.dispatchEvent();
+                }
             }
         },
         _resourceProgressChangeHandler: function (e) {
@@ -348,8 +350,10 @@ PocketCode.GameEngine = (function () {
                 this._handleLoadingComplete();
         },
         _deviceOnInactiveHandler: function () {
-            if (!this._currentScene)
+            if (!this._currentScene) {
+                this._executionState = PocketCode.ExecutionState.STOPPED;
                 this._onProgramExecuted.dispatchEvent();
+            }
         },
         _deviceOnSpaceKeyDownHandler: function (e) {
             var cs = this._currentScene;
@@ -378,6 +382,7 @@ PocketCode.GameEngine = (function () {
             }
             this._onBeforeProgramStart.dispatchEvent();  //indicates the project was loaded and rendering objects can be generated
 
+            this._executionState = PocketCode.ExecutionState.RUNNING;
             this.startScene(this._startScene.id);
         },
         restartProject: function () {
@@ -386,14 +391,14 @@ PocketCode.GameEngine = (function () {
         },
         pauseProject: function () {
             if (this._device)
-                this._device.pause();
+                this._device.pauseFeatures();
             if (this._currentScene)
                 return this._currentScene.pause();
             return false;
         },
         resumeProject: function () {
             if (this._device)
-                this._device.resume();
+                this._device.resumeFeatures();
             if (this._currentScene)
                 return this._currentScene.resume();
             return false;

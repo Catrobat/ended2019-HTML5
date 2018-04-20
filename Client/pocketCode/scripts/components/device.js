@@ -682,10 +682,10 @@ PocketCode.Device = (function () {
             return 0.0; //not supported
         },
 
-        pause: function () {
+        pauseFeatures: function () {
             this._features.VIBRATE.pause();
         },
-        resume: function () {
+        resumeFeatures: function () {
             this._features.VIBRATE.resume();
         },
         reset: function () {
@@ -809,18 +809,18 @@ PocketCode.MediaDevice = (function () {
             this._onCameraChange.dispatchEvent(e);
         },
         /* override */
-        pause: function () {
+        pauseFeatures: function () {
             this._fd.stop();
             this._cam.pause();
 
-            PocketCode.Device.prototype.pause.call(this);   //call super()
+            PocketCode.Device.prototype.pauseFeatures.call(this);   //call super()
         },
-        resume: function () {
+        resumeFeatures: function () {
             this._cam.resume();
             var e = this._camStatus;
             this._fd.start(e.src, e.width, e.height, e.orientation);
 
-            PocketCode.Device.prototype.resume.call(this);   //call super()
+            PocketCode.Device.prototype.resumeFeatures.call(this);   //call super()
         },
         reset: function () {   //called at program-restart
             //this._initialized = false;
@@ -881,6 +881,10 @@ PocketCode.MediaDevice = (function () {
         },
         dispose: function () {
             this._removeDomListener(window, 'orientationchange', this._orientationListener);
+
+            //clear object references (to avoid errors during dispose)
+            this._fd = undefined;
+            this._cam = undefined;
 
             //not necessary- disposing features handled in base class
             //this._fd.dispose();

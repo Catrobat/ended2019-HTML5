@@ -99,8 +99,10 @@ PocketCode.PlayerPageController = (function () {
             PocketCode.PageController.prototype.loadViewState.call(this, viewState, dialogsLength);   //to handle dialogs
             //set UI based on viewState
             if (viewState === PocketCode.ExecutionState.PAUSED) {
-                if (this._gameEngine.executionState == PocketCode.ExecutionState.RUNNING)
+                if (this._gameEngine.executionState == PocketCode.ExecutionState.RUNNING || this._gameEngine.executionState == PocketCode.ExecutionState.PAUSED_USERINTERACTION)
                     this._pauseProject();
+                else    //loaded onExecuted event
+                    viewState = PocketCode.ExecutionState.STOPPED;
             }
             else {
                 this._gameEngine.stopProject();
@@ -114,8 +116,12 @@ PocketCode.PlayerPageController = (function () {
 
         //browser
         _visibilityChangeHandler: function (e) {
-            if (e.visible == false)
-                this._pauseProject();
+            if (e.visible == true ||
+                this._gameEngine.executionState != PocketCode.ExecutionState.RUNNING && this._gameEngine.executionState != PocketCode.ExecutionState.PAUSED_USERINTERACTION)
+                return;
+            if (SmartJs.Device.isMobile)
+                return history.back();
+            this._pauseProject();
         },
         //project handler
         _projectLoadingProgressHandler: function (e) {
@@ -132,7 +138,7 @@ PocketCode.PlayerPageController = (function () {
         _beforeProjectStartHandler: function (e) {    //on start event dispatched by gameEngine
             //if (e.reinit) {
             //    //this.initOnLoad();
-                this._playerViewportController.clearViewport();
+            this._playerViewportController.clearViewport();
             //}
             this._view.hideStartScreen();
         },

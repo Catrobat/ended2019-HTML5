@@ -12,16 +12,25 @@ QUnit.test("Device", function (assert) {
     assert.ok(dev instanceof PocketCode.Device, "instance check");
     assert.ok(dev.onSpaceKeyDown instanceof SmartJs.Event.Event, "onSpaceKeyDown event check");
 
-    assert.ok(dev.onInit instanceof SmartJs.Event.Event && dev.onSpaceKeyDown instanceof SmartJs.Event.Event, "event check");
+    assert.ok(dev.onInit instanceof SmartJs.Event.Event &&
+        dev.onInactive instanceof SmartJs.Event.Event &&
+        dev.onSpaceKeyDown instanceof SmartJs.Event.Event, "event check");
 
-    assert.ok(dev.initialized, "initialized getter");   //geo location not in use
+    assert.equal(dev.initialized, true, "initialized getter");   //geo location not in use
+    assert.equal(dev.hasActiveFeatures, false, "hasActiveFeatures getter");   //no feature running
     assert.equal(dev.isMobile, SmartJs.Device.isMobile, "isMobile: accessor");
     assert.equal(dev.isTouch, SmartJs.Device.isTouch, "isMobile: accessor");
+
+    assert.ok(typeof dev.mobileLockRequired == 'boolean', "mobileLockRequired: accessor"); //poor tests as we cannot set isMobile here
 
     assert.equal(dev.unsupportedFeatureDetected, false, "unsupported feature detected: initial = false");
     assert.equal(dev.unsupportedFeatures.length, 0, "unsupported features: initial = []");
 
-    assert.ok(typeof dev.mobileLockRequired == 'boolean', "mobileLockRequired: accessor"); //poor tests as we cannot set isMobile here
+    var vs = dev.viewState;
+    assert.ok(vs.VIBRATE != undefined && vs.INCLINATION == undefined, "viewState getter including only elements that have a viewState");
+    vs.VIBRATE.remainingTime = 1;   //replace time to validate setter
+    assert.ok(dev.viewState.VIBRATE.remainingTime != 1, "viewState not influenced by changing the vs object");
+    dev.viewState = vs; //no assert possible for setter as the device does not support vibration
 
     assert.ok(!isNaN(dev.accelerationX), "accelerationX getter");
     assert.ok(!isNaN(dev.accelerationY), "accelerationY getter");
