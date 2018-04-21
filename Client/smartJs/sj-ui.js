@@ -460,7 +460,6 @@ SmartJs.Ui.merge({
                 if (size.height !== this.height || size.width !== this.width)
                     this.onResize.dispatchEvent({ caller: caller });
             },
-
             addClassName: function (className) {
                 if (typeof className === undefined) return;
                 if (typeof className !== 'string')

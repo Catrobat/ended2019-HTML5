@@ -217,3 +217,84 @@ QUnit.test("I18nRadio", function (assert) {
     assert.ok(ctrl.objClassName === "I18nRadio", "objClassName check");
 
 });
+
+QUnit.test("Slider", function (assert) {
+
+    var dom = document.getElementById("qunit-fixture");
+    var slider = new PocketCode.Ui.Slider();
+
+    //instance, objClass name and Class name check
+    assert.ok(slider instanceof PocketCode.Ui.Slider && slider instanceof SmartJs.Ui.Control, "instance check");
+    assert.ok(slider.objClassName === "Slider", "ObjClassName check");
+    assert.ok(slider.className === "pc-slider", "css className check");
+
+    //event check
+    assert.ok(slider.onChange instanceof SmartJs.Event.Event, "event accessor");
+
+    assert.equal(slider.minValue, 0, "cntr default: min value");
+    assert.equal(slider.maxValue, 100, "cntr default: max value");
+    assert.equal(slider.value, 0, "cntr default: value");
+
+    //out of range checks
+    slider.value = 200;
+    assert.equal(slider.value, 100, "value setter: including max value");
+    slider.value = -200;
+    assert.equal(slider.value, 0, "value setter: including min value");
+
+    slider.minValue = 10;
+    assert.equal(slider.value, 10, "min value setter: value changed to min");
+
+    slider.value = 90;
+    slider.maxValue = 80;
+    assert.equal(slider.value, 80, "max value setter: value changed to max");
+
+    assert.throws(function () { slider.maxValue = 9; }, Error, "ERROR: maxValue < minValue");
+
+    //slider using property object
+    slider = new PocketCode.Ui.Slider({ minValue: 1, maxValue: 99, value: 50, valueDigits: 2, minLabel: "1", maxLabel: "100" });
+    dom.appendChild(slider._dom);
+
+    //min, max Value, starting Value and orientation getter/setter check
+    assert.equal(slider.minValue, 1, "cntr merge: min value");
+    assert.equal(slider.maxValue, 99, "cntr merge: max value");
+    assert.equal(slider.value, 50, "cntr merge: value");
+    assert.equal(slider.valueDigits, 2, "cntr merge: valueDigits");
+    assert.equal(slider.minLabel, "1", "cntr merge: minLabel");
+    assert.equal(slider.maxLabel, "100", "cntr merge: maxLabel");
+
+    assert.throws(function () { slider.minValue = "a"; }, Error, "ERROR: min value validation");
+    slider.minValue = 0;
+    assert.equal(slider.minValue, 0, "min value getter/setter");
+
+    assert.throws(function () { slider.maxValue = "0"; }, Error, "ERROR: max value validation");
+    slider.maxValue = 90;
+    assert.equal(slider.maxValue, 90, "max value getter/setter");
+
+    assert.throws(function () { slider.value = {}; }, Error, "ERROR: value validation");
+    slider.value = 45;
+    assert.equal(slider.value, 45, "value getter/setter");
+
+    assert.throws(function () { slider.valueDigits = []; }, Error, "ERROR: valueDigits validation");
+    slider.valueDigits = 3;
+    assert.equal(slider.valueDigits, 3, "valueDigits getter/setter");
+
+    slider.minLabel = "10";
+    assert.equal(slider.minLabel, "10", "minLabel getter/setter");
+    slider.maxLabel = "90";
+    assert.equal(slider.maxLabel, "90", "maxLabel getter/setter");
+
+
+    var changeCount = 0;
+    var onChangeHandler = function (e) {
+        assert.equal(e.value, 32, "event argument check");
+        changeCount++;
+    };
+    slider.onChange.addEventListener(new SmartJs.Event.EventListener(onChangeHandler, this));
+    slider.value = 32;
+    assert.equal(changeCount, 1, "event only dispatched once");
+
+    //dispose check
+    slider.dispose();
+    assert.ok(slider._disposed, "slider disposed");
+
+});
