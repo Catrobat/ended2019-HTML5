@@ -47,12 +47,34 @@ PocketCode._I18nProvider = (function (propObject) {
             "lbDeviceAccDescr": "Represents the change (angle per second) the device will move to one side if you start pressing a cusor button, e.g. the maximum acceleration of a sprite based on the inclination sensor.",
             "lbDeviceIncX": "Inclination X",
             "lbDeviceIncY": "Inclination Y",
+
+            "variableTrue": "richtig",  //true
+            "variableFalse": "falsch",  //false
         };
 
         this._onLanguageChange = new SmartJs.Event.Event(this);
         this._onDirectionChange = new SmartJs.Event.Event(this);
         this._onError = new SmartJs.Event.Event(this);
     }
+
+    //events
+    Object.defineProperties(I18nProvider.prototype, {
+        onLanguageChange: {
+            get: function () {
+                return this._onLanguageChange;
+            }
+        },
+        onDirectionChange: {
+            get: function () {
+                return this._onDirectionChange;
+            }
+        },
+        onError: {
+            get: function () {
+                return this._onError;
+            }
+        },
+    });
 
     //properties
     Object.defineProperties(I18nProvider.prototype, {
@@ -73,25 +95,6 @@ PocketCode._I18nProvider = (function (propObject) {
             get: function () {
                 return this._supportedLanguages;
             },
-        },
-    });
-
-    //events
-    Object.defineProperties(I18nProvider.prototype, {
-        onLanguageChange: {
-            get: function () {
-                return this._onLanguageChange;
-            }
-        },
-        onDirectionChange: {
-            get: function () {
-                return this._onDirectionChange;
-            }
-        },
-        onError: {
-            get: function () {
-                return this._onError;
-            }
         },
     });
 
