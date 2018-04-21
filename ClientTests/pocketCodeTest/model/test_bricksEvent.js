@@ -442,9 +442,9 @@ QUnit.test("WhenConditionMetBrick", function (assert) {
     var gameEngine = new PocketCode.GameEngine();
     var scene = new PocketCode.Model.Scene(gameEngine, undefined, []);
     var sprite = new PocketCode.Model.Sprite(gameEngine, scene, { id: "spriteId", name: "spriteName" });
-    var b = new PocketCode.Model.WhenConditionMetBrick("device", sprite, 24, { condition: cond }, scene.onStart);
+    var b = new PocketCode.Model.WhenConditionMetBrick("device", sprite, { condition: cond }, scene.onStart);
 
-    assert.ok(b._device === "device" && b._sprite instanceof PocketCode.Model.Sprite && b._cycleTime === 24, "brick created and properties set correctly");   //timesToRepeat is parsed to get a formula object
+    assert.ok(b._device === "device" && b._sprite instanceof PocketCode.Model.Sprite, "brick created and properties set correctly");   //timesToRepeat is parsed to get a formula object
     assert.ok(b instanceof PocketCode.Model.WhenConditionMetBrick && b instanceof PocketCode.Model.ScriptBlock, "instance check");
     assert.ok(b.objClassName === "WhenConditionMetBrick", "objClassName check");
 
@@ -514,6 +514,9 @@ QUnit.test("WhenConditionMetBrick", function (assert) {
         tb1.executed = 0;
         window.setTimeout(function () {
             assert.equal(tb1.executed, 0, "Stop executed");
+            assert.equal(b._attached, false, "no animationframe handler attached after validation to true");
+            assert.equal(SmartJs.AnimationFrame._frameId, undefined, "AnimationFrame stopped");
+
             done1();
         }, 40);
 

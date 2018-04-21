@@ -188,25 +188,18 @@ PocketCode.Model.merge({
         return IfThenElseBrick;
     })(),
 
-    //please notice: we evaluate the condition using a timeout equal to minLoopDelay
-    //the implementation is equal to the Android implementation- anyway, it's not correct
-    //we should? extend our formula to support onChange events- this may cause performance issues, e.g. onChangeHandler on each sensor, sprite property, variable, ..
     WaitUntilBrick: (function () {
         WaitUntilBrick.extends(PocketCode.Model.ThreadedBrick, false);
 
-        function WaitUntilBrick(device, sprite, delay, propObject) {
+        function WaitUntilBrick(device, sprite, propObject) {
             PocketCode.Model.ThreadedBrick.call(this, device, sprite, propObject);
 
-            this._delay = delay; //= minLoopCycleTime;
             this._condition = new PocketCode.Formula(device, sprite, propObject.condition);
-            this._timeoutHandler = false;
+            this._attached = false;
         }
 
         WaitUntilBrick.prototype.merge({
             _execute: function () {
-                if (this._timeoutHandler)
-                    window.clearTimeout(this._timeoutHandler);
-
                 var po,
                     pending = false;    //indicating if there are unhadled threads waiting
                 for (var id in this._pendingOps) {
@@ -218,12 +211,21 @@ PocketCode.Model.merge({
                         pending = true;
                 }
 
-                if (pending) //polling will only be restarted if there are unhaldled ops waiting
-                    this._timeoutHandler = window.setTimeout(this._execute.bind(this), this._delay);
+                if (pending) {
+                    if (!this._attached) { //start evaluating poriodically
+                        this._attached = true;
+                        SmartJs.AnimationFrame.addEventListener(new SmartJs.Event.EventListener(this._execute, this));
+                    }
+                }
+                else { //stop evaluating poriodically if no operations were found
+                    this._attached = false;
+                    SmartJs.AnimationFrame.removeEventListener(new SmartJs.Event.EventListener(this._execute, this));
+                }
+
             },
             pause: function () {
-                if (this._timeoutHandler)
-                    window.clearTimeout(this._timeoutHandler);
+                this._attached = false;
+                SmartJs.AnimationFrame.removeEventListener(new SmartJs.Event.EventListener(this._execute, this));
             },
             resume: function () {
                 this._execute();

@@ -421,9 +421,9 @@ QUnit.test("WaitUntilBrick", function (assert) {
     var gameEngine = new PocketCode.GameEngine();
     var scene = new PocketCode.Model.Scene(gameEngine, undefined, []);
     var sprite = new PocketCode.Model.Sprite(gameEngine, scene, { id: "spriteId", name: "spriteName" });
-    var b = new PocketCode.Model.WaitUntilBrick("device", sprite, 24, { condition: conditionTrue });
+    var b = new PocketCode.Model.WaitUntilBrick("device", sprite, { condition: conditionTrue });
 
-    assert.ok(b._device === "device" && b._sprite instanceof PocketCode.Model.Sprite && b._delay === 24, "brick created and properties set correctly");   //timesToRepeat is parsed to get a formula object
+    assert.ok(b._device === "device" && b._sprite instanceof PocketCode.Model.Sprite, "brick created and properties set correctly");   //timesToRepeat is parsed to get a formula object
     assert.ok(b instanceof PocketCode.Model.WaitUntilBrick && b instanceof PocketCode.Model.ThreadedBrick, "instance check");
     assert.ok(b.objClassName === "WaitUntilBrick", "objClassName check");
 
@@ -450,6 +450,8 @@ QUnit.test("WaitUntilBrick", function (assert) {
         assert.ok((Date.now() - dateTime) > 50, "paused and resumed");
 
         b._condition = new PocketCode.Formula("device", sprite, conditionFalse);    //make sure both threads get executed even the condition is not met any more
+        assert.equal(b._attached, false, "no animationframe handler attached after validation to true");
+        assert.equal(SmartJs.AnimationFrame._frameId, undefined, "AnimationFrame stopped");
         done3();
     };
     b.execute(new SmartJs.Event.EventListener(testFinishedHandler2, this), "id_1");

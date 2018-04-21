@@ -176,6 +176,7 @@ PocketCode.merge({
                         break;
 
                     case 'WhenProgramStartBrick':
+                    case 'WhenConditionMetBrick':
                         brick = new PocketCode.Model[type](this._device, currentSprite, jsonBrick, this._scene.onStart);
                         break;
 
@@ -213,15 +214,10 @@ PocketCode.merge({
                         break;
 
                     case 'MoveNStepsBrick':
-                    case 'WaitUntilBrick':
                     case 'ForeverBrick':
                     case 'RepeatBrick':
                     case 'RepeatUntilBrick':
                         brick = new PocketCode.Model[type](this._device, currentSprite, this._minLoopCycleTime, jsonBrick);
-                        break;
-
-                    case 'WhenConditionMetBrick':
-                        brick = new PocketCode.Model[type](this._device, currentSprite, this._minLoopCycleTime, jsonBrick, this._scene.onStart);
                         break;
 
                     case 'StopBrick':
@@ -230,6 +226,7 @@ PocketCode.merge({
 
                     default:
                         //control: WaitBrick, NoteBrick, WhenStartAsCloneBrick, IfThenElse, DeleteCloneBrick
+                        //event: WaitUntilBrick
                         //motion: GoToPositionBrick, SetXBrick, SetYBrick, ChangeXBrick, ChangeYBrick, SetRotationStyleBrick, IfOnEdgeBounce
                         //        TurnLeft, TurnRight, SetDirection, SetDirectionTo, SetRotationStyle, GlideTo, GoBack, ComeToFront, Vibration
                         //motion physics: SetVelocity, RotationSpeedLeft, RotationSpeedRight, SetMass, SetBounceFactor, SetFriction
