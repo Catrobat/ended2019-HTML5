@@ -1,4 +1,4 @@
-﻿﻿/// <reference path="../../../smartJs/sj.js" />
+﻿/// <reference path="../../../smartJs/sj.js" />
 /// <reference path="../../../smartJs/sj-ui.js" />
 /// <reference path="../../../smartJs/sj-event.js" />
 /// <reference path="../core.js" />
@@ -329,10 +329,13 @@ PocketCode.GameEngine = (function () {
             loadingAlerts.deviceEmulation = device ? device.emulationInUse : [];
             loadingAlerts.deviceLockRequired = device ? device.mobileLockRequired : [];
 
-            if (loadingAlerts.deviceEmulation || loadingAlerts.deviceLockRequired || loadingAlerts.invalidSoundFiles.length != 0 ||
-                loadingAlerts.unsupportedBricks.length != 0 || loadingAlerts.deviceUnsupportedFeatures.length != 0) {
-                this._onLoadingProgress.dispatchEvent({ progress: 100 });       //update ui progress to hide loading indicator
-                this._onLoad.dispatchEvent({ loadingAlerts: loadingAlerts });   //dispatch warnings
+            if (loadingAlerts.deviceEmulation ||
+                loadingAlerts.deviceLockRequired ||
+                loadingAlerts.invalidSoundFiles.length != 0 ||
+                loadingAlerts.unsupportedBricks.length != 0 ||
+                loadingAlerts.deviceUnsupportedFeatures.length != 0) {
+                    this._onLoadingProgress.dispatchEvent({ progress: 100 });       //update ui progress to hide loading indicator
+                    this._onLoad.dispatchEvent({ loadingAlerts: loadingAlerts, device: loadingAlerts.deviceEmulation ? device : undefined });   //dispatch warnings
             }
             else {
                 this._onLoad.dispatchEvent();
