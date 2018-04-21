@@ -7,53 +7,56 @@ PocketCode.Math.merge({
     /* custom equl (==) operator*/
     isEqual: function (value1, value2) {
 
-        if (value1 == value2)   //simple check: implicit
+        if (value1 === value2)   //simple check: explicit
             return true;
 
-        //2 lists
+        var cast = PocketCode.Math.Cast;
+
+        //2 lists (lists are added as value: no recursive (endless) call possible)
         if (value1 instanceof PocketCode.Model.UserVariableList && value2 instanceof PocketCode.Model.UserVariableList) {
-            if (value1.length != value2.length || value1.value != value2.value) //quick compare
+            if (value1.length != value2.length)// || value1.value != value2.value) //quick compare
                 return false;
 
             //please notice: in Scratch Arrays are only equal if the elements have the same order
             for (var i = 1, l = value1.length; i <= l; i++) {   //we work with custom lists here (idx = 1..n)
-                if(!this.isEqual(value1.valueAt(i), value2.valueAt(i)))
+                if (cast.toString(value1.valueAt(i)).toUpperCase() !== cast.toString(value2.valueAt(i)).toUpperCase())   //string compare (not strong typed)
                     return false;
             }
             return true;
         }
 
-        var cast = PocketCode.Math.Cast,
-            value1 = cast.toValue(value1),  //make sure we compare to native types
-            value2 = cast.toValue(value2);
         //case insensitive strings
         if (typeof value1 == 'string' && typeof value2 == 'string' && value1.toUpperCase() == value2.toUpperCase())
             return true;
 
-        //numbers
-        if (value1 != value1 && value2 != value2)   //2 real NaN values return true (Scratch)
+        var tval1 = cast.toTypedValue(value1),  //make sure we compare to native types
+            tval2 = cast.toTypedValue(value2);
+
+        //check again: numbers & bools
+        if (tval1 === tval2)
             return true;
-        var num1 = cast.toNumber(value1), //(typeof value1 == 'number') ? value : num1;
-            num2 = cast.toNumber(value2); //(typeof value2 == 'number') ? value : num2;
-        if (num1 && (num1 == num2)) //not true for num1 = num2 = 0
+        //both = NaN
+        if (tval1 !== tval1 && tval2 !== tval2)
             return true;
 
-        //bool
-        if (typeof value1 == 'string' && typeof value2 == 'boolean' ||
-            typeof value1 == 'boolean' && typeof value2 == 'string')
-            return (cast.toBoolean(value1) && cast.toBoolean(value2));  //both == true
+        if (tval1 == undefined || tval2 == undefined) {
+            if (cast.toString(value1) === cast.toString(value2))
+                return true;    //undefined == "" (empty string) => true
+            return false;   //make sure undefined is not converted to bool = false
+        }
 
+        //bool: currently not supprted by scratch,
+        //but false == 0 and true == 1 should evaluate to true
+        if (tval1 === true && tval2 === 1 ||
+            tval1 === false && tval2 === 0 ||
+            tval2 === true && tval1 === 1 ||
+            tval2 === false && tval1 === 0)
+            return true;
+
+        //default
         return false;
     },
 
-    /*
-     * according to Scratch..
-     * - entering true or false in a box is stored as a string
-     * - strings cannot be casted to numbers -> 0
-     * - but strings can be casted to bool (true false: case-insensitive match
-     * - strings are compared case-insensitive
-     * - ...
-     */
     _Cast: (function () {
 
         function Cast() { }
@@ -88,23 +91,15 @@ PocketCode.Math.merge({
                 return value;
             },
             toBoolean: function (value) {
-                value = this.toValue(value);    //objects value
-                if (typeof value === 'string') {
-                    return (value.toUpperCase() === 'TRUE' ? true : false);    //scratch compatibility: return false for all string2bool
-                }
-                return !!value; //notice: !!"any string but empty" -> true
+                value = this.toTypedValue(value);    //objects value
+                return !!value; //!!"any string but empty" -> true
             },
             toNumber: function (value) {
-                value = this.toValue(value);    //objects value
-
-                //if (typeof value == 'string')   //try to replace localized comma with '.'
-                //    value = value.replace((1.1).toLocaleString().substring(1, 2), '.');
-                //try to parse string or bool to number: including Infinity as string
+                value = this.toTypedValue(value);    //objects value
                 value = +value; //returns NaN if not possible
                 if (value != null && !isNaN(value))
                     return value;
-
-                return 0;//(value === 'true' ? 1 : 0);    //scratch compatibility: false, undefined, null, other strings, ..
+                return 0;
             },
             toString: function (value) {
                 value = this.toValue(value);    //objects value
@@ -129,24 +124,34 @@ PocketCode.Math.merge({
                 if (value === -Infinity)
                     return value.toLocaleString(languageCode);
 
-                return value.toString();    //string, number, .. no formatting (shows localized numbers, comma, 1000th separator, ..)
+                return value.toString();    //string, number, .. no formatting (shows localized numbers: language, comma, 1000th separator, ..)
             },
-            //toTypedValue: function (value) {
-            //    //used in variables: setting a return value of a formula.calculate()
-            //    value = this.toValue(value);    //objects value
+            toTypedValue: function (value) {
+                value = this.toValue(value);    //objects value
 
-            //    if (value === null || value === undefined)
-            //        return undefined;
-            //    if (typeof value === 'string') { //convert numbers added as string: 
-            //        //we do not convert boolsch values- they are stored as string but can be casted to bool (like in Scratch)
-            //        var num = +value;   //convert to number
-            //        return (!isNaN(num) ? num : value);
-            //    }
-            //        //if (isNaN(value))   //like in Scratch: we allow NaN as value -> it's casted when used
-            //        //    return 0;
-            //    else    //boolean or number including +-Infinity
-            //        return value;
-            //},
+                if (value === null || value === undefined)
+                    return undefined;
+                if (value != value)    //NaN
+                    return value;
+                if (typeof value == 'string') { //convert types numbers added as string
+                    switch (value.toUpperCase()) {
+                        case "NAN":
+                            return NaN;
+                        case "TRUE":
+                            return true;
+                        case "FALSE":
+                            return false;
+                        case "INFINITY":    //supporting case insensitive
+                            return Infinity;
+                        case "-INFINITY":
+                            return -Infinity;
+                    }
+                    var num = +value;   //convert to number
+                    return (!isNaN(num) ? num : value);
+                }
+                else    //boolean or number including NaN & +-Infinity
+                    return value;
+            },
             /* override */
             dispose: function () {
                 //static class: cannot be disposed

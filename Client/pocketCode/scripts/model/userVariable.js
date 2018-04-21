@@ -195,7 +195,7 @@ PocketCode.Model.merge({
             length: {
                 get: function () {
                     return this._value.length;
-                }
+                },
             },
         });
 
@@ -204,7 +204,16 @@ PocketCode.Model.merge({
             _getValue: function () {
                 //as lists can be assigned to variables and used in formulas (at least in Scratch) we need
                 //to represent the list as single value as well
-                return this._value.join('');
+                var string = this._value.join('');
+                //Scratch returns a list joined without separator when every entry has a length = 1
+                if (this.length == string.length) { //quick check
+                    for (var i = 0, l = this.length; i < l; i++)
+                        if (this._value[i].toString().length != 1)
+                            return this._value.join(' ');   //return a string using whitespace as separator
+                    return string;
+                }
+
+                return this._value.join(' ');   //return a string using whitespace as separator
             },
             append: function (value) {
                 this._value.push(PocketCode.Math.Cast.toValue(value));

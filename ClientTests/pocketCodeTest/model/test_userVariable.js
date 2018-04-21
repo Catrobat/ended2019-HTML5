@@ -127,7 +127,11 @@ QUnit.test("UserVariableSimple", function (assert) {
     assert.equal(uv.value, 3.4, "assign user variable");
     var uvl = new PocketCode.Model.UserVariableList(1, "2", [3.4, 3.5, 3.6]);
     uv2.value = uvl;
-    assert.equal(uv2.value, "3.43.53.6", "list is added as string");
+    assert.equal(uv2.value, "3.4 3.5 3.6", "list is added as string (including spaces)");
+
+    var uvl = new PocketCode.Model.UserVariableList(1, "2", [3, ".", 4, 3, ".", 5, 3, ".", "6", "a"]);
+    uv2.value = uvl;
+    assert.equal(uv2.value, "3.43.53.6a", "list is added as string (single char list entries only- without spaces)");
 
     uvl = new PocketCode.Model.UserVariableList(1, "2", [3.4]);
     uv2.value = uvl;
