@@ -421,9 +421,9 @@ QUnit.test("WaitUntilBrick", function (assert) {
     var gameEngine = new PocketCode.GameEngine();
     var scene = new PocketCode.Model.Scene(gameEngine, undefined, []);
     var sprite = new PocketCode.Model.Sprite(gameEngine, scene, { id: "spriteId", name: "spriteName" });
-    var b = new PocketCode.Model.WaitUntilBrick("device", sprite, 24, { condition: conditionTrue });
+    var b = new PocketCode.Model.WaitUntilBrick("device", sprite, { condition: conditionTrue });
 
-    assert.ok(b._device === "device" && b._sprite instanceof PocketCode.Model.Sprite && b._delay === 24, "brick created and properties set correctly");   //timesToRepeat is parsed to get a formula object
+    assert.ok(b._device === "device" && b._sprite instanceof PocketCode.Model.Sprite, "brick created and properties set correctly");   //timesToRepeat is parsed to get a formula object
     assert.ok(b instanceof PocketCode.Model.WaitUntilBrick && b instanceof PocketCode.Model.ThreadedBrick, "instance check");
     assert.ok(b.objClassName === "WaitUntilBrick", "objClassName check");
 
@@ -450,6 +450,8 @@ QUnit.test("WaitUntilBrick", function (assert) {
         assert.ok((Date.now() - dateTime) > 50, "paused and resumed");
 
         b._condition = new PocketCode.Formula("device", sprite, conditionFalse);    //make sure both threads get executed even the condition is not met any more
+        assert.equal(b._attached, false, "no animationframe handler attached after validation to true");
+        assert.equal(SmartJs.AnimationFrame._frameId, undefined, "AnimationFrame stopped");
         done3();
     };
     b.execute(new SmartJs.Event.EventListener(testFinishedHandler2, this), "id_1");
@@ -478,7 +480,7 @@ QUnit.test("WaitUntilBrick", function (assert) {
 
 QUnit.test("RepeatBrick", function (assert) {
 
-    assert.expect(11);   //init async asserts (to wait for)
+    assert.expect(10);   //init async asserts (to wait for)
     var done1 = assert.async();
     var done2 = assert.async();
 
@@ -539,7 +541,7 @@ QUnit.test("RepeatBrick", function (assert) {
         //assert.equal(tb.executed, 6, "loop running continuously");
         var delay = finishTime - startTime;
         //console.log("running loop 6 times without loop delay (5 delays) = " + delay + "ms");
-        assert.ok(delay < 3, "sync call: ok");
+        //assert.ok(delay < 3, "sync call: ok");    //currently disabled: used to test threadCounter
         assert.equal(e.id, "n_times", "id returned correctly");
         assert.ok(!e.loopDelay, "loopDelay returned correctly (always false or undefined on loops)");
         assert.equal(tb.executed, 6, "executed 6 times");
@@ -676,12 +678,12 @@ QUnit.test("SceneTransitionBrick (continue scene)", function (assert) {
     gameEngine._scenes[scene2._id] = scene2;
     gameEngine._scenes[scene._id] = scene;
 
-    var b = new PocketCode.Model.SceneTransitionBrick(device, sprite, gameEngine, { sceneId: "s2" });
+    var b = new PocketCode.Model.SceneTransitionBrick(device, sprite, scene, { sceneId: "s2" });
     b.dispose();
-    assert.ok(b._disposed && !sprite._disposed && !scene._disposed && !scene2._disposed && !gameEngine._disposed, "disposed without changing other objects");
+    assert.ok(b._disposed && !sprite._disposed && !scene._disposed && !scene2._disposed && !scene._disposed, "disposed without changing other objects");
 
     //recreate
-    b = new PocketCode.Model.SceneTransitionBrick(device, sprite, gameEngine, { sceneId: "s2" });
+    b = new PocketCode.Model.SceneTransitionBrick(device, sprite, scene, { sceneId: "s2" });
 
     assert.ok(b._device === device && b._sprite === sprite, "brick created and properties set correctly");
     assert.ok(b instanceof PocketCode.Model.SceneTransitionBrick && b instanceof PocketCode.Model.BaseBrick, "instance check");
@@ -719,12 +721,12 @@ QUnit.test("StartSceneBrick", function (assert) {
     gameEngine._scenes[scene2._id] = scene2;
     gameEngine._scenes[scene._id] = scene;
 
-    var b = new PocketCode.Model.StartSceneBrick(device, sprite, gameEngine, { sceneId: "s2" });
+    var b = new PocketCode.Model.StartSceneBrick(device, sprite, scene, { sceneId: "s2" });
     b.dispose();
-    assert.ok(b._disposed && !sprite._disposed && !scene._disposed && !scene2._disposed && !gameEngine._disposed, "disposed without changing other objects");
+    assert.ok(b._disposed && !sprite._disposed && !scene._disposed && !scene2._disposed && !scene._disposed, "disposed without changing other objects");
 
     //recreate
-    b = new PocketCode.Model.StartSceneBrick(device, sprite, gameEngine, { sceneId: "s2" });
+    b = new PocketCode.Model.StartSceneBrick(device, sprite, scene, { sceneId: "s2" });
 
     assert.ok(b._device === device && b._sprite === sprite, "brick created and properties set correctly");
     assert.ok(b instanceof PocketCode.Model.StartSceneBrick && b instanceof PocketCode.Model.BaseBrick, "instance check");
@@ -827,7 +829,7 @@ QUnit.test("DeleteCloneBrick", function (assert) {
         sprite = scene._sprites[0];
 
         scene.start();
-        setTimeout(validateClone, 10);
+        setTimeout(validateClone, 100);
     }
 
     function validateClone() {
@@ -841,7 +843,7 @@ QUnit.test("DeleteCloneBrick", function (assert) {
             window.setTimeout(function () {
                 assert.ok(clone._disposed, "disposed on delete (with delay)");
                 done3();
-            }, 100);
+            }, 300);
             //assert.equal(typeof e.loopDelay, "boolean", "loopDelay received");
             assert.equal(scene._sprites.length, 1, "clone deleted from list");
             done2();
@@ -996,8 +998,8 @@ QUnit.test("StopBrick: type OTHER_SCRIPTS: simultaneous startet scripts", functi
     var gameEngine = new PocketCode.GameEngine();
     gameEngine._collisionManager = new PocketCode.CollisionManager(400, 200);  //make sure collisionMrg is initialized before calling an onStart event
     var scene = new PocketCode.Model.Scene(gameEngine, undefined, []);
+    scene._id = "id";
     gameEngine._scenes["id"] = scene;   //necessary to stop scene
-    gameEngine._currentScene = scene; //set internal: tests only
     gameEngine._startScene = scene;
 
     scene._background = new PocketCode.Model.Sprite(gameEngine, scene, { id: "spriteId", name: "spriteName" });  //to avoid error on start

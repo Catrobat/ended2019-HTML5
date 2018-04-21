@@ -16,9 +16,14 @@ QUnit.test("PlayerPageView", function (assert) {
     var PlayerPageView = new PocketCode.Ui.PlayerPageView();
     assert.ok(PlayerPageView instanceof SmartJs.Ui.ContainerControl, "instance check");
     assert.ok(PlayerPageView._footer.hidden == true, "footer hidden");
-    assert.ok(PlayerPageView._header.hidden == true, "header hidden");
-    assert.ok(PlayerPageView.__container._childs[0] instanceof PocketCode.Ui.PlayerToolbar &&
-        PlayerPageView.__container._childs[1] instanceof PocketCode.Ui.PlayerStartScreen, "add toolbar and startScreen to childs");
+
+    if (SmartJs.Device.isMobile)
+        assert.ok(PlayerPageView._header.hidden == false, "header hidden = false for mobile devices");
+    else
+        assert.ok(PlayerPageView._header.hidden == true, "header hidden");
+
+    //assert.ok(PlayerPageView.__container._childs[0] instanceof PocketCode.Ui.PlayerToolbar &&
+    //    PlayerPageView.__container._childs[1] instanceof PocketCode.Ui.PlayerStartScreen, "add toolbar and startScreen to childs");
     assert.ok(PlayerPageView._onExit instanceof SmartJs.Event.Event, "add onExit Event");
     assert.ok(PlayerPageView._startScreen.hidden == true, "startScreen hidden");
 
@@ -26,7 +31,7 @@ QUnit.test("PlayerPageView", function (assert) {
 
     //menu
     var menu = PlayerPageView.menu;
-    assert.equal(menu,  PlayerPageView._menu, "menu getter");
+    assert.equal(menu, PlayerPageView._menu, "menu getter");
 
     //executionState
     PlayerPageView.executionState = 1;

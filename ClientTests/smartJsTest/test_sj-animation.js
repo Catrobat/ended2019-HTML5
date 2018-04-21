@@ -256,8 +256,11 @@ QUnit.test("SmartJs.Animation.Rotation", function (assert) {
         obj.startAngle = 54;
         obj.rotationSpeed = 7;
 
+        updateCounter = 0;
         r.setObject(obj);
+        assert.equal(updateCounter, 1, "update event dispatched when calling setObject()");
         obj = r.toObject();
+        assert.equal(Math.floor(lastUpdate.value), 54, "setObject() update event args");
         assert.ok(obj.startAngle == 54 && startedAt == obj.startTimestamp && obj.rotationSpeed == 7, "setObject() - cloning");
 
         window.setTimeout(test_pause, 10);

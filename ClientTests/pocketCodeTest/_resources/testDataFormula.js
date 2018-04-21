@@ -131,7 +131,7 @@ bool2NumberConversion = {"type":"OPERATOR","value":"PLUS","left":{"type":"OPERAT
 //formula: encoding tests (take from project 2673)
 var encoding1 = {
     "type": "STRING",
-    "value": "Los seres vivos son los que tienen vida, esto quiere decir, que son toda la variedad de seres que habitan nuestro planeta, desde los más pequeños hasta los más grandes, todas las plantas, animales e incluso nosotros los seres humanos. \nPodemos reconocer a los seres vivos porque tienen en común el ciclo de vida, los cambios que sufren a lo largo de su vida y cómo se van transformando. \nPara conocer mejor las fases que compone el ciclo de vida pulsa “Comenzar”.",
+    "value": "Los seres vivos 'son los que tienen vida', esto quiere decir, que son toda la variedad de seres que habitan nuestro planeta, desde los más pequeños hasta los más grandes, todas las plantas, animales e incluso nosotros los seres humanos. \nPodemos reconocer a los seres vivos porque tienen en común el ciclo de vida, los cambios que sufren a lo largo de su vida y cómo se van transformando. \nPara conocer mejor las fases que compone el ciclo de vida pulsa “Comenzar”.",
     "left": null,
     "right": null
 };

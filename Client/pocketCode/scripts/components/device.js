@@ -66,6 +66,9 @@ PocketCode.Device = (function () {
             },
         };
 
+        //attach device feature handler
+        this._features.VIBRATE.onInactive.addEventListener(new SmartJs.Event.EventListener(this._featureInactiveHandler, this));
+
         this._sensorData = {
             X_ACCELERATION: 0.0,  //we make sure no null-values are returned as this may break our formula calculations
             Y_ACCELERATION: 0.0,
@@ -106,6 +109,7 @@ PocketCode.Device = (function () {
 
         //events
         this._onInit = new SmartJs.Event.Event(this);
+        this._onInactive = new SmartJs.Event.Event(this);
         this._onSpaceKeyDown = new SmartJs.Event.Event(this);
         //this._onSupportChange = new SmartJs.Event.Event(this);  //this event is triggered if a sensor is used that is not supported
     }
@@ -115,6 +119,11 @@ PocketCode.Device = (function () {
         onInit: {   //used for onLoad event
             get: function () {
                 return this._onInit;
+            },
+        },
+        onInactive: {   //used for onExecuted event
+            get: function () {
+                return this._onInactive;
             },
         },
         onSpaceKeyDown: {
@@ -129,6 +138,15 @@ PocketCode.Device = (function () {
         initialized: {
             get: function () {
                 return (!this._features.GEO_LOCATION.inUse || this._geoLocationData.initialized);
+            },
+        },
+        hasActiveFeatures: {
+            get: function () {
+                for (var f in this._features) {
+                    if (this._features[f].isActive)
+                        return true;
+                }
+                return false;
             },
         },
         isMobile: {
@@ -174,11 +192,23 @@ PocketCode.Device = (function () {
                 return unsupported;
             },
         },
-        viewState: {
+        viewState: {    //used for pause/resume scene
             get: function () {
-                return {
-                    vibrate: this._features.VIBRATE.viewState,
-                };
+                var features = this._features,
+                    viewState = {},
+                    featureVS;
+                for (var p in features) {
+                    featureVS = features[p].viewState;
+                    if (featureVS)  //do not generate undefined properties
+                        viewState[p] = features[p].viewState;
+                }
+                return viewState;
+            },
+            set: function (viewState) {
+                var features = this._features;
+                for (var p in viewState)
+                    features[p].viewState = viewState[p];
+                return viewState;
             },
         },
 
@@ -425,6 +455,10 @@ PocketCode.Device = (function () {
             if (this.initialized)
                 this._onInit.dispatchEvent();
         },
+        _featureInactiveHandler: function (e) {  //note: reused by derived classes
+            if (!this.hasActiveFeatures)
+                this._onInactive.dispatchEvent();
+        },
         _getInclinationX: function (beta, gamma) {
             var x;
             if (this._windowOrientation == 0 || this._windowOrientation == -180) {
@@ -591,11 +625,15 @@ PocketCode.Device = (function () {
                     break;
                 case PocketCode.UserActionType.TOUCH_MOVE:
                     var e = this._touchEvents.active[id];
+                    if (!e)
+                        return;
                     e.x = x;
                     e.y = y;
                     break;
                 case PocketCode.UserActionType.TOUCH_END:
                     var e = this._touchEvents.active[id];
+                    if (!e)
+                        return;
                     e.active = false;
                     delete this._touchEvents.active[id];
                     break;
@@ -646,11 +684,11 @@ PocketCode.Device = (function () {
             return 0.0; //not supported
         },
 
-        pause: function () {
-            //TODO: vibration
+        pauseFeatures: function () {
+            this._features.VIBRATE.pause();
         },
-        resume: function () {
-            //TODO: vibration
+        resumeFeatures: function () {
+            this._features.VIBRATE.resume();
         },
         reset: function () {
             //clear touch history
@@ -658,28 +696,27 @@ PocketCode.Device = (function () {
                 active: {},
                 history: [],
             };
-            //TODO: vibration
+            //features
+            this._features.VIBRATE.reset();
         },
         /* override */
         dispose: function () {
-            if (this._initDeviceOrientationListener) {
+            //dispose features (stop them)
+            for (var f in this._features)
+                if (this._features[f].dispose)
+                    this._features[f].dispose();
+
+            if (this._initDeviceOrientationListener)
                 this._removeDomListener(window, 'deviceorientation', this._initDeviceOrientationListener);
-                //delete this._initDeviceOrientationListener;
-            }
-            if (this._initDeviceMotionListener) {
+            if (this._initDeviceMotionListener)
                 this._removeDomListener(window, 'devicemotion', this._initDeviceMotionListener);
-                //delete this._initDeviceMotionListener;
-            }
-            if (this._orientationChangeListener) {
+            if (this._orientationChangeListener)
                 this._removeDomListener(window, 'orientationchange', this._orientationChangeListener);
-                //delete this._orientationChangeListener;
-            }
 
             if (this._deviceOrientationListener)
                 this._removeDomListener(window, 'deviceorientation', this._deviceOrientationListener);
             if (this._deviceMotionListener)
                 this._removeDomListener(window, 'devicemotion', this._deviceMotionListener);
-
 
             SmartJs.Core.EventTarget.prototype.dispose.call(this);    //call super()
         },
@@ -746,19 +783,6 @@ PocketCode.MediaDevice = (function () {
             },
         },
         /* override */
-        viewState: {    //used for pause/resume scene
-            get: function () {
-                var features = this._features;
-                return {
-                    vibrate: features.VIBRATE.viewState,
-                    camera: features.CAMERA.viewState,
-                    faceDetection: features.FACE_DETECTION.viewState,
-                };
-            },
-            set: function (viewState) {
-                //TODO: load viewState when scene is resumed
-            },
-        },
         initialized: {
             get: function () {
                 var features = this._features;
@@ -786,18 +810,18 @@ PocketCode.MediaDevice = (function () {
             this._onCameraChange.dispatchEvent(e);
         },
         /* override */
-        pause: function () {
+        pauseFeatures: function () {
             this._fd.stop();
             this._cam.pause();
 
-            PocketCode.Device.prototype.pause.call(this);   //call super()
+            PocketCode.Device.prototype.pauseFeatures.call(this);   //call super()
         },
-        resume: function () {
+        resumeFeatures: function () {
             this._cam.resume();
             var e = this._camStatus;
             this._fd.start(e.src, e.width, e.height, e.orientation);
 
-            PocketCode.Device.prototype.resume.call(this);   //call super()
+            PocketCode.Device.prototype.resumeFeatures.call(this);   //call super()
         },
         reset: function () {   //called at program-restart
             //this._initialized = false;
@@ -866,10 +890,18 @@ PocketCode.MediaDevice = (function () {
 
         dispose: function () {
             this._removeDomListener(window, 'orientationchange', this._orientationListener);
-            this._fd.dispose();
-            this._cam.onInit.removeEventListener(new SmartJs.Event.EventListener(this._featureInitializedHandler, this));
-            this._cam.onChange.removeEventListener(new SmartJs.Event.EventListener(this._cameraChangeHandler, this));
-            this._cam.dispose();
+
+            //clear object references (to avoid errors during dispose)
+            this._fd = undefined;
+            this._cam = undefined;
+
+            //not necessary- disposing features handled in base class
+            //this._fd.dispose();
+            //this._fd = undefined;
+            //this._cam.onInit.removeEventListener(new SmartJs.Event.EventListener(this._featureInitializedHandler, this));
+            //this._cam.onChange.removeEventListener(new SmartJs.Event.EventListener(this._cameraChangeHandler, this));
+            //this._cam.dispose();
+            //this._cam = undefined;
 
             PocketCode.Device.prototype.dispose.call(this);
         },

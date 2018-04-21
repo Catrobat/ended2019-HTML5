@@ -321,7 +321,7 @@
 .pc-playerMenuH .pc-playerMenuPlayOverlay {
     height: 3em;
     width: 9.2em;
-    bottom: 9.4em;
+    bottom: 9.39em;
     left: 50%;
     margin-left: -4.6em;
 }
@@ -349,7 +349,7 @@
 .pc-playerMenuV .pc-playerMenuPlayOverlay {
     height: 9.2em;
     width: 3em;
-    left: 9.37em;
+    left: 9.36em;
     top: 50%;
     margin-top: -4.6em;
 }

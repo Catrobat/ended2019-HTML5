@@ -26,7 +26,7 @@ PocketCode.Model.merge({
                     threadId: threadId,
                     scope: scope,
                     loopDelay: false,
-                    childIdx: 0,
+                    //brick: undefined,
                 };
                 this._executeContainerItem({ id: id, loopDelay: false });
             },
@@ -41,15 +41,16 @@ PocketCode.Model.merge({
                     return;
                 }
 
-                var idx = po.childIdx,
-                    bricks = this._bricks;
+                var bricks = this._bricks,
+                    idx = bricks.indexOf(po.brick) + 1; //indexOf will return -1 if not found.. starting with index = 0
                 if (idx < bricks.length && !args.stopped) {
-                    po.childIdx++;
+                    po.brick = bricks[idx];
                     bricks[idx].execute(new SmartJs.Event.EventListener(this._executeContainerItem, this), args.id, po.scope);
                 }
                 else {
-                    if (typeof po.scope == 'object' && (po.scope instanceof PocketCode.GameEngine || po.scope instanceof PocketCode.Model.Sprite))
-                        po.scope = undefined;   //make sure to not dispose objects currently in use
+                    //if (typeof po.scope == 'object' && (po.scope instanceof PocketCode.GameEngine || po.scope instanceof PocketCode.Model.Sprite))
+                    delete po.scope;    //make sure to not dispose objects currently in use
+                    delete po.brick;
                     var listener = po.listener,
                         threadId = po.threadId,
                         loopDelay = po.loopDelay;
@@ -93,8 +94,9 @@ PocketCode.Model.merge({
                 var po;
                 for (var id in this._pendingOps) {
                     po = this._pendingOps[id];
-                    if (typeof po.scope == 'object' && (po.scope instanceof PocketCode.GameEngine || po.scope instanceof PocketCode.Model.Sprite))
-                        po.scope = undefined;   //make sure to not dispose objects currently in use
+                    //if (typeof po.scope == 'object' && (po.scope instanceof PocketCode.GameEngine || po.scope instanceof PocketCode.Model.Sprite))
+                    delete po.scope;    //make sure to not dispose objects currently in use
+                    delete po.brick;
 
                     for (var prop in po) //may include objects like timer, animation, ...
                         if (po[prop] && po[prop].dispose)
@@ -243,8 +245,8 @@ PocketCode.Model.merge({
                     pos = this._pendingOps;
                 for (var id in pos) {
                     po = this._pendingOps[id];
-                    if (typeof po.scope == 'object' && (po.scope instanceof PocketCode.GameEngine || po.scope instanceof PocketCode.Model.Sprite))
-                        po.scope = undefined;   //make sure to not dispose objects currently in use
+                    //if (typeof po.scope == 'object' && (po.scope instanceof PocketCode.GameEngine || po.scope instanceof PocketCode.Model.Sprite))
+                    delete po.scope;   //make sure to not dispose objects currently in use
 
                     for (var prop in po) //may include objects like animation, ...
                         if (po[prop] && po[prop].dispose)
@@ -411,7 +413,7 @@ PocketCode.Model.merge({
             PocketCode.Model.SingleContainerBrick.call(this, device, sprite, propObject);
 
             this._minLoopCycleTime = minLoopCycleTime || 20;
-            this._calls = 0;
+            //this._calls = 0;
         }
 
         LoopBrick.prototype.merge({
@@ -447,7 +449,7 @@ PocketCode.Model.merge({
                 if (!po)
                     return;
 
-                this._calls++;
+                //this._calls++;
                 if (/*this._bricks &&*/ this._loopConditionMet(po) && !e.stopped) {   //bricks checked already in execute()
                     var executionDelay = 0;
                     if (e.loopDelay) {
@@ -458,7 +460,7 @@ PocketCode.Model.merge({
                         window.setTimeout(this._execute.bind(this, id, po.scope), executionDelay);
                     }
                     else {
-                        this._calls++;
+                        //this._calls++;
                         //if (this._calls < PocketCode.threadCounter)
                         //    this._execute.call(this, id, po.scope);
                         //else
@@ -467,7 +469,7 @@ PocketCode.Model.merge({
                 }
                 else
                     this._return(id, false, e.stopped);
-                this._calls = 0;
+                //this._calls = 0;
             },
         });
 
