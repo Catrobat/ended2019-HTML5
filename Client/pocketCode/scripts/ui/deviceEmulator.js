@@ -132,7 +132,7 @@ PocketCode.Ui.DeviceEmulator = (function () {
             this._scollCntr.verifyResize();
         },
         dispose: function () {
-            SmartJs.Ui.Window.onResize.removeEventListener(new SmartJs.Event.EventListener(this._windowResizeHandler, this));
+            SmartJs.Ui.Window.onResize.removeEventListener(new SmartJs.Event.EventListener(this.verifyResize, this));
             SmartJs.Ui.Control.prototype.dispose.call(this);
         },
     });

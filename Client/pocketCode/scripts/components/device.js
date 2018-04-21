@@ -726,9 +726,10 @@ PocketCode.Device = (function () {
 })();
 
 PocketCode.MediaDevice = (function () {
-    MediaDevice.extends(PocketCode.Device);
+    MediaDevice.extends(PocketCode.Device, false);
 
     function MediaDevice() {
+        PocketCode.Device.call(this);
 
         //camera
         this._features.CAMERA = new PocketCode.Camera();
@@ -911,9 +912,10 @@ PocketCode.MediaDevice = (function () {
 })();
 
 PocketCode.DeviceEmulator = (function () {
-    DeviceEmulator.extends(PocketCode.MediaDevice);
+    DeviceEmulator.extends(PocketCode.MediaDevice, false);
 
     function DeviceEmulator() {
+        PocketCode.MediaDevice.call(this);
 
         this._features.INCLINATION.supported = true;
         //set defaults for sliders (ui configuration)
