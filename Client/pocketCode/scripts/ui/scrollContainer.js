@@ -33,11 +33,6 @@ PocketCode.Ui.ScrollContainer = (function () {
         _resizeHandler: function (e) {
             this._iScroll.refresh();
         },
-        /*override*/
-        verifyResize: function (caller) {
-        //    this._container.verifyResize();
-            SmartJs.Ui.ContainerControl.prototype.verifyResize.call(this, caller);
-        },
     });
 
     return ScrollContainer;
