@@ -1097,55 +1097,32 @@
 /* expander control */
 .pc-expander {
     width: 100%;
-    /*background: #303030;*/
 }
 
 .pc-expanderHeader {
-    background-color: #303030;
-    font-size: 22px;
     padding: 3px 0px 3px;
 }
 
-/*    .pc-expanderHeader input:checked + label {
-        color: #17a5b8;
-    }
-
-[dir='rtl'] .pc-expander .pc-expanderHeader label:after {
-    content: '>';
-    -webkit-transform: rotate(270deg);
-    -moz-transform: rotate(270deg);
-    -ms-transform: rotate(270deg);
-    transform: rotate(270deg);
-    position: absolute;
-    right: 13px;
-    left: auto;
-    top: 2px;
-}
-*/
 .pc-expander .pc-expanderHeader label::after {
     content: '>';
-    font: 22px "Consolas", monospace;
+    font: 15px "Consolas", monospace;
     font-weight: bold;
     -webkit-transform: rotate(90deg);
     -moz-transform: rotate(90deg);
     -ms-transform: rotate(90deg);
     transform: rotate(90deg);
-    right: 10px;
+    right: 17px;
     line-height: 29px;
     border: 0px;
     position: absolute;
     pointer-events: none;
-    /* margin-left: 7px; */
-    /* margin-top: -4px; */
-    /* margin-right: 7px; */
 }
 
 [dir='rtl'] .pc-expander .pc-expanderHeader label::after {
     right: auto;
-    left: 10px;
+    left: 17px;
     content: '>';
 }
-
 
 .pc-expander .pc-expanderHeader input:checked + label::after {
     -webkit-transform: rotate(270deg);
@@ -1254,11 +1231,6 @@
     height: 33px;
     width: 100%;
 }
-    /*
-.pc-expander .pc-expanderTree .pc-expanderHeader{
-    float: none;
-    padding-right: 0px;
-}*/
 
     .pc-expander .pc-expanderHeader label {
         display: block;
@@ -1277,14 +1249,9 @@
     padding-right: 0px;
 }
 
-/*.pc-expander .pc-expanderBody button:hover {
-    color: #17a5b8;
-}*/
-
 .pc-expander .pc-expanderHeader label:hover {
     color: #fff;
 }
-
 
 /*Device Emulator*/
 .pc-deviceEmulator {
@@ -1320,6 +1287,7 @@
 
         .pc-deviceEmulator .pc-expanderHeader label::after {
             content: '<';
+            font-size: 22px;
         }
 
 .pc-deviceEmulator .pc-expanderBody span {

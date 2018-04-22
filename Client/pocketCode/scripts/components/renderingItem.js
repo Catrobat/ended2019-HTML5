@@ -234,9 +234,11 @@ PocketCode.merge({
                 var canvas = this._cacheCanvas,
                     ctx = this._cacheCtx,
                     string = PocketCode.Math.Cast.toI18nString(this._value, PocketCode.I18nProvider.currentLanguage),
+                    string = string.replace(/\n+/g, '\n'),   //only single line feeds allowed
                     dir = PocketCode.I18nProvider.getTextDirection(string),
                     rtl = (dir == PocketCode.Ui.Direction.RTL),
                     translation = 0,
+                    //fontSize = (string.length <=2 && string.slice(-1) == '\u221E') ? this.fontSize * 1.2 : this.fontSize,
                     font = this.fontStyle + ' ' + this.fontWeight + ' ' + this.fontSize + 'px' + ' ' + this.fontFamily;
 
                 if (string == '') {  //clear cache

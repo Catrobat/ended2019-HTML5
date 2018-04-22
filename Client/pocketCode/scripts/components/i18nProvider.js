@@ -50,6 +50,10 @@ PocketCode._I18nProvider = (function (propObject) {
 
             "variableTrue": "richtig",  //true
             "variableFalse": "falsch",  //false
+            "variableNaN": "NaN",
+            "variableInfinity": "Infinity",
+
+            "lbLanguage": "Sprache",
         };
 
         this._onLanguageChange = new SmartJs.Event.Event(this);
@@ -164,7 +168,7 @@ PocketCode._I18nProvider = (function (propObject) {
 
             return string;
         },
-        getTextDirection: function(string) {
+        getTextDirection: function (string) {
             return this._rtlRegExp.test(string) ? PocketCode.Ui.Direction.RTL : PocketCode.Ui.Direction.LTR;
         },
         /* override */
