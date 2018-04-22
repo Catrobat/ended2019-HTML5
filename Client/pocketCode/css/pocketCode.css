@@ -879,69 +879,68 @@
     height: 24px;
 }
 
-    .pc-slider .pc-label {
-        height: 100%;
-        line-height: 100%;
-        vertical-align: middle;
-        padding-left: 4px;
-        padding-right: 4px;
-    }
+.pc-slider .pc-label {
+    height: 100%;
+    line-height: 100%;
+    vertical-align: middle;
+    padding-left: 4px;
+    padding-right: 4px;
+}
 
-    .pc-slider .pc-label, .pc-slider .pc-sliderControl {
-        display: table-cell;
-        height: 100%;
-        border: 0px;
-    }
+.pc-slider .pc-label, .pc-slider .pc-sliderControl {
+    display: table-cell;
+    height: 100%;
+    border: 0px;
+}
 
-    .pc-slider .pc-sliderControl {
-        position: relative;
-        width: 100%;
-    }
+.pc-slider .pc-sliderControl {
+    position: relative;
+    width: 100%;
+}
 
-    .pc-slider .pc-track {
-        width: 100%;
-        height: 5px;
-        display: inline-block;
-        background-color: #17A5B8;
-        border-radius: 1px;
-        cursor: pointer;
-    }
+.pc-slider .pc-track {
+    width: 100%;
+    height: 5px;
+    display: inline-block;
+    background-color: #17A5B8;
+    border-radius: 1px;
+    cursor: pointer;
+}
 
-        .pc-slider .pc-track div {
-            height: 3px;
-            margin: 1px;
-            border-radius: 1px;
-            background-color: #A9DCF1;
-        }
+.pc-slider .pc-track div {
+    height: 3px;
+    margin: 1px;
+    border-radius: 1px;
+    background-color: #A9DCF1;
+}
 
-    .pc-slider .pc-thumb {
-        position: absolute;
-        top: 3px;
-        width: 17px;
-        height: 17px;
-        border-radius: 50%;
-        background-color: #A9DCF1;
-        cursor: col-resize;
-    }
+.pc-slider .pc-thumb {
+    position: absolute;
+    top: 3px;
+    width: 17px;
+    height: 17px;
+    border-radius: 50%;
+    background-color: #A9DCF1;
+    cursor: col-resize;
+}
 
-        .pc-slider .pc-thumb:hover {
-            background-color: #fff;
-        }
+.pc-slider .pc-thumb:hover {
+    background-color: #fff;
+}
 
-    .pc-slider .pc-thumb-down, .pc-slider .pc-thumb-down:hover {
-        background-color: #fff;
-    }
+.pc-slider .pc-thumb-down, .pc-slider .pc-thumb-down:hover {
+    background-color: #fff;
+}
 
-    .pc-slider .pc-thumb .pc-valueLabel {
-        position: absolute;
-        left: 50%;
-        top: -17px;
-        width: 36px;
-        margin-left: -18px;
-        text-align: center;
-        cursor: default;
-    }
-
+.pc-slider .pc-thumb .pc-valueLabel {
+    position: absolute;
+    left: 50%;
+    top: -17px;
+    width: 36px;
+    margin-left: -18px;
+    text-align: center;
+    cursor: default;
+}
 
 /* expander control */
 .pc-expander {
@@ -1081,14 +1080,14 @@
     width: 100%;
 }
 
-    .pc-expander .pc-expanderHeader label {
-        display: block;
-        /* float: right; */
-        /* margin-top: 5px; */
-        line-height: 30px;
-        padding-right: 10px;
-        padding-left: 10px;
-    }
+.pc-expander .pc-expanderHeader label {
+    display: block;
+    /* float: right; */
+    /* margin-top: 5px; */
+    line-height: 30px;
+    padding-right: 10px;
+    padding-left: 10px;
+}
 
 .pc-expander .pc-expanderTree .pc-expanderHeader label {
     float: none;
@@ -1112,7 +1111,7 @@
     overflow: hidden;
     border: solid 1px #17a5b8;
     background-color: #003041;
-    background-color: rgba(0,48,65,0.92);
+    background-color: rgba(0, 48, 65, 0.92);
     font-size: 15px;
     color: #D3D3D3;
 }
@@ -1124,20 +1123,20 @@
 
 .pc-deviceEmulator .pc-expanderHeader {
     background-color: #00475E;
-    background-color: rgba(0,71,94,.8);
+    background-color: rgba(0, 71, 94, .8);
     color: #A9DCF1;
     font-size: 19px;
 }
 
-    .pc-deviceEmulator .pc-expanderHeader label {
-        padding-left: 7px;
-        padding-right: 10px;
-    }
+.pc-deviceEmulator .pc-expanderHeader label {
+    padding-left: 7px;
+    padding-right: 10px;
+}
 
-        .pc-deviceEmulator .pc-expanderHeader label::after {
-            content: '<';
-            font-size: 22px;
-        }
+.pc-deviceEmulator .pc-expanderHeader label::after {
+    content: '<';
+    font-size: 22px;
+}
 
 .pc-deviceEmulator .pc-expanderBody span {
     display: block;
@@ -1151,28 +1150,28 @@
     padding: 0px 16px 0px 8px;
 }
 
-    .pc-deviceEmulatorBody .pc-deviceEmulatorContent {
-        padding-top: 6px;
-        padding-bottom: 3px;
-    }
+.pc-deviceEmulatorBody .pc-deviceEmulatorContent {
+    padding-top: 6px;
+    padding-bottom: 3px;
+}
 
 .pc-deviceEmulator .pc-slider {
     margin: 12px 0px 14px 0px;
     color: #A9DCF1;
 }
 
-    .pc-deviceEmulator .pc-slider .pc-label {
-        min-width: 33px;
-    }
+.pc-deviceEmulator .pc-slider .pc-label {
+    min-width: 33px;
+}
 
-        .pc-deviceEmulator .pc-slider .pc-label:first-child {
-            min-width: 16px;
-        }
+.pc-deviceEmulator .pc-slider .pc-label:first-child {
+    min-width: 16px;
+}
 
-    .pc-deviceEmulator .pc-slider .pc-valueLabel {
-        font-size: 80%;
-        top: -15px;
-    }
+.pc-deviceEmulator .pc-slider .pc-valueLabel {
+    font-size: 80%;
+    top: -15px;
+}
 
 .pc-deviceEmulator .pc-expanderBody .pc-imgContainer {
     text-align: center;
@@ -1185,10 +1184,10 @@
     padding-bottom: 3px;
 }
 
-    .pc-deviceEmulator .pc-expanderBody .pc-inclinationLabel div {
-        display: inline;
-    }
+.pc-deviceEmulator .pc-expanderBody .pc-inclinationLabel div {
+    display: inline;
+}
 
-    .pc-deviceEmulator .pc-expanderBody .pc-inclinationLabel .pc-label:after {
-        content: ': ';
-    }
+.pc-deviceEmulator .pc-expanderBody .pc-inclinationLabel .pc-label:after {
+    content: ': ';
+}
