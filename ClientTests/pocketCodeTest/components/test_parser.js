@@ -897,7 +897,25 @@ QUnit.test("FormulaParser: sensors: geo location", function (assert) {
 
     var f = new PocketCode.Formula(device, sprite);//, { "type": "NUMBER", "value": "20", "right": null, "left": null });
 
-    assert.ok(false, "TODO: sensors: geo location");
+    f.json = latitude;
+    assert.ok(typeof f.calculate() === 'number', "LATITUDE: formula return type");
+    assert.equal(f.isStatic, false, "LATITUDE: isStatic");
+    assert.equal(f.toString(), "latitude", "LATITUDE: toString");
+
+    f.json = longitude;
+    assert.ok(typeof f.calculate() === 'number', "LONGITUDE: formula return type");
+    assert.equal(f.isStatic, false, "LONGITUDE: isStatic");
+    assert.equal(f.toString(), "longitude", "LONGITUDE: toString");
+
+    f.json = altitude;
+    assert.ok(typeof f.calculate() === 'number', "ALTITUDE: formula return type");
+    assert.equal(f.isStatic, false, "ALTITUDE: isStatic");
+    assert.equal(f.toString(), "altitude", "ALTITUDE: toString");
+
+    f.json = location_accuracy;
+    assert.ok(typeof f.calculate() === 'number', "LOCATION_ACCURACY: formula return type");
+    assert.equal(f.isStatic, false, "LOCATION_ACCURACY: isStatic");
+    assert.equal(f.toString(), "location_accuracy", "LOCATION_ACCURACY: toString");
 });
 
 

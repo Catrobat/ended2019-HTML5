@@ -125,6 +125,12 @@ var multi_finger_y = { "type": "FUNCTION", "value": "MULTI_FINGER_Y", "left": { 
 var multi_finger_touched = { "type": "FUNCTION", "value": "MULTI_FINGER_TOUCHED", "left": { "type": "NUMBER", "value": "8", "left": null, "right": null }, "right": null };
 var last_finger_index = { "type": "SENSOR", "value": "LAST_FINGER_INDEX", "left": null, "right": null };
 
+//geo location
+var latitude = { "type": "SENSOR", "value": "LATITUDE", "left": null, "right": null };
+var longitude = { "type": "SENSOR", "value": "LONGITUDE", "left": null, "right": null };
+var altitude = { "type": "SENSOR", "value": "ALTITUDE", "left": null, "right": null };
+var location_accuracy = { "type": "SENSOR", "value": "LOCATION_ACCURACY", "left": null, "right": null };
+
 //bool to number conversion
 bool2NumberConversion = {"type":"OPERATOR","value":"PLUS","left":{"type":"OPERATOR","value":"PLUS","left":{"type":"OPERATOR","value":"PLUS","left":{"type":"NUMBER","value":"1","left":null,"right":null},"right":{"type":"BRACKET","value":"","left":null,"right":{"type":"OPERATOR","value":"GREATER_OR_EQUAL","left":{"type":"USER_VARIABLE","value":"s2","left":null,"right":null},"right":{"type":"NUMBER","value":"2","left":null,"right":null}}}},"right":{"type":"OPERATOR","value":"MULT","left":{"type":"NUMBER","value":"2","left":null,"right":null},"right":{"type":"BRACKET","value":"","left":null,"right":{"type":"OPERATOR","value":"GREATER_OR_EQUAL","left":{"type":"USER_VARIABLE","value":"s2","left":null,"right":null},"right":{"type":"NUMBER","value":"3","left":null,"right":null}}}}},"right":{"type":"OPERATOR","value":"MULT","left":{"type":"NUMBER","value":"4","left":null,"right":null},"right":{"type":"BRACKET","value":"","left":null,"right":{"type":"OPERATOR","value":"GREATER_OR_EQUAL","left":{"type":"USER_VARIABLE","value":"s2","left":null,"right":null},"right":{"type":"NUMBER","value":"4","left":null,"right":null}}}}};
 
