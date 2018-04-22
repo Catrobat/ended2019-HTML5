@@ -15,6 +15,7 @@ PocketCode.Ui.DeviceEmulator = (function () {
         this._device = device;
 
         this._container = new PocketCode.Ui.Expander('lbDeviceEmulator');
+        this._container.onVisibilityChange.addEventListener(new SmartJs.Event.EventListener(this._openCloseHandler, this));
         this._appendChild(this._container);
         var scroll = new PocketCode.Ui.ScrollContainer({ className: 'pc-deviceEmulatorBody' }, { className: 'pc-deviceEmulatorContent' });
         this._container.appendChild(scroll);
@@ -125,6 +126,8 @@ PocketCode.Ui.DeviceEmulator = (function () {
             SmartJs.Ui.ContainerControl.prototype.verifyResize.call(this);  //call super
         },
         dispose: function () {
+            this._container.onVisibilityChange.removeEventListener(new SmartJs.Event.EventListener(this._openCloseHandler, this));
+            clearInterval(this._pollingTimer);
             SmartJs.Ui.Window.onResize.removeEventListener(new SmartJs.Event.EventListener(this.verifyResize, this));
             SmartJs.Ui.Control.prototype.dispose.call(this);
         },
