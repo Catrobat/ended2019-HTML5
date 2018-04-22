@@ -285,7 +285,7 @@
             preventDefault: true,
             preventDefaultExceptions: [
                 {
-                    tagNames: /^(INPUT|TEXTAREA|BUTTON|SELECT|LABEL)$/,
+                    tagNames: /^(INPUT|TEXTAREA|BUTTON|SELECT|LABEL|DIV)$/,
                     eventNames: undefined,
                 },
                 {

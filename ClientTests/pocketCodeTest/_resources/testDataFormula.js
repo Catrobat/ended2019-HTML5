@@ -125,13 +125,19 @@ var multi_finger_y = { "type": "FUNCTION", "value": "MULTI_FINGER_Y", "left": { 
 var multi_finger_touched = { "type": "FUNCTION", "value": "MULTI_FINGER_TOUCHED", "left": { "type": "NUMBER", "value": "8", "left": null, "right": null }, "right": null };
 var last_finger_index = { "type": "SENSOR", "value": "LAST_FINGER_INDEX", "left": null, "right": null };
 
+//geo location
+var latitude = { "type": "SENSOR", "value": "LATITUDE", "left": null, "right": null };
+var longitude = { "type": "SENSOR", "value": "LONGITUDE", "left": null, "right": null };
+var altitude = { "type": "SENSOR", "value": "ALTITUDE", "left": null, "right": null };
+var location_accuracy = { "type": "SENSOR", "value": "LOCATION_ACCURACY", "left": null, "right": null };
+
 //bool to number conversion
 bool2NumberConversion = {"type":"OPERATOR","value":"PLUS","left":{"type":"OPERATOR","value":"PLUS","left":{"type":"OPERATOR","value":"PLUS","left":{"type":"NUMBER","value":"1","left":null,"right":null},"right":{"type":"BRACKET","value":"","left":null,"right":{"type":"OPERATOR","value":"GREATER_OR_EQUAL","left":{"type":"USER_VARIABLE","value":"s2","left":null,"right":null},"right":{"type":"NUMBER","value":"2","left":null,"right":null}}}},"right":{"type":"OPERATOR","value":"MULT","left":{"type":"NUMBER","value":"2","left":null,"right":null},"right":{"type":"BRACKET","value":"","left":null,"right":{"type":"OPERATOR","value":"GREATER_OR_EQUAL","left":{"type":"USER_VARIABLE","value":"s2","left":null,"right":null},"right":{"type":"NUMBER","value":"3","left":null,"right":null}}}}},"right":{"type":"OPERATOR","value":"MULT","left":{"type":"NUMBER","value":"4","left":null,"right":null},"right":{"type":"BRACKET","value":"","left":null,"right":{"type":"OPERATOR","value":"GREATER_OR_EQUAL","left":{"type":"USER_VARIABLE","value":"s2","left":null,"right":null},"right":{"type":"NUMBER","value":"4","left":null,"right":null}}}}};
 
 //formula: encoding tests (take from project 2673)
 var encoding1 = {
     "type": "STRING",
-    "value": "Los seres vivos son los que tienen vida, esto quiere decir, que son toda la variedad de seres que habitan nuestro planeta, desde los más pequeños hasta los más grandes, todas las plantas, animales e incluso nosotros los seres humanos. \nPodemos reconocer a los seres vivos porque tienen en común el ciclo de vida, los cambios que sufren a lo largo de su vida y cómo se van transformando. \nPara conocer mejor las fases que compone el ciclo de vida pulsa “Comenzar”.",
+    "value": "Los seres vivos 'son los que tienen vida', esto quiere decir, que son toda la variedad de seres que habitan nuestro planeta, desde los más pequeños hasta los más grandes, todas las plantas, animales e incluso nosotros los seres humanos. \nPodemos reconocer a los seres vivos porque tienen en común el ciclo de vida, los cambios que sufren a lo largo de su vida y cómo se van transformando. \nPara conocer mejor las fases que compone el ciclo de vida pulsa “Comenzar”.",
     "left": null,
     "right": null
 };

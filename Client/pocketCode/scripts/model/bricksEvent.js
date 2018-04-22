@@ -68,7 +68,7 @@ PocketCode.Model.merge({
 
                     var event = this._onActionEvents[action];
                     if (!(event instanceof SmartJs.Event.Event))
-                        throw new Error('unrecognized event: check if all events were registered in out parser');
+                        throw new Error('unrecognized event: check if all events were registered in our parser');
                     if (this._actionEvent)
                         this._actionEvent.removeEventListener(new SmartJs.Event.EventListener(this._onActionHandler, this));
 
@@ -179,12 +179,13 @@ PocketCode.Model.merge({
     WhenConditionMetBrick: (function () {
         WhenConditionMetBrick.extends(PocketCode.Model.EventBrick, false);
 
-        function WhenConditionMetBrick(device, sprite, minLoopCycleTime, propObject, startEvent) {
+        function WhenConditionMetBrick(device, sprite, propObject, startEvent) {
             PocketCode.Model.EventBrick.call(this, device, sprite, propObject);
 
             this._previousMet = false;
-            this._cycleTime = minLoopCycleTime;
             this._condition = new PocketCode.Formula(device, sprite, propObject.condition);
+
+            this._attached = false;
 
             if (this._sprite instanceof PocketCode.Model.SpriteClone) {
                 this._onStart = this._sprite.onCloneStart;
@@ -198,12 +199,14 @@ PocketCode.Model.merge({
 
         WhenConditionMetBrick.prototype.merge({
             _onCloneStartHandler: function () {  //to make sure all whenStartAsClone scripts where executed before evaluating the condition
-                window.setTimeout(this.executeEvent.bind(this), this._cycleTime);
+                window.setTimeout(this.executeEvent.bind(this), 20);
             },
             //a When.. brick cannot be part of a user script, so we do not have to take care of the execution scope (always sprite)
             _execute: function () {
-                if (this._timeoutHandler)
-                    window.clearTimeout(this._timeoutHandler);
+                if (!this._attached) {
+                    this._attached = true;
+                    SmartJs.AnimationFrame.addEventListener(new SmartJs.Event.EventListener(this._execute, this));
+                }
 
                 var met = false;
                 try {
@@ -217,12 +220,11 @@ PocketCode.Model.merge({
                 }
                 else {
                     this._previousMet = met;
-                    this._timeoutHandler = window.setTimeout(this._execute.bind(this), this._cycleTime);
                 }
             },
             pause: function () {
-                if (this._timeoutHandler)
-                    window.clearTimeout(this._timeoutHandler);
+                this._attached = false;
+                SmartJs.AnimationFrame.removeEventListener(new SmartJs.Event.EventListener(this._execute, this));
                 PocketCode.Model.EventBrick.prototype.pause.call(this);
             },
             resume: function () {
@@ -231,13 +233,15 @@ PocketCode.Model.merge({
             },
             stop: function (stopEventType) {
                 if (stopEventType != PocketCode.StopEventType.BRICK) {
-                    window.clearTimeout(this._timeoutHandler);
+                    this._attached = false;
+                    SmartJs.AnimationFrame.removeEventListener(new SmartJs.Event.EventListener(this._execute, this));
                     this._previousMet = false;  //reinit
                 }
                 PocketCode.Model.EventBrick.prototype.stop.call(this);
             },
             dispose: function () {
-                window.clearTimeout(this._timeoutHandler);
+                SmartJs.AnimationFrame.removeEventListener(new SmartJs.Event.EventListener(this._execute, this));
+
                 if (this._sprite instanceof PocketCode.Model.SpriteClone)
                     this._onStart.removeEventListener(new SmartJs.Event.EventListener(this._onCloneStartHandler, this));
                 else

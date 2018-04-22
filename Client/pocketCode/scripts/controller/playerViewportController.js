@@ -7,10 +7,9 @@ PocketCode.PlayerViewportController = (function () {
 
     function PlayerViewportController() {
         PocketCode.BaseController.call(this, new PocketCode.Ui.PlayerViewportView());
+
         this._renderingSprite = [];
         this._renderingTexts = [];
-        this._redrawRequired = false;
-        this._redrawInProgress = false;
 
         //init default values
         this._projectScreenWidth = 200;
@@ -115,7 +114,7 @@ PocketCode.PlayerViewportController = (function () {
                 }
             }
         },
-        updateVariable: function (objectId, varId, properties) {  //properties: {text: , x: , y: , visible: }
+        updateVariable: function (scopeId, variableId, value, viewState) {  //properties: { visible: , x: , y: }
             var _text,
                 _texts = this._renderingTexts,
                 _visible;
@@ -123,8 +122,9 @@ PocketCode.PlayerViewportController = (function () {
             for (var i = 0, l = _texts.length; i < l; i++) {
                 _text = _texts[i];
                 _visible = _text.visible;
-                if (_text.objectId == objectId && _text.id === varId) {
-                    _text.merge(properties);
+                if (_text.scopeId == scopeId && _text.id === variableId) {
+                    _text.value = value;
+                    _text.merge(viewState);
                     if (_text.visible != false || _visible != _text.visible)   //visible or visibility changed
                         this._view.render();
                     break;

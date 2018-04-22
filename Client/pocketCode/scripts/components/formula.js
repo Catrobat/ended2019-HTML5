@@ -35,7 +35,7 @@ PocketCode.Formula = (function () {
                     this.isStatic = true;
                     this._calculate = parsed.calculate;  //to map scope to formula (currently scope = parsed)
                     var val = this._calculate();
-                    val = (typeof val === 'string') ? '\'' + val.replace(/('|\n|\\)/g, '\\\$1') + '\'' : val;
+                    val = (typeof val !== 'string') ? val : '\'' + val.replace(/(')/g, '\\$1').replace(/(\n)/g, '\\n') + '\'';
                     val = 'return ' + val + ';';
                     this._calculate = new Function(val);
                 }
@@ -50,9 +50,13 @@ PocketCode.Formula = (function () {
 
     //methods
     Formula.prototype.merge({
-        calculate: function() {
-            if (this._json !== undefined)   //null is allowed
-                return this._calculate();
+        calculate: function (scope) {
+            if (this._json !== undefined) {   //null is allowed
+                var val = this._calculate(scope);
+                if (val instanceof PocketCode.Model.UserVariable)
+                    val = val.value;
+                return val;
+            }
             throw new Error('No Formula objct loaded');
         },
         _degree2radian: function (val) {
@@ -64,21 +68,6 @@ PocketCode.Formula = (function () {
         _log10: function (val) {
             return Math.log(val) / Math.LN10;
         },
-        //_validateNumeric: function (left, operator, right) {
-        //    if (isNaN(left))
-        //        left = 0;
-        //    if (isNaN(right)) {
-        //        right = 0;
-        //        if (operator == ' / ')  //handle division by zero
-        //            return 0;
-        //        else if (operator == ' % ') {   //modulo
-        //            var func = new Function('return ' + left + ';');
-        //            return func();
-        //        }
-        //    }
-        //    var func = new Function('return ' + left + operator + right + ';');
-        //    return func();
-        //},
         _validateFormula: function () {
             try {
                 var formula = new PocketCode.Formula(this._device, this._sprite);
@@ -93,12 +82,13 @@ PocketCode.Formula = (function () {
                     size: 100,
                     positionX: 0,
                     positionY: 0,
+                    volume: 100,
                     collidesWithEdge: false,
                     collidesWithPointer: true,
                     velocityX: 0,
                     velocityY: 0,
                     velocityAngular: 0,
-                    getVariable: function (id) { return { id: id, value: 0 }; },
+                    getVariable: function (id) { return new PocketCode.Model.UserVariableSimple(id, 'undefined'); },
                     getList: function (id) { return new PocketCode.Model.UserVariableList(id, 'undefined'); },
                     collidesWithSprite: function (name) { return true; },
                 };

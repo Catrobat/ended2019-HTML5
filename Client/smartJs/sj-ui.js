@@ -257,7 +257,6 @@ SmartJs.Ui.merge({
             this._onResize.addEventListener(new SmartJs.Event.EventListener(function (e) {
 
                 var size = this._cachedSize;// = { height: this.height, width: this.width };
-
                 size.height = this.height;
                 size.width = this.width;
 
@@ -272,11 +271,21 @@ SmartJs.Ui.merge({
 
                 var parent = this._parent;
                 if (parent && parent !== e.caller)
-                    this._parent.onLayoutChange.dispatchEvent({ caller: this });
+                    parent.onLayoutChange.dispatchEvent({ caller: this });
             }, this));
 
             this._onLayoutChange = new SmartJs.Event.Event(this);
             this._onLayoutChange.addEventListener(new SmartJs.Event.EventListener(function (e) {
+                var size = this._cachedSize;// = { height: this.height, width: this.width };
+                if (this.height != size.height || this.width != size.width) {   //changed on resize of childs
+                    size.height = this.height;
+                    size.width = this.width;
+                    if (this._parent)
+                        this._parent.onLayoutChange.dispatchEvent({ caller: this });
+                    //this._onResize.dispatchEvent({ caller: this });
+                    //return;
+                }
+                //else: update childs
                 var childs = this._childs;
                 for (var i = 0, l = childs.length; i < l; i++) {
                     var child = childs[i];
@@ -460,7 +469,6 @@ SmartJs.Ui.merge({
                 if (size.height !== this.height || size.width !== this.width)
                     this.onResize.dispatchEvent({ caller: caller });
             },
-
             addClassName: function (className) {
                 if (typeof className === undefined) return;
                 if (typeof className !== 'string')
