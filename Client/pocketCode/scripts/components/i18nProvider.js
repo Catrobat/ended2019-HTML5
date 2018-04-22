@@ -48,12 +48,12 @@ PocketCode._I18nProvider = (function (propObject) {
             "lbDeviceIncX": "Inclination X",
             "lbDeviceIncY": "Inclination Y",
 
-            "variableTrue": "richtig",  //true
-            "variableFalse": "falsch",  //false
+            "variableTrue": "true",  //true
+            "variableFalse": "false",  //false
             "variableNaN": "NaN",
             "variableInfinity": "Infinity",
 
-            "lbLanguage": "Sprache",
+            "lbLanguage": "Language",
         };
 
         this._onLanguageChange = new SmartJs.Event.Event(this);

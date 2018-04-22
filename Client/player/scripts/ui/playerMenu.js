@@ -39,7 +39,7 @@ PocketCode.Player.Ui.merge({
                 //this.appendChild(new PocketCode.Ui.MenuSeparator());
             }
 
-            this._languageGroup = new PocketCode.Ui.Expander('lbLanguages');
+            this._languageGroup = new PocketCode.Ui.Expander('lbLanguage');
             this._languageGroup.open();
             this.appendChild(this._languageGroup);
             this._languageRadioGroup = new PocketCode.Ui.RadioGroup();
