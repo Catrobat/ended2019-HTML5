@@ -39,7 +39,7 @@ QUnit.test("Canvas", function (assert) {
     };
 
     var gameEngine = new PocketCode.GameEngine();
-    var scene = new PocketCode.Model.Scene(gameEngine, undefined, undefined, []);
+    var scene = new PocketCode.Model.Scene(gameEngine, undefined, []);
     var is = new PocketCode.ImageStore();
     gameEngine._imageStore = is;
 

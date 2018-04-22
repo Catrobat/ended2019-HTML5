@@ -443,7 +443,7 @@ PocketCode.ImageFilter = {
 /*
  * this class is a helper class including image manipulation logic
  */
-PocketCode.ImageHelper = (function () {
+PocketCode._ImageHelper = (function () {
 
     //ctr
     function ImageHelper() {
@@ -881,4 +881,4 @@ PocketCode.ImageHelper = (function () {
 })();
 
 //static class: constructor override (keeping code coverage enabled)
-PocketCode.ImageHelper = new PocketCode.ImageHelper();
+PocketCode.ImageHelper = new PocketCode._ImageHelper();

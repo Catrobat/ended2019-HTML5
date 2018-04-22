@@ -35,14 +35,16 @@ QUnit.test("ImageFilter: color", function (assert) {
         3, 3, 2, 15
     ];
 
-    var originalHsvToRgb = PocketCode.ImageHelper.hsvToRgb;
-    PocketCode.ImageHelper.hsvToRgb = function(h, s, v){
-        return {r: h, g: s, b: v};
+    var testImageHelper = new PocketCode._ImageHelper();    //recreate the static class to avoid side effects in test framework
+
+    var originalHsvToRgb = testImageHelper.hsvToRgb;
+    testImageHelper.hsvToRgb = function (h, s, v) {
+        return { r: h, g: s, b: v };
     };
 
-    var originalRgbToHsv = PocketCode.ImageHelper.rgbToHsv;
-    PocketCode.ImageHelper.rgbToHsv = function(r, g, b){
-        return {h: r, s: g, v: b};
+    var originalRgbToHsv = testImageHelper.rgbToHsv;
+    testImageHelper.rgbToHsv = function (r, g, b) {
+        return { h: r, s: g, v: b };
     };
 
     var modifiedData = originalPixelData.slice(0);
@@ -59,11 +61,11 @@ QUnit.test("ImageFilter: color", function (assert) {
         for (var i = 0, l = modifiedData.length; i < l; i++) {
             //only h value shifted
             if ((i % 4) !== 0) {
-                if(originalPixelData[i] !== modifiedData[i]){
+                if (originalPixelData[i] !== modifiedData[i]) {
                     dataAsExpected = false;
                 }
-            } else if ((originalPixelData[i] + expectedColorShift) < 0){
-                if(modifiedData[i] !== (originalPixelData[i] + expectedColorShift + 360))
+            } else if ((originalPixelData[i] + expectedColorShift) < 0) {
+                if (modifiedData[i] !== (originalPixelData[i] + expectedColorShift + 360))
                     dataAsExpected = false
             } else {
                 if (modifiedData[i] !== ((originalPixelData[i] + expectedColorShift) % 360))
@@ -85,8 +87,8 @@ QUnit.test("ImageFilter: color", function (assert) {
     PocketCode.ImageFilter.color(modifiedData, colorShift);
     assert.ok(checkData(), "Color shifted correctly large value");
 
-    PocketCode.ImageHelper.hsvToRgb = originalHsvToRgb;
-    PocketCode.ImageHelper.rgbToHsv = originalRgbToHsv;
+    testImageHelper.hsvToRgb = originalHsvToRgb;
+    testImageHelper.rgbToHsv = originalRgbToHsv;
 });
 
 QUnit.test("ImageFilter: brightness", function (assert) {
@@ -108,17 +110,16 @@ QUnit.test("ImageFilter: brightness", function (assert) {
     var dataAsExpected = true;
 
     for (var i = 0, l = modifiedData.length; i < l; i++) {
-        if ((i % 4) !== 3){
+        if ((i % 4) !== 3) {
             if (modifiedData[i] !== (originalPixelData[i] + Math.round(brightnessChange * 2.55))) {
                 dataAsExpected = false;
             }
-        } else if (modifiedData[i] !== originalPixelData[i]){
+        } else if (modifiedData[i] !== originalPixelData[i]) {
             dataAsExpected = false;
         }
     }
     assert.ok(dataAsExpected, "applyBrightnessFilter: correct change made to brightness if brightness is not 0");
 });
-
 
 QUnit.test("ImageHelper", function (assert) {
 
@@ -136,7 +137,7 @@ QUnit.test("ImageHelper", function (assert) {
     };
 
     var img1, img2, img3, img4, img5, img6, img7, img8, img9, img11,
-        ih = PocketCode.ImageHelper;
+        ih = new PocketCode._ImageHelper(); //recreate the static class to avoid side effects in test framework
 
     var imgLoadCounter = 0;
     var imgLoadHandler = function () {
@@ -235,7 +236,7 @@ QUnit.test("ImageHelper", function (assert) {
         d *= 2; //apply scaling
         size = ih.getBoundingSize(canvas, 2, 45);
         assert.ok(round1000(size.height) == round1000(d) && round1000(size.width) == round1000(d), "bounding size including rotate");
-        
+
         done2();
         runTests_getImageTrimOffsets();
     };
@@ -314,7 +315,7 @@ QUnit.test("ImageHelper", function (assert) {
             bl = oImg1.bl,
             br = oImg1.br;
         assert.ok(img.height == 1 && img.width == 8, "img1 cut");
-        assert.ok(round1000(x) == - 1 && round1000(y) == -3.5, "img1 recentered");
+        assert.ok(round1000(x) == -1 && round1000(y) == -3.5, "img1 recentered");
         x = tl.length * Math.cos(tl.angle);
         y = tl.length * Math.sin(tl.angle);
         assert.ok(round1000(x) == -5 && round1000(y) == -3, "top left corner vector checked");
@@ -538,32 +539,32 @@ QUnit.test("ImageHelper", function (assert) {
         //when adding values accuracy and ranges need to be taken into account. e.g. s goes from 0 - 1 and not from 0-100
         var hsvRgbMapping = [
             {
-                hsv: {h: 0, s: 0.5, v: 255},
-                rgb: {r: 255, g: 128, b: 128}
+                hsv: { h: 0, s: 0.5, v: 255 },
+                rgb: { r: 255, g: 128, b: 128 }
             },
             {
-                hsv: {h: 0, s: 0, v: 0},
-                rgb: {r: 0, g: 0, b: 0}
+                hsv: { h: 0, s: 0, v: 0 },
+                rgb: { r: 0, g: 0, b: 0 }
             },
             {
-                hsv: {h: 30, s: 0.57, v: 77},
-                rgb: {r: 77, g: 55, b: 33}
+                hsv: { h: 30, s: 0.57, v: 77 },
+                rgb: { r: 77, g: 55, b: 33 }
             },
             {
-                hsv: {h: 337.2, s: 0.98, v: 255},
-                rgb: {r: 255, g: 5, b: 100}
+                hsv: { h: 337.2, s: 0.98, v: 255 },
+                rgb: { r: 255, g: 5, b: 100 }
             },
             {
-                hsv: {h: 0, s: 0, v: 50},
-                rgb: {r: 50, g: 50, b: 50}
+                hsv: { h: 0, s: 0, v: 50 },
+                rgb: { r: 50, g: 50, b: 50 }
             },
             {
-                hsv: {h: 0, s: 0, v: 50},
-                rgb: {r: 50, g: 50, b: 50}
+                hsv: { h: 0, s: 0, v: 50 },
+                rgb: { r: 50, g: 50, b: 50 }
             },
             {
-                hsv: {h: 0, s: 0, v: 255},
-                rgb: {r: 255, g: 255, b: 255}
+                hsv: { h: 0, s: 0, v: 255 },
+                rgb: { r: 255, g: 255, b: 255 }
             },
             {
                 hsv: { h: 213.06, s: 0.76, v: 194 },
@@ -588,7 +589,7 @@ QUnit.test("ImageHelper", function (assert) {
 
         ];
 
-        for(var i = 0, l = hsvRgbMapping.length; i < l; i++){
+        for (var i = 0, l = hsvRgbMapping.length; i < l; i++) {
             assert.propEqual(ih.rgbToHsv(hsvRgbMapping[i].rgb.r, hsvRgbMapping[i].rgb.g, hsvRgbMapping[i].rgb.b), hsvRgbMapping[i].hsv, "rgb to hsv conversion worked as expected: " + i);
             assert.propEqual(ih.hsvToRgb(hsvRgbMapping[i].hsv.h, hsvRgbMapping[i].hsv.s, hsvRgbMapping[i].hsv.v), hsvRgbMapping[i].rgb, "hsv to rgb conversion worked as expected: " + i);
         }

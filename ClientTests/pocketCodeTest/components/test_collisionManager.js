@@ -94,7 +94,7 @@ QUnit.test("checkSpriteCollision", function (assert) {
     var done = assert.async();
 
     var gameEngine = new PocketCode.GameEngine();
-    var scene = new PocketCode.Model.Scene(gameEngine, undefined, undefined, []);
+    var scene = new PocketCode.Model.Scene(gameEngine, undefined, []);
 
     var cm = new PocketCode.CollisionManager(10, 20);
     //test only

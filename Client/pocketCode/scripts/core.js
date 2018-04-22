@@ -8,67 +8,72 @@
 if (!PocketCode)
     var PocketCode = {};
 
-if (!PocketCode.crossOrigin)
-    PocketCode.crossOrigin = new ((function () {
+//set default server if not set already
+if (!PocketCode.hasOwnProperty('domain'))
+    PocketCode.domain = 'https://share.catrob.at/';
 
-        function CrossOrigin() {
-            //init: worst case
-            this._current = true;
-            this._supported = false;
-            this._initialized = false;
+//if (!PocketCode.crossOrigin)
+//    PocketCode.crossOrigin = new ((function () {
 
-            var loc = window.location, a = document.createElement('a');
-            a.href = PocketCode.domain;
-            var port = loc.protocol == 'https:' ? '443' : loc.port;
-            var aPort = a.port; //safari fix
-            if (aPort == '0')
-                aPort = '';
-            if (a.hostname == loc.hostname && (aPort == loc.port || aPort == port) && a.protocol == loc.protocol) {  //TODO: check sub domains
-                this._current = false;
-                this._initialized = true;
-            }
-            else {
-                //this._current = true;
-                var oImg = new Image();
-                if (!('crossOrigin' in oImg)) {
-                    this._initialized = true;
-                    return;
-                }
-                oImg.crossOrigin = 'anonymous';
-                oImg.onload = function () {
-                    this._supported = true;
-                    this._initialized = true;
-                }.bind(this);
-                oImg.onerror = function () {
-                    this._supported = false;
-                    this._initialized = true;
-                    //throw new Error('core: cross origin check failed: please make sure both the provided base and favicon urls are valid');
-                }.bind(this);
-                oImg.src = PocketCode.domain + 'html5/pocketCode/img/favicon.png';
-            }
-        }
+//        function CrossOrigin() {
+//            //init: worst case
+//            this._current = true;
+//            this._supported = false;
+//            this._initialized = false;
 
-        //properties
-        Object.defineProperties(CrossOrigin.prototype, {
-            current: {
-                get: function () {
-                    return this._current;
-                },
-            },
-            supported: {
-                get: function () {
-                    return this._supported;
-                },
-            },
-            initialized: {
-                get: function () {
-                    return this._initialized;
-                },
-            },
-        });
+//            var loc = window.location, a = document.createElement('a');
+//            a.href = PocketCode.domain;
+//            var port = loc.protocol == 'https:' ? '443' : loc.port;
+//            var aPort = a.port; //safari fix
+//            if (aPort == '0')
+//                aPort = '';
+//            if (a.hostname == loc.hostname && (aPort == loc.port || aPort == port) && a.protocol == loc.protocol) {  //TODO: check sub domains
+//                this._current = false;
+//                this._initialized = true;
+//            }
+//            else {
+//                //this._current = true;
+//                var oImg = new Image();
+//                if (!('crossOrigin' in oImg)) {
+//                    this._initialized = true;
+//                    return;
+//                }
+//                oImg.crossOrigin = 'anonymous';
+//                oImg.onload = function () {
+//                    this._supported = true;
+//                    this._initialized = true;
+//                }.bind(this);
+//                oImg.onerror = function () {
+//                    this._supported = false;
+//                    this._initialized = true;
+//                    //throw new Error('core: cross origin check failed: please make sure both the provided base and favicon urls are valid');
+//                }.bind(this);
+//                oImg.src = PocketCode.domain + 'html5/pocketCode/img/favicon.png';
+//            }
+//        }
 
-        return CrossOrigin;
-    })())();
+//        //properties
+//        Object.defineProperties(CrossOrigin.prototype, {
+//            current: {
+//                get: function () {
+//                    return this._current;
+//                },
+//            },
+//            supported: {
+//                get: function () {
+//                    return this._supported;
+//                },
+//            },
+//            initialized: {
+//                get: function () {
+//                    return this._initialized;
+//                },
+//            },
+//        });
+
+//        return CrossOrigin;
+//    })())();
+
 
 /**
  * @namespace Model
@@ -78,6 +83,8 @@ PocketCode.Model = {};  //PocketCode.Model || {};
 
 PocketCode.merge({
 
+    //threadCounter: 35, //SmartJs.Device.isMobile ? 35 : 70,  //to configure the a special amount of loop cycles without delay or broadcasts before a timeout is triggered to avoid call stack overflow
+    //^^ currently disables.. allows several synchronous calls (without theading timeout) to run script much faster: references: LoopBrick (bricksCore.js) and PublishSubscribeBroker (publishSubscribe.js)
     UserActionType: {
         SPRITE_TOUCHED: 'spriteTouched',
         TOUCH_START: 'touchStart',
@@ -92,33 +99,16 @@ PocketCode.merge({
         PAUSED_USERINTERACTION: 5,  //and running, e.g. ask brick
         ERROR: 6,
     },
+    StopEventType: {
+        SYSTEM: 0,  //default
+        BRICK: 1,
+        RUNNING_SCRIPT_CALL: 2,
+    },
     StopType: {
         THIS_SCRIPT: 0,
         OTHER_SCRIPTS: 1,
         ALL_SOUNDS: 2,
         ALL: 3,
-    },
-    /**
-     * GraphicEffects
-     * @type {{COLOR: string, FISHEYE: string, WHIRL: string, PIXELATE: string, MOSAIC: string, BRIGHTNESS: string, GHOST: string}}
-     */
-    GraphicEffect: {
-        WHIRL: 'whirl',
-        FISHEYE: 'fisheye',
-        PIXELATE: 'pixelate',
-        MOSAIC: 'mosaic',
-        COLOR: 'color',
-        BRIGHTNESS: 'brightness',
-        GHOST: 'ghost',     //opacity, transparency
-        /*
-        GRAYSCALE: 'grayscale',
-        THRESHOLD: 'threshold',
-        
-        NEGATIVE: 'negative',
-        COMIC: 'comic',
-        DUPLICATE: 'duplicate',
-        CONFETTI: 'confetti',
-        */
     },
 
     isPlayerCompatible: function () {
@@ -129,9 +119,9 @@ PocketCode.merge({
                 var bc = SmartJs.isBrowserCompatible();
                 if (!bc.result) {
                     _result = _full = false;
-                    return false;
+                    //return false;
                 }
-                return true;
+                return bc;
             }(),
             operaMini: function () {
                 if (window.operamini) {//!!window.['operamini']) {
@@ -139,7 +129,7 @@ PocketCode.merge({
                     return false;
                 }
                 return true;
-            },
+            }(),
             pushState: function () {
                 if (SmartJs.Device.isMobile && !history.pushState) {
                     _result = _full = false;
@@ -203,9 +193,10 @@ PocketCode.Core = {
         function I18nString(i18nKey /*, arguments*/) {
             SmartJs.Core.String.call(this, '');
 
-            //if (typeof i18nKey !== 'string')
-            //    throw new Error('invalid argument: i18nKey');
+            if (PocketCode.I18nProvider)
+                PocketCode.I18nProvider.onLanguageChange.addEventListener(new SmartJs.Event.EventListener(this._updateString, this));
             this.i18nKey = i18nKey;
+            this._updateString();
             this._format = arguments;
         }
 
@@ -217,20 +208,18 @@ PocketCode.Core = {
                         throw new Error('invalid argument: i18nKey');
 
                     this._i18nKey = i18nKey;
+                    this._updateString();
                 },
             },
         });
 
         //methods
         I18nString.prototype.merge({
-            /* override */
-            toString: function () {
+            _updateString: function () {
                 if (!PocketCode.I18nProvider || !PocketCode.I18nProvider.getLocString)
                     this._string = '[' + this._i18nKey + ']';
                 else
                     this._string = PocketCode.I18nProvider.getLocString(this._i18nKey);
-
-                return SmartJs.Core.String.prototype.toString.call(this);    //call super
             },
         });
 

@@ -67,7 +67,7 @@ PocketCode.PageController = (function () {
             },
         },
     });
-    
+
     //methods
     PageController.prototype.merge({
         loadViewState: function (viewState, dialogsLength) {
@@ -84,7 +84,7 @@ PocketCode.PageController = (function () {
 
             this._dialogs.push(dialog);
             if (SmartJs.Device.isMobile) {  //create history entry
-                var state = history.state;
+                var state = history.state ? history.state : { historyIdx: -1, dialogsLength: 0 };
                 history.pushState(new PocketCode.HistoryEntry(state.historyIdx + 1, state.dialogsLength, this, PocketCode.ExecutionState.RUNNING, this._dialogs.length), document.title, '');
             }
 

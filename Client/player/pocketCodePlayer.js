@@ -29,7 +29,7 @@ document.addEventListener('DOMContentLoaded', function () {
     if (!localFile && (hn === 'localhost' || hn === ''))// || hn === 'web-test.catrob.at' || hn === 'share.catrob.at')
         href = 'pocketCodePlayer.css';
     else
-        href = PocketCode.domain + '/html5/player/pocketCodePlayer.css';
+        href = PocketCode.domain + 'html5/player/pocketCodePlayer.css';
 
     var link = document.createElement('link');
     link.href = href;
@@ -497,6 +497,16 @@ PocketCode.Web = {
             setUiDirection: function (dir) {
                 this._dom.dir = dir;
             },
+            appendEmulator: function (emulatorControl) {
+                if (this._deviceEmulator)   //this will occur when a new (another) project is loaded (gameEngine)
+                    this._dom.removeChild(emulatorControl.dom);
+
+                if (!emulatorControl)
+                    return;
+                this._deviceEmulator = emulatorControl;
+                this._dom.appendChild(emulatorControl.dom);
+                //emulatorControl.verifyResize();   //manually called because we are dealing with the DOM directly
+            }
         };
 
         return WebOverlay;
@@ -704,6 +714,7 @@ PocketCode.Web = {
             this._resources = resources;
             this._root = resources.root;
             this._files = resources.files;
+            this._version = Date.now().toString().substring(3, 6); //prevent caching
 
             //events to override
             this.onProgress = function () { };
@@ -775,7 +786,8 @@ PocketCode.Web = {
                         }.bind(this);
                         oHead.appendChild(oScript);
                         //oHead.insertBefore(oScript, oHead.firstChild);    //alternative
-                        oScript.id = oScript.src = href;
+                        oScript.id = href;
+                        oScript.src = href + '?v=' + this._version;
                         break;
                     case 'css':
                         var oCss = document.createElement("link");
@@ -789,7 +801,7 @@ PocketCode.Web = {
                             oCss.href = href;
                             setTimeout(successHandler.bind(this), 10);
                         }.bind(this);
-                        oCssSim.src = href;
+                        oCssSim.src = href + '?v=' + this._version;
                         break;
                         //case 'img':
                         //	var oImg = new Image();
@@ -950,6 +962,7 @@ PocketCode.Web = {
                 this._player.onInit.addEventListener(new SmartJs.Event.EventListener(this._applicationInitHandler, this));
                 this._player.onUiDirectionChange.addEventListener(new SmartJs.Event.EventListener(this._uiDirectionChangeHandler, this));
                 this._player.onExit.addEventListener(new SmartJs.Event.EventListener(this._closeHandler, this));
+                this._player.onEmulatorLoaded.addEventListener(new SmartJs.Event.EventListener(this._deviceEmulatorLoadHandler, this));
 
                 if (this._isMobile) {
                     //this._player = new PocketCode.Player.Application();//this._splashScreen, this._webOverlay);
@@ -1058,6 +1071,7 @@ PocketCode.Web = {
                         this._player.onUiDirectionChange.removeEventListener(new SmartJs.Event.EventListener(this._uiDirectionChangeHandler, this));
                         this._player.onHWRatioChange.removeEventListener(new SmartJs.Event.EventListener(this._applicationRatioChangetHandler, this));
                         this._player.onExit.removeEventListener(new SmartJs.Event.EventListener(this._closeHandler, this));
+                        this._player.onEmulatorLoaded.removeEventListener(new SmartJs.Event.EventListener(this._deviceEmulatorLoadHandler, this));
                         this._player.dispose();
                         //this._player = undefined;
                     }
@@ -1071,6 +1085,9 @@ PocketCode.Web = {
                         window.close();
                     //return;
                 }
+            },
+            _deviceEmulatorLoadHandler: function (e) {
+                this._webOverlay.appendEmulator(e.emulator);
             },
         };
 
@@ -1088,21 +1105,21 @@ PocketCode.Web.resources = {
         if (!localFile && (hn === 'localhost' || hn === ''))// || hn === 'web-test.catrob.at' || hn === 'share.catrob.at')
             return '../';
 
-        return PocketCode.domain + '/html5/';
+        return PocketCode.domain + 'html5/';
     }(),
     files: [
-		{ url: 'smartJs/sj.css', type: 'css' },
-		{ url: 'smartJs/sj.js', type: 'js' },
-		{ url: 'smartJs/sj-core.js', type: 'js' },
-		{ url: 'smartJs/sj-event.js', type: 'js' },
-		{ url: 'smartJs/sj-components.js', type: 'js' },
-		{ url: 'smartJs/sj-animation.js', type: 'js' },
-		{ url: 'smartJs/sj-communication.js', type: 'js' },
-		{ url: 'smartJs/sj-ui.js', type: 'js' },
-		//{ url: 'pocketCode/libs/smartJs/sj.custom.min.js', type: 'js' },
+		//{ url: 'smartJs/sj.css', type: 'css' },
+		//{ url: 'smartJs/sj.js', type: 'js' },
+		//{ url: 'smartJs/sj-core.js', type: 'js' },
+		//{ url: 'smartJs/sj-event.js', type: 'js' },
+		//{ url: 'smartJs/sj-components.js', type: 'js' },
+		//{ url: 'smartJs/sj-animation.js', type: 'js' },
+		//{ url: 'smartJs/sj-communication.js', type: 'js' },
+		//{ url: 'smartJs/sj-ui.js', type: 'js' },
+		{ url: 'pocketCode/libs/smartJs/sj.custom.min.js', type: 'js' },
 
-		{ url: 'pocketCode/libs/soundjs/soundjs-0.6.1.custom.js', type: 'js' },
-		{ url: 'pocketCode/libs/iscroll/iscroll-5.3.1.custom.js', type: 'js' },
+		{ url: 'pocketCode/libs/soundjs/soundjs-0.6.1.custom.min.js', type: 'js' },
+		{ url: 'pocketCode/libs/iscroll/iscroll-5.3.1.custom.min.js', type: 'js' },
 
 		{ url: 'pocketCode/css/pocketCode.css', type: 'css' },
 
@@ -1134,6 +1151,7 @@ PocketCode.Web.resources = {
 		{ url: 'pocketCode/scripts/components/imageStore.js', type: 'js' },
 		{ url: 'pocketCode/scripts/components/gameEngine.js', type: 'js' },    //make sure includes are in the right order (inheritance)
 		{ url: 'pocketCode/scripts/components/i18nProvider.js', type: 'js' },
+		{ url: 'pocketCode/scripts/components/math.js', type: 'js' },
 		{ url: 'pocketCode/scripts/components/loggingProvider.js', type: 'js' },
 		{ url: 'pocketCode/scripts/components/parser.js', type: 'js' },
 		{ url: 'pocketCode/scripts/components/proxy.js', type: 'js' },
@@ -1144,10 +1162,12 @@ PocketCode.Web.resources = {
 		{ url: 'pocketCode/scripts/ui/canvas.js', type: 'js' },
 		{ url: 'pocketCode/scripts/ui/dialog.js', type: 'js' },
 		{ url: 'pocketCode/scripts/ui/input.js', type: 'js' },
+        { url: 'pocketCode/scripts/ui/expander.js', type: 'js' },
 		{ url: 'pocketCode/scripts/ui/menu.js', type: 'js' },
 		{ url: 'pocketCode/scripts/ui/playerStartScreen.js', type: 'js' },
 		{ url: 'pocketCode/scripts/ui/playerToolbar.js', type: 'js' },
 		{ url: 'pocketCode/scripts/ui/scrollContainer.js', type: 'js' },
+        { url: 'pocketCode/scripts/ui/deviceEmulator.js', type: 'js' },
 
 		{ url: 'pocketCode/scripts/view/pageView.js', type: 'js' },
 		{ url: 'pocketCode/scripts/view/playerPageView.js', type: 'js' },

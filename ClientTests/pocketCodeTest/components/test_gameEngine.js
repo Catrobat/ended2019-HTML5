@@ -10,15 +10,13 @@ QUnit.test("GameEngine", function (assert) {
 
     //dispose: testing dispose first should notify us on errors caused by disposing some core (prototype) properties or events
     var gameEngine = new PocketCode.GameEngine();
-    var scene = new PocketCode.Model.Scene(gameEngine, undefined, undefined, []);
+    var scene = new PocketCode.Model.Scene(gameEngine, undefined, []);
     gameEngine.__currentScene = scene;
 
     assert.ok(gameEngine instanceof PocketCode.GameEngine && gameEngine instanceof SmartJs.Core.Component, "instance check");
     assert.ok(gameEngine.objClassName === "GameEngine", "objClassName check");
 
-    gameEngine._executionState = PocketCode.ExecutionState.RUNNING; //should be stopped
     gameEngine.dispose();
-    assert.equal(gameEngine.executionState, undefined, "gameEngine stopped during dispose- property deleted");
     assert.equal(gameEngine._disposed, true, "disposed completely");
 
     //dispose test: on finished
@@ -30,7 +28,7 @@ QUnit.test("GameEngine", function (assert) {
     };
 
     gameEngine = new PocketCode.GameEngine();
-    var scene = new PocketCode.Model.Scene(gameEngine, undefined, undefined, []);
+    var scene = new PocketCode.Model.Scene(gameEngine, undefined, []);
     gameEngine.__currentScene = scene;
     assert.ok(gameEngine instanceof PocketCode.GameEngine && gameEngine instanceof PocketCode.Model.UserVariableHost && gameEngine instanceof SmartJs.Core.Component, "instance check");
 
@@ -53,7 +51,7 @@ QUnit.test("GameEngine", function (assert) {
             imagesMatch = false;
         }
 
-        if(gameEngine._images[testProject.images[i].id._size] !== testProject.images[i]._size /*|| testProject.images[i].imageObject.getAttribute("src") !== gameEngine._images[testProject.images[i]._id].url*/){
+        if (gameEngine._images[testProject.images[i].id._size] !== testProject.images[i]._size /*|| testProject.images[i].imageObject.getAttribute("src") !== gameEngine._images[testProject.images[i]._id].url*/) {
             imageObjectsCreatedCorrectly = false;
         }
     }
@@ -67,6 +65,7 @@ QUnit.test("GameEngine", function (assert) {
 
     //Hardcoded sound Tests
     var sounds = [{ id: "id1", url: "src", size: 1 }, { id: "id2", url: "src", size: 2 }, { id: "id3", url: "src", size: 3 }];
+    gameEngine._resourceBaseUrl = "";
     gameEngine._sounds = sounds;
     assert.ok(gameEngine.__sounds["id1"] === sounds[0] && gameEngine.__sounds["id2"] === sounds[1] && gameEngine.__sounds["id3"] === sounds[2], "sounds set correctly (hardcoded)");
     gameEngine._soundManager.init();
@@ -107,8 +106,10 @@ QUnit.test("GameEngine", function (assert) {
 QUnit.test("GameEngine: variable UI updates", function (assert) {
 
     var gameEngine = new PocketCode.GameEngine();
-    var scene = new PocketCode.Model.Scene(gameEngine, undefined, undefined, []);
-    gameEngine.__currentScene = scene;
+    var scene = new PocketCode.Model.Scene(gameEngine, undefined, []);
+    scene._id = "id";
+    gameEngine._scenes["id"] = scene;
+    gameEngine._startScene = scene;
     assert.ok(gameEngine.onVariableUiChange instanceof SmartJs.Event.Event, "onVariableUiChange: event check");
 
     gameEngine.renderingTexts = [];
@@ -117,78 +118,100 @@ QUnit.test("GameEngine: variable UI updates", function (assert) {
 
     gameEngine._variables = [{ id: "g1", name: "var1", }, { id: "g2", name: "var2", }, ];   //global
 
-    assert.equal(gameEngine._executionState, PocketCode.ExecutionState.INITIALIZED, "Created gameEngine: status initialized");
+    var handlerCount = 0,
+        lastEventArgs;
+    var onChangeHandler = function (e) {
+        handlerCount++;
+        lastEventArgs = e;
+    };
+    gameEngine.onVariableUiChange.addEventListener(new SmartJs.Event.EventListener(onChangeHandler, this));
+    gameEngine.getVariable("g1").value = false;
+
+    assert.equal(handlerCount, 0, "variable not visible");
+    gameEngine.showVariableAt("g1", 1, 2);
+    assert.equal(handlerCount, 1, "event on showVariableAt");
+    assert.deepEqual(lastEventArgs.viewState, { visible: true, x: 1, y: 2 }, "viewState update triggered (show)");
+    assert.equal(lastEventArgs.value, false, "value check in eventArgs");
+
+    gameEngine.getVariable("g1").value = false;
+    assert.equal(handlerCount, 1, "no event dispatched if value does not change");
+
+    gameEngine.getVariable("g1").value = undefined;
+    assert.equal(handlerCount, 2, "value changed (strong typed)");
+    assert.equal(lastEventArgs.value, undefined, "value included in event args");
+
+    gameEngine.hideVariable("g1");
+    assert.deepEqual(lastEventArgs.viewState, { visible: false }, "viewState update triggered (hide)");
+
+    handlerCount = 0;
+    gameEngine.getVariable("g1").value = true;
+    assert.equal(handlerCount, 0, "no event if hidden again");
+});
+
+
+QUnit.test("GameEngine: execution state", function (assert) {
+
+    var gameEngine = new PocketCode.GameEngine();
+    var scene = new PocketCode.Model.Scene(gameEngine, undefined, []);
+    scene._id = "id";
+    gameEngine._scenes["id"] = scene;
+    gameEngine._startScene = scene;
+
+    assert.equal(gameEngine.executionState, PocketCode.ExecutionState.INITIALIZED, "Created gameEngine: status initialized");
     gameEngine._resourcesLoaded = false;
-    assert.throws(gameEngine.runProject(), Error, "ERROR: Program not ready");
-    gameEngine._resourcesLoaded = true; //project loaded
-    gameEngine._spritesLoaded = true;
+    assert.throws(function () { gameEngine.runProject() }, Error, "ERROR: Program not ready");
 
     var programStartEvent = 0;
-    //onProgramStart commented out in gameEngine
-    //gameEngine.onProgramStart.addEventListener(new SmartJs.Event.EventListener(function () {
-    //    programStartEvent++;
-    //}));
+    gameEngine.onBeforeProgramStart.addEventListener(new SmartJs.Event.EventListener(function () {
+        programStartEvent++;
+    }));
 
     //simulate project loaded for tests
     gameEngine._resourcesLoaded = true;
-    gameEngine._spritesLoaded = true;
-
+    gameEngine._scenesLoaded = true;
+    gameEngine.projectReady = true;
+    gameEngine._device = new PocketCode.MediaDevice();    //created during loading
 
     gameEngine.runProject();
-    programStartEvent++;
     assert.equal(programStartEvent, 1, "Called onProgramStart");
-
-    gameEngine._executionState = 1;
-    assert.equal(gameEngine._executionState, PocketCode.ExecutionState.RUNNING, "Set programs execution state to RUNNING on start");
+    assert.equal(gameEngine.executionState, PocketCode.ExecutionState.RUNNING, "Set programs execution state to RUNNING on start");
 
     gameEngine.runProject();
     assert.equal(programStartEvent, 1, "Did not attempt to start running gameEngine");
 
     gameEngine.pauseProject();
-    gameEngine._executionState = 3;
-
-    assert.equal(gameEngine._executionState, PocketCode.ExecutionState.PAUSED, "Set programs execution state to PAUSED on calling pause");
+    assert.equal(gameEngine.executionState, PocketCode.ExecutionState.PAUSED, "Set programs execution state to PAUSED on calling pause");
     gameEngine._soundManager.status = 3;
     assert.equal(gameEngine._soundManager.status, PocketCode.ExecutionState.PAUSED, "Called soundManagers pauseSounds function");
 
     gameEngine.resumeProject();
-    gameEngine._executionState = 1;
-
-    assert.deepEqual(gameEngine._executionState, PocketCode.ExecutionState.RUNNING, "Set programs execution state to RUNNING on calling resume");
+    assert.deepEqual(gameEngine.executionState, PocketCode.ExecutionState.RUNNING, "Set programs execution state to RUNNING on calling resume");
     gameEngine._soundManager.status = 1;
     assert.deepEqual(gameEngine._soundManager.status, PocketCode.ExecutionState.RUNNING, "Called soundManagers resumeSounds function");
 
     gameEngine.stopProject();
-    gameEngine._executionState = 0;
-
-    assert.equal(gameEngine._executionState, PocketCode.ExecutionState.STOPPED, "Set programs execution state to STOP on calling stop");
+    assert.equal(gameEngine.executionState, PocketCode.ExecutionState.STOPPED, "Set programs execution state to STOP on calling stop");
     gameEngine._soundManager.status = 0;
     assert.equal(gameEngine._soundManager.status, PocketCode.ExecutionState.STOPPED, "Called soundManagers stop function");
 
     gameEngine.resumeProject();
-    assert.equal(gameEngine._executionState, PocketCode.ExecutionState.STOPPED, "Did not resume stopped gameEngine");
+    assert.equal(gameEngine.executionState, PocketCode.ExecutionState.STOPPED, "Did not resume stopped gameEngine");
 
     gameEngine.pauseProject();
-    assert.equal(gameEngine._executionState, PocketCode.ExecutionState.STOPPED, "Did not attempt to pause stopped gameEngine");
+    assert.equal(gameEngine.executionState, PocketCode.ExecutionState.STOPPED, "Did not attempt to pause stopped gameEngine");
 
     gameEngine.stopProject();
     gameEngine.runProject();
 
     assert.ok(gameEngine._soundManager.status === PocketCode.ExecutionState.STOPPED, "Called SoundManagers stopAllSounds when restarting gameEngine");
 
-    var spriteChanges = 0;
-    gameEngine.onSpriteUiChange.addEventListener(new SmartJs.Event.EventListener(function () {
-        spriteChanges++;
-        //TODO tests for event
-    }));
-
-    return;
 });
 
 
 QUnit.test("GameEngine: tests with a testProject", function (assert) {
 
     var done = assert.async();
+
     var gameEngine = new PocketCode.GameEngine();
     var onLoadHandler = function () {
         assert.ok(gameEngine.projectLoaded, "Project Loaded");
@@ -197,17 +220,18 @@ QUnit.test("GameEngine: tests with a testProject", function (assert) {
 
     gameEngine.onLoad.addEventListener(new SmartJs.Event.EventListener(onLoadHandler, this));
     gameEngine.loadProject(strProject817);
-    gameEngine.startScene("s1");
 
     function runTests() {
+        assert.ok(gameEngine._startScene, "start scene initialized");
         gameEngine.startScene("s1");
-        assert.ok(gameEngine._startScene, "Scene started");
 
+        assert.equal(gameEngine._currentScene, gameEngine._scenes["s1"], "current scene set");
+        assert.equal(gameEngine._currentScene.executionState, PocketCode.ExecutionState.RUNNING, "scene running");
         gameEngine.runProject();
         assert.deepEqual(gameEngine.executionState, PocketCode.ExecutionState.RUNNING, "runProject: Project running");
 
-        gameEngine.restartProject();
-        assert.deepEqual(gameEngine.executionState, PocketCode.ExecutionState.STOPPED, "restartProject: Project restarted");
+        //gameEngine.restartProject();
+        //assert.deepEqual(gameEngine.executionState, PocketCode.ExecutionState.STOPPED, "restartProject: Project restarted");
 
         gameEngine.runProject();
         gameEngine.pauseProject();
@@ -231,6 +255,7 @@ QUnit.test("GameEngine: tests with a testProject", function (assert) {
         gameEngine.resumeOrStartScene("s1");
         assert.deepEqual(gameEngine.executionState, PocketCode.ExecutionState.RUNNING, "resumeOrStartScene: starting Scene");
 
+        gameEngine.dispose();   //make sure the listeners to internal (static) classes are removed to avoid side effects with other tests
         done();
     };
 
@@ -243,3 +268,4 @@ QUnit.test("GameEngine: tests with a testProject", function (assert) {
     */
     return;
 });
+

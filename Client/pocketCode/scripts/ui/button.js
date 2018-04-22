@@ -18,8 +18,8 @@ PocketCode.Ui.Button = (function () {
 
         //events
         this._onClick = new SmartJs.Event.Event(this);
-        this._addDomListener(this._dom, 'click', this._clickHandler);
-        this._btnListener = this._addDomListener(this._dom, 'touchstart', function (e) { }, { cancelBubble: true, stopPropagation: false, systemAllowed: true });   //allow system events to show css (pressed) on buttons
+        this._clickListener = this._addDomListener(this._dom, 'click', this._clickHandler);
+        this._touchStartListener = this._addDomListener(this._dom, 'touchstart', function (e) { }, { cancelBubble: true, stopPropagation: false, systemAllowed: true });   //allow system events to show css (pressed) on buttons
         //this._addDomListener(this._dom, 'touchend', this._clickHandler, { cancelBubble: true });//function (e) { this._dom.click(); });
     }
 
@@ -62,6 +62,12 @@ PocketCode.Ui.Button = (function () {
         _clickHandler: function (e) {
             this._dom.blur();
             this._onClick.dispatchEvent();
+        },
+        /*override*/
+        dispose: function () {
+            this._removeDomListener(this._dom, 'click', this._clickListener);
+            this._removeDomListener(this._dom, 'touchstart', this._touchStartListener);
+            SmartJs.Ui.Control.prototype.dispose.call(this);    //call super()
         },
     });
 

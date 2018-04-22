@@ -438,6 +438,8 @@ QUnit.test("Proxy", function (assert) {
     var done3 = assert.async();
     var done4 = assert.async();
 
+    var testProxy = new PocketCode._Proxy(); //recreate the static class to avoid side effects in test framework
+
     assert.throws(function () { var propy = new PocketCode.Proxy(); }, Error, "ERROR: static, no class definition/constructor");
     assert.throws(function () { PocketCode.Proxy instanceof PocketCode.Proxy }, Error, "ERROR: static class: no instanceof allowed");
     assert.throws(function () { PocketCode.Proxy.send({}); }, Error, "ERROR: sending request not typeof PocketCode.ServiceRequest");
@@ -530,7 +532,7 @@ QUnit.test("Proxy", function (assert) {
 
         req = new PocketCode.ServiceRequest(PocketCode.Services.PROJECT_DETAILS, SmartJs.RequestMethod.GET, { id: "0" });
         req.onError.addEventListener(new SmartJs.Event.EventListener(onErrorHandler2, this));
-        PocketCode.Proxy.send(req);
+        testProxy.send(req);
 
         //done2();
         //runTest3();
@@ -565,7 +567,7 @@ QUnit.test("Proxy", function (assert) {
         onLoad = 0;
         onError = 0;
 
-        PocketCode.Proxy._sendUsingCors = function () { return false; };    //simulate cors not supported
+        testProxy._sendUsingCors = function () { return false; };    //simulate cors not supported
         req = new PocketCode.ServiceRequest(PocketCode.Services.PROJECT, SmartJs.RequestMethod.GET, { id: "824", prop1: "prop_1", prop2: "prop_2" });
         req.onLoadStart.addEventListener(new SmartJs.Event.EventListener(onLoadStartHandler, this));
         req.onLoad.addEventListener(new SmartJs.Event.EventListener(onLoadHandler3, this));
@@ -573,7 +575,7 @@ QUnit.test("Proxy", function (assert) {
         //req.onAbort.addEventListener(new SmartJs.Event.EventListener(onAbortHandler, this));
         req.onProgressChange.addEventListener(new SmartJs.Event.EventListener(onProgressChangeHandler, this));
         req.onProgressSupportedChange.addEventListener(new SmartJs.Event.EventListener(onProgressSupportedChangeHandler, this));
-        PocketCode.Proxy.send(req);
+        testProxy.send(req);
 
     };
 
@@ -594,16 +596,16 @@ QUnit.test("Proxy", function (assert) {
 
     var runTest4 = function () {
 
-        PocketCode.Proxy._sendUsingCors = function () { return false; };    //simulate cors not supported
+        testProxy._sendUsingCors = function () { return false; };    //simulate cors not supported
         req = new PocketCode.ServiceRequest(PocketCode.Services.PROJECT, SmartJs.RequestMethod.GET, { id: "0" });
         req.onError.addEventListener(new SmartJs.Event.EventListener(onErrorHandler4, this));
-        PocketCode.Proxy.send(req);
+        testProxy.send(req);
 
     };
 
 
     //start tests
-    PocketCode.Proxy.send(req);
+    testProxy.send(req);
 
 });
 

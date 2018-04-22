@@ -14,9 +14,9 @@ QUnit.test("WhenProgramStartBrick", function (assert) {
 
     var gameEngine = new PocketCode.GameEngine();
     gameEngine._collisionManager = new PocketCode.CollisionManager(400, 200);  //make sure collisionMrg is initialized before calling an onStart event
-    var scene = new PocketCode.Model.Scene(gameEngine, undefined, undefined, []);
+    var scene = new PocketCode.Model.Scene(gameEngine, undefined, []);
+    scene._id = "id";
     gameEngine._scenes["id"] = scene;   //necessary to stop scene
-    gameEngine._currentScene = scene; //set internal: tests only
     gameEngine._startScene = scene;
 
     scene._background = new PocketCode.Model.Sprite(gameEngine, scene, { id: "spriteId", name: "spriteName" });  //to avoid error on start
@@ -55,6 +55,7 @@ QUnit.test("WhenProgramStartBrick", function (assert) {
     //simulate project loaded for tests
     gameEngine._resourcesLoaded = true;
     gameEngine._scenesLoaded = true;
+    gameEngine._device = new PocketCode.MediaDevice();
     gameEngine.runProject();
 
 
@@ -125,7 +126,7 @@ QUnit.test("WhenActionBrick", function (assert) {
     var done2 = assert.async();
 
     var gameEngine = new PocketCode.GameEngine();
-    var scene = new PocketCode.Model.Scene(gameEngine, undefined, undefined, []);
+    var scene = new PocketCode.Model.Scene(gameEngine, undefined, []);
     var sprite = new PocketCode.Model.Sprite(gameEngine, scene, { id: "spriteId", name: "spriteName" });
     scene._sprites.push(sprite);    //add to receive events
     assert.throws(function () { var b = new PocketCode.Model.WhenActionBrick("device", sprite, { action: "action" }, { spriteTouched: scene.onSpriteTappedAction }); }, Error, "ERROR: invalid action");
@@ -152,14 +153,14 @@ QUnit.test("WhenActionBrick", function (assert) {
     assert.equal(b.action, PocketCode.UserActionType.TOUCH_START, "action getter (other action)");
 
     //test empty container
-    var executed = 0;
+    var executed2 = 0;
     var executionStateHandler = function () {
-        executed++;
+        executed2++;
     };
 
     b.onExecutionStateChange.addEventListener(new SmartJs.Event.EventListener(executionStateHandler, this));
     scene.onSpriteTappedAction.dispatchEvent({ sprite: sprite });
-    assert.equal(executed, 2, "executionState handler called (twice: begin + end)");
+    assert.equal(executed2, 2, "executionState handler called (twice: begin + end)");
 
     b.onExecutionStateChange.removeEventListener(new SmartJs.Event.EventListener(executionStateHandler, this));
 
@@ -241,14 +242,15 @@ QUnit.test("WhenBroadcastReceiveBrick", function (assert) {
     var handlerCalled = 0;
     var broadcastHandler = function (e) {
         if (e.executionState == PocketCode.ExecutionState.RUNNING) {
-            assert.ok(true, "onExecutionStateChange called: including threaded bricks (running)");
-            done1();
+            assert.ok(true, "onExecutionStateChange called: empty container (running)");
+            return;
         }
         else if (e.executionState == PocketCode.ExecutionState.STOPPED) {
             handlerCalled++;
             assert.ok(handlerCalled === 1, "executed handler called (once)");
 
             b.onExecutionStateChange.removeEventListener(listener);
+            done1();
             runTests2();
         }
         else
@@ -289,13 +291,19 @@ QUnit.test("WhenBroadcastReceiveBrick", function (assert) {
 
         var listener;
         var asyncHandler = function (e) {
-            if (e.executionState == PocketCode.ExecutionState.RUNNING)
+            if (e.executionState == PocketCode.ExecutionState.RUNNING) {
+                assert.ok(true, "onExecutionStateChange called: including threaded bricks (running)");
                 return;
-            assert.equal(e.executionState, PocketCode.ExecutionState.STOPPED, "onExecutionStateChange called: including threaded bricks");
+            }
+            else if (e.executionState == PocketCode.ExecutionState.STOPPED) {
+                assert.equal(e.executionState, PocketCode.ExecutionState.STOPPED, "onExecutionStateChange called: including threaded bricks");
 
-            b.onExecutionStateChange.removeEventListener(listener);
-            done2();
-            runTests3();
+                b.onExecutionStateChange.removeEventListener(listener);
+                done2();
+                runTests3();
+            }
+            else
+                assert.ok(false, "invalid executionstate detected");
         };
         listener = new SmartJs.Event.EventListener(asyncHandler, this);
         b.onExecutionStateChange.addEventListener(listener);
@@ -318,7 +326,7 @@ QUnit.test("WhenBroadcastReceiveBrick", function (assert) {
         b.onExecutionStateChange.addEventListener(listener);
 
         var waitCallback = function (e) {
-            assert.equal(asyncHandler2Called, 1, "wait callback called before executed handler");
+            assert.equal(asyncHandler2Called, 1, "wait callback called after executed handler");
 
             var valid = true,
                 bricks = b._bricks._bricks; //in brick container
@@ -422,11 +430,11 @@ QUnit.test("WhenConditionMetBrick", function (assert) {
     var cond = JSON.parse('{"type":"NUMBER","value":"0","right":null,"left":null}');
 
     var gameEngine = new PocketCode.GameEngine();
-    var scene = new PocketCode.Model.Scene(gameEngine, undefined, undefined, []);
+    var scene = new PocketCode.Model.Scene(gameEngine, undefined, []);
     var sprite = new PocketCode.Model.Sprite(gameEngine, scene, { id: "spriteId", name: "spriteName" });
-    var b = new PocketCode.Model.WhenConditionMetBrick("device", sprite, 24, { condition: cond }, scene.onStart);
+    var b = new PocketCode.Model.WhenConditionMetBrick("device", sprite, { condition: cond }, scene.onStart);
 
-    assert.ok(b._device === "device" && b._sprite instanceof PocketCode.Model.Sprite && b._cycleTime === 24, "brick created and properties set correctly");   //timesToRepeat is parsed to get a formula object
+    assert.ok(b._device === "device" && b._sprite instanceof PocketCode.Model.Sprite, "brick created and properties set correctly");   //timesToRepeat is parsed to get a formula object
     assert.ok(b instanceof PocketCode.Model.WhenConditionMetBrick && b instanceof PocketCode.Model.ScriptBlock, "instance check");
     assert.ok(b.objClassName === "WhenConditionMetBrick", "objClassName check");
 
@@ -496,6 +504,9 @@ QUnit.test("WhenConditionMetBrick", function (assert) {
         tb1.executed = 0;
         window.setTimeout(function () {
             assert.equal(tb1.executed, 0, "Stop executed");
+            assert.equal(b._attached, false, "no animationframe handler attached after validation to true");
+            assert.equal(SmartJs.AnimationFrame._frameId, undefined, "AnimationFrame stopped");
+
             done1();
         }, 40);
 
@@ -508,7 +519,7 @@ QUnit.test("WhenCollisionBrick", function (assert) {
     var done1 = assert.async();
 
     var gameEngine = new PocketCode.GameEngine();
-    var scene = new PocketCode.Model.Scene(gameEngine, undefined, undefined, []);
+    var scene = new PocketCode.Model.Scene(gameEngine, undefined, []);
     var physicsWorld = new PocketCode.PhysicsWorld(scene);
     var sprite = { id: "id1" };
     var spriteId2 = "id2";
@@ -584,7 +595,7 @@ QUnit.test("WhenBackgroundChangesToBrick", function (assert) {
 
     var device = "device";
     var gameEngine = new PocketCode.GameEngine();
-    var scene = new PocketCode.Model.Scene(gameEngine, undefined, undefined, []);
+    var scene = new PocketCode.Model.Scene(gameEngine, undefined, []);
     var sprite = new PocketCode.Model.BackgroundSprite(gameEngine, scene, { id: "spriteId", name: "spriteName" });
     scene._background = sprite;
     //gleiche lookid wie probOpject??????
@@ -658,7 +669,7 @@ QUnit.test("WhenStartAsCloneBrick", function (assert) {
     var done1 = assert.async();
 
     var gameEngine = new PocketCode.GameEngine();
-    var scene = new PocketCode.Model.Scene(gameEngine, "device", "soundManager", [], 20);
+    var scene = new PocketCode.Model.Scene(gameEngine, "device", [], 20);
     assert.ok(scene.onSpriteUiChange instanceof SmartJs.Event.Event, "mock scene interface check");
     var mockScene = {
         onSpriteUiChange: new SmartJs.Event.Event(this)

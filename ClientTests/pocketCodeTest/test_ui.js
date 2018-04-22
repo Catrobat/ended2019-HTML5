@@ -96,7 +96,6 @@ QUnit.test("I18nTextNode", function (assert) {
     tn.dispose();
     assert.equal(tn._disposed, true, "disposed");
     assert.equal(vp._childs.length, 0, "removed from parent during dispose");
-
 });
 
 
@@ -128,6 +127,15 @@ QUnit.test("I18nControl", function (assert) {
     PocketCode.I18nProvider.onLanguageChange.dispatchEvent();
     assert.equal(x.testCount, 1, "base class triggers UI update event + method call");
 
+    var dom = document.getElementById("qunit-fixture");
+    var div = document.createElement("div");
+    dom.appendChild(div);
+    var vp = new SmartJs.Ui.Control(div);   //if you make dom a Control in UnitTests the ID will change and cause errors on other test cases
+    vp._appendChild(ctr);
+
+    ctr.dispose();
+    assert.equal(ctr._disposed, true, "disposed");
+    assert.equal(vp._childs.length, 0, "removed from parent during dispose");
 });
 
 
