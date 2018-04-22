@@ -123,7 +123,7 @@ PocketCode.Model.merge({
         RotationSpeedLeftBrick.prototype._execute = function (scope) {
             var degreesPerSecond = this._degreesPerSecond.calculate(scope);
 
-            if (isNaN(degreesPerSecond))
+            if (!isNaN(degreesPerSecond))
                 this._sprite.setRotationSpeed(-degreesPerSecond)
             this._return(); //without delay
         };
@@ -143,7 +143,7 @@ PocketCode.Model.merge({
         RotationSpeedRightBrick.prototype._execute = function (scope) {
             var degreesPerSecond = this._degreesPerSecond.calculate(scope);
 
-            if (isNaN(degreesPerSecond))
+            if (!isNaN(degreesPerSecond))
                 this._sprite.setRotationSpeed(degreesPerSecond)
             this._return(); //without delay
         };
