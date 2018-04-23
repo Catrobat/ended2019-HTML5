@@ -423,6 +423,8 @@ PocketCode.GameEngine = (function () {
         },
         //scene
         _dispatchOnSceneChange: function (reinit) {
+            if (!this._currentScene)    //restart
+                return; 
             //notifies the UI to reinit sprites and texts
             var scene = this._currentScene,
                 globalVars = this._getRenderingVariables(this._id);
