@@ -53,7 +53,7 @@ PocketCode.Formula = (function () {
         calculate: function (scope) {
             if (this._json !== undefined)   //null is allowed
                 return this._calculate(scope);
-            throw new Error('No Formula objct loaded');
+            throw new Error('No Formula object loaded');
         },
         _degree2radian: function (val) {
             return val * (Math.PI / 180.0);
