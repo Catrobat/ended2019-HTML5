@@ -133,20 +133,6 @@ QUnit.test("Device: Touch", function (assert) {
     var pos = dev.getLatestActiveTouchPosition();
     assert.ok(pos.x == 3 && pos.y == 4, "latest active touch position");
 
-    //geoLocation
-    var dev = new PocketCode.Device();
-
-    //setting internal values
-    dev._geoLocationData.latitude = 1;
-    dev._geoLocationData.longitude = 2;
-    dev._geoLocationData.altitude = 3;
-    dev._geoLocationData.accuracy = 4;
-
-    assert.equal(dev.geoLatitude, 1, "latitude getter");
-    assert.equal(dev.geoLongitude, 2, "longitude getter");
-    assert.equal(dev.geoAltitude, 3, "altitude getter");
-    assert.equal(dev.geoAccuracy, 4, "accuracy getter");
-
 });
 
 QUnit.test("Device: GeoLocation", function (assert) {
@@ -160,7 +146,7 @@ QUnit.test("Device: GeoLocation", function (assert) {
             accuracy: 4
         }
     };
-    assert.ok(!dev._geoLocationData.initialized, "initialized before load check");
+    assert.ok(!dev._features.GEO_LOCATION.initialized, "initialized before load check");
     assert.ok(!dev._features.GEO_LOCATION.supported, "supported before load check");
     dev._geoNavigatorLoadHandler(geoPosition);
     assert.equal(dev.geoLatitude, 1, "latitude getter");
@@ -168,15 +154,15 @@ QUnit.test("Device: GeoLocation", function (assert) {
     assert.equal(dev.geoAltitude, 3, "altitude getter");
     assert.equal(dev.geoAccuracy, 4, "accuracy getter");
     assert.ok(dev._features.GEO_LOCATION.supported, "supported after load check");
-    assert.ok(dev._geoLocationData.initialized, "initialized after load check");
+    assert.ok(dev._features.GEO_LOCATION.initialized, "initialized after load check");
 
     // geo location navigator error handler check
     dev = new PocketCode.Device();
-    assert.ok(!dev._geoLocationData.initialized, "initialized before check");
+    assert.ok(!dev._features.GEO_LOCATION.initialized, "initialized before check");
     assert.ok(!dev._features.GEO_LOCATION.supported, "supported before load check");
     dev._geoNavigatorErrorHandler();
     assert.ok(!dev._features.GEO_LOCATION.supported, "supported after load check");
-    assert.ok(dev._geoLocationData.initialized, "initialized after check");
+    assert.ok(dev._features.GEO_LOCATION.initialized, "initialized after check");
 
     // geo location service load handler check
     dev = new PocketCode.Device();
@@ -188,7 +174,7 @@ QUnit.test("Device: GeoLocation", function (assert) {
             accuracy: 4
         }
     };
-    assert.ok(!dev._geoLocationData.initialized, "initialized before load check");
+    assert.ok(!dev._features.GEO_LOCATION.initialized, "initialized before load check");
     assert.ok(!dev._features.GEO_LOCATION.supported, "supported before load check");
     dev._geoServiceLoadHandler(serviceRequestPosition);
     assert.equal(dev.geoLatitude, 1, "latitude getter");
@@ -199,15 +185,11 @@ QUnit.test("Device: GeoLocation", function (assert) {
 
     // geo location service error handler check
     dev = new PocketCode.Device();
-    assert.ok(!dev._geoLocationData.initialized, "initialized before check");
-    assert.ok(!dev._features.GEO_LOCATION.supported, "supported before load check");
     dev._geoServiceErrorHandler();
     assert.ok(!dev._features.GEO_LOCATION.supported, "supported after load check");
 
     // geo location service and navigator check
     dev = new PocketCode.Device();
-    assert.ok(!dev._geoLocationData.initialized, "initialized before load check");
-    assert.ok(!dev._features.GEO_LOCATION.supported, "supported before load check");
     dev._getGeoLocationData();
     assert.ok(dev._features.GEO_LOCATION.inUse, "inUse check");
 });

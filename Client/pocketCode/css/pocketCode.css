@@ -518,6 +518,7 @@
 .pc-playerButton span {
     position: absolute;
     font-size: 1.01em;
+    line-height: 1.3em;
     font-weight: 600;
     text-align: center;
     bottom: 0.6em;

@@ -380,13 +380,11 @@ PocketCode.GameEngine = (function () {
                 this._device.reset();
                 this._resetVariables();  //global
                 this._viewStates = {};
-                for (var id in this._scenes)
-                    this._scenes[id].reinitializeSprites();
             }
             this._onBeforeProgramStart.dispatchEvent();  //indicates the project was loaded and rendering objects can be generated
 
             this._executionState = PocketCode.ExecutionState.RUNNING;
-            this.startScene(this._startScene.id);
+            this.startScene(this._startScene.id);   //calls reinit() if needed
         },
         restartProject: function () {
             this.stopProject();
