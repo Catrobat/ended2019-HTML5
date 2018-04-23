@@ -146,6 +146,7 @@ PocketCode.merge({
                         }
                         catch (e) { }
                     }
+                    this._initialized = true;
                 }
                 if (!this._supported)
                     return false;
