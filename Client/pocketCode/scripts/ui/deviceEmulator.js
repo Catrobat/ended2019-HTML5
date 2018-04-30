@@ -19,6 +19,7 @@ PocketCode.Ui.DeviceEmulator = (function () {
         this._appendChild(this._container);
         var scroll = new PocketCode.Ui.ScrollContainer({ className: 'pc-deviceEmulatorBody' }, { className: 'pc-deviceEmulatorContent' });
         this._container.appendChild(scroll);
+        this._container.onResize.addEventListener(new SmartJs.Event.EventListener(scroll.onResize.dispatchEvent, scroll.onResize));
 
         var tn = new PocketCode.Ui.I18nTextNode('lbDeviceMaxDegree');
         var span = new SmartJs.Ui.HtmlTag('span');
@@ -111,28 +112,23 @@ PocketCode.Ui.DeviceEmulator = (function () {
             this._inclYTextNode.text = this._device.inclinationY.toFixed(1);
         },
         _openCloseHandler: function (e) {
-            if (e.opened) {
+            if (e.opened)
                 this._pollingTimer = setInterval(this._updateImageTransformation.bind(this), 100);
-                window.setTimeout(this._updateScrollbars.bind(this), 200);   //make sure the scrollbars are updated correctly
-                window.setTimeout(this._updateScrollbars.bind(this), 400);
-            }
-            else {
+            else
                 clearInterval(this._pollingTimer);
-            }
-        },
-        _updateScrollbars:function(){
-            this._scollCntr.onResize.dispatchEvent();
         },
         /* override */
         verifyResize: function () {
             var height = document.body.clientHeight;
             this._scollCntr.style.maxHeight = Math.max(height - 101, 100) + 'px';
+            this._scollCntr.verifyResize();
 
             SmartJs.Ui.ContainerControl.prototype.verifyResize.call(this);  //call super
-            this._scollCntr.verifyResize();
         },
         dispose: function () {
-            SmartJs.Ui.Window.onResize.removeEventListener(new SmartJs.Event.EventListener(this._windowResizeHandler, this));
+            this._container.onVisibilityChange.removeEventListener(new SmartJs.Event.EventListener(this._openCloseHandler, this));
+            clearInterval(this._pollingTimer);
+            SmartJs.Ui.Window.onResize.removeEventListener(new SmartJs.Event.EventListener(this.verifyResize, this));
             SmartJs.Ui.Control.prototype.dispose.call(this);
         },
     });

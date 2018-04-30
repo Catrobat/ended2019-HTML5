@@ -315,6 +315,7 @@ SmartJs.Animation.Rotation = (function () {
             this._rotationSpeed = obj.rotationSpeed || 0.0;
             if (obj.startTimestamp && !!obj.rotationSpeed)
                 this._start(obj.startTimestamp);
+            this._onUpdate.dispatchEvent({ value: this.angle });
         },
         _start: function (startTimestamp) {   //or restart
             this._timer.start(startTimestamp);
@@ -333,6 +334,7 @@ SmartJs.Animation.Rotation = (function () {
         stop: function () {
             SmartJs.AnimationFrame.removeEventListener(this._afl);
             this._timer.stop();
+            this._rotationSpeed = 0.0;
             this._paused = false;
         },
         dispose: function () {

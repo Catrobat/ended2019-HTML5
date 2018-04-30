@@ -26,6 +26,7 @@ PocketCode.Model.Scene = (function () {
         this._sprites = [];
         this._originalSpriteOrder = [];
         this._minLoopCycleTime = minLoopCycleTime || 20; //ms
+        this._gameEngine = gameEngine;
         this._device = device;
 
         this._broadcastMgr = new PocketCode.BroadcastManager(jsonBroadcasts || []);
@@ -233,14 +234,16 @@ PocketCode.Model.Scene = (function () {
                 clones = [];
             for (var i = 0, l = sprites.length; i < l; i++)
                 if (sprites[i] instanceof PocketCode.Model.SpriteClone)
-                    clones.push(sprites[i]);    //do not edit indixes during iterating
+                    clones.push(sprites[i]);    //do not edit indices during iterating
 
             for (var i = 0, l = clones.length; i < l; i++)
-                this.deleteClone(clones[i].id);
+                clones[i].dispose();
 
             this._sprites = this._originalSpriteOrder;
             for (var i = 0, l = sprites.length; i < l; i++)
                 sprites[i].init();
+
+            this._executionState === PocketCode.ExecutionState.INITIALIZED;
         },
         start: function () {
             if (this._executionState === PocketCode.ExecutionState.RUNNING)
@@ -255,7 +258,7 @@ PocketCode.Model.Scene = (function () {
                 this._checkForOnExecuted();    //make sure an empty program terminates
             return true;
         },
-        pause: function (internal) {    //internal: for ask, .. 
+        pause: function (internal) {    //internal: for ask, .. (latest tests showed that all sounds are paudes if a dialog is shown)
             //to make sure the execution state does not change to paused which will cause the UI to change as well
             if (internal) {
                 if (this._executionState == PocketCode.ExecutionState.PAUSED_USERINTERACTION)
@@ -275,14 +278,13 @@ PocketCode.Model.Scene = (function () {
             }
 
             //this._projectTimer.pause();
-            //this._soundManager.pauseSounds();
 
             if (this._background)
-                this._background.pauseScripts(!internal);
+                this._background.pauseScripts(true);//!internal);
 
             var sprites = this._sprites;
             for (var i = 0, l = sprites.length; i < l; i++) {
-                sprites[i].pauseScripts(!internal);
+                sprites[i].pauseScripts(true);//(!internal);
             }
             if (internal)
                 this._executionState = PocketCode.ExecutionState.PAUSED_USERINTERACTION;
@@ -304,14 +306,13 @@ PocketCode.Model.Scene = (function () {
 
             this._executionState = PocketCode.ExecutionState.RUNNING;   //important: because pause can be set again during resume
             //this._projectTimer.resume();
-            //this._soundManager.resumeSounds();
 
             if (this._background)
-                this._background.resumeScripts(!internal);
+                this._background.resumeScripts(true);//(!internal);
 
             var sprites = this._sprites;
             for (var i = 0, l = sprites.length; i < l; i++) {
-                sprites[i].resumeScripts(!internal);
+                sprites[i].resumeScripts(true);//(!internal);
             }
             return true;
         },
@@ -324,14 +325,22 @@ PocketCode.Model.Scene = (function () {
             this._executionState = PocketCode.ExecutionState.STOPPED;
         },
         stopAllScriptsAndSounds: function (stopEventType) {    //to make sure a WhenConditionMet-Brick doesn't stop running (listening to changes)
-            if (this._background) {
+            if (this._background)
                 this._background.stopAllScripts(stopEventType);
-            }
+
             var sprites = this._sprites;
-            for (var i = 0, l = sprites.length; i < l; i++) {
+            for (var i = 0, l = sprites.length; i < l; i++)
                 sprites[i].stopAllScripts(stopEventType);
+
+            this.stopAllSounds();
+        },
+        stopAllSounds: function() {
+            if (this._background)
+                this._background.stopAllSounds();
+
+            var sprites = this._sprites;
+            for (var i = 0, l = sprites.length; i < l; i++)
                 sprites[i].stopAllSounds();
-            }
         },
         _checkForOnExecuted: function (e) {
             window.setTimeout(function () {
@@ -340,8 +349,6 @@ PocketCode.Model.Scene = (function () {
                 if (this.onSpriteTappedAction.listenersAttached || this.onTouchStartAction.listenersAttached)
                     return; //still waiting for user interaction
 
-                //if (this._soundManager.isPlaying())
-                //    return;
                 if (this._background && this._background.scriptsOrSoundsExecuting)
                     return;
                 var sprites = this._sprites;
@@ -507,28 +514,40 @@ PocketCode.Model.Scene = (function () {
                 layer = this.getSpriteLayer(sprite),
                 clone = sprite.clone(this._device, this._broadcastMgr);
             clone.onExecuted.addEventListener(new SmartJs.Event.EventListener(this._checkForOnExecuted, this));
+            clone.onReadyToDispose.addEventListener(new SmartJs.Event.EventListener(this._cloneDeleteHandler, this));
 
             this._sprites.insert(layer - 1, clone); //adding at position from original sprite
 
-            this._onUiChange.dispatchEvent();   //to include clone in rendering sprites
+            this._onUiChange.dispatchEvent();   //to include clone in rendering sprites and texts
             clone.onCloneStart.dispatchEvent();
             return true;
         },
-        deleteClone: function (cloneId) {
+        _cloneDeleteHandler: function (e) {
+            //clone deletes itself to make sure audio files have finished playing and onExecuted is handled correctly
+            //onReadyToDispose notifies the scene to dispose and remove the object as soon it's not needed anymore
+
             var clone;
             try {   //make sure an already disposed clone does not throw an error (not found)
-                clone = this.getSpriteById(cloneId);
+                clone = this.getSpriteById(e.cloneId);
             }
             catch (e) { }
             if (!(clone instanceof PocketCode.Model.SpriteClone))
                 return;
 
             clone.onExecuted.removeEventListener(new SmartJs.Event.EventListener(this._checkForOnExecuted, this));
+            clone.onReadyToDispose.removeEventListener(new SmartJs.Event.EventListener(this._cloneDeleteHandler, this));
             this._sprites.remove(clone);
             this._checkForOnExecuted();    //call executed handler: the clone may be the last running script
             clone.dispose(); //dispose results in an error: hanging project 965 (dispose will stop scripts- no broadcastWait callback?)
             //window.setTimeout(clone.dispose.bind(clone), 50);   //dispose with delay to make sure scripts are not stopped immediately
-            this._onUiChange.dispatchEvent();   //to remove clone from rendering sprites
+            this._onUiChange.dispatchEvent();   //to remove clone from rendering sprites and texts
+        },
+        //scene transition & start
+        resumeOrStartOtherScene: function (sceneId) {
+            return this._gameEngine.resumeOrStartScene(sceneId);
+        },
+        startOtherScene: function (sceneId) {
+            return this._gameEngine.startScene(sceneId);
         },
         //physics
         setGravity: function (x, y) {
@@ -539,23 +558,21 @@ PocketCode.Model.Scene = (function () {
                 return; //may occur when dispose on error
 
             this.stop();
-            //do not dispose device & sound-manager: handled by game engine
+            //do not dispose device: handled by game engine
             this._device = undefined;
-            //this._soundManager.onFinishedPlaying.removeEventListener(new SmartJs.Event.EventListener(this._checkForOnExecuted, this));
+            this._gameEngine = undefined;
 
             if (this._background)
                 this._background.onExecuted.removeEventListener(new SmartJs.Event.EventListener(this._checkForOnExecuted, this));
 
-            delete this._originalSpriteOrder;
+            delete this._originalSpriteOrder;   //avoid problems during dispose: when instances stored more than once
             var sprites = this._sprites;
             for (var i = 0, l = sprites.length; i < l; i++) {
                 sprites[i].onExecuted.removeEventListener(new SmartJs.Event.EventListener(this._checkForOnExecuted, this));
             }
 
-            //call super
-            PocketCode.Model.UserVariableHost.prototype.dispose.call(this);
+            SmartJs.Core.Component.prototype.dispose.call(this);    //call super
         },
-
     });
 
     return Scene;

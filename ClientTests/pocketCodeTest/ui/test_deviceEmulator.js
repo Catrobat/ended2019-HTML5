@@ -5,15 +5,14 @@
 /// <reference path="../../../Client/smartJs/sj-components.js" />
 /// <reference path="../../../Client/smartJs/sj-ui.js" />
 /// <reference path="../../../Client/pocketCode/scripts/ui/deviceEmulator.js" />
-
 "use strict";
 
 QUnit.module("ui/deviceEmulator.js");
 
+
 QUnit.test("DeviceEmulator UI: Expander tests", function (assert) {
 
-    var soundmanager = new PocketCode.SoundManager();
-    var device = new PocketCode.DeviceEmulator(soundmanager);
+    var device = new PocketCode.DeviceEmulator();
     var deviceEmulator = new PocketCode.Ui.DeviceEmulator(device);
 
     var expanderBody = deviceEmulator._container.__container;
@@ -30,16 +29,16 @@ QUnit.test("DeviceEmulator UI: Expander tests", function (assert) {
 
     //Resize change test
     var dom = document.getElementById("qunit-fixture");
-    dom.appendChild(deviceEmulator._dom);
+    dom.appendChild(deviceEmulator.dom);
 
-    // deviceEmulator.dispose();
-    // assert.ok(deviceEmulator._disposed, "deviceEmulator disposed");
+    deviceEmulator.dispose();
+    assert.ok(deviceEmulator._disposed, "deviceEmulator disposed");
 });
+
 
 QUnit.test("DeviceEmulator UI: Slider tests", function (assert) {
 
-    var sm = new PocketCode.SoundManager();
-    var device = new PocketCode.DeviceEmulator(sm);
+    var device = new PocketCode.DeviceEmulator();
     var deviceEmulator = new PocketCode.Ui.DeviceEmulator(device);
     var accSlider = deviceEmulator._accSlider;
     var maxDegreeSlider = deviceEmulator._maxSlider;
@@ -68,10 +67,10 @@ QUnit.test("DeviceEmulator UI: Slider tests", function (assert) {
     assert.equal(deviceEmulator._device.inclinationChangePerSec, 10, "onChange Event triggered: Acceleration Slider change");
 });
 
+
 QUnit.test("DeviceEmulator UI: image Transformation tests", function (assert) {
 
-    var sm = new PocketCode.SoundManager();
-    var device = new PocketCode.DeviceEmulator(sm);
+    var device = new PocketCode.DeviceEmulator();
     var deviceEmulator = new PocketCode.Ui.DeviceEmulator(device);
 
     //imgTransformation test

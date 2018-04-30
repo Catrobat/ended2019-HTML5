@@ -1,4 +1,4 @@
-﻿﻿/// <reference path="../../smartJs/sj.js" />
+﻿/// <reference path="../../smartJs/sj.js" />
 /// <reference path="../../smartJs/sj-core.js" />
 /// <reference path="../../smartJs/sj-event.js" />
 'use strict';
@@ -505,6 +505,7 @@ PocketCode.Web = {
                     return;
                 this._deviceEmulator = emulatorControl;
                 this._dom.appendChild(emulatorControl.dom);
+                //emulatorControl.verifyResize();   //manually called because we are dealing with the DOM directly
             }
         };
 
@@ -1107,15 +1108,15 @@ PocketCode.Web.resources = {
         return PocketCode.domain + 'html5/';
     }(),
     files: [
-		{ url: 'smartJs/sj.css', type: 'css' },
-		{ url: 'smartJs/sj.js', type: 'js' },
-		{ url: 'smartJs/sj-core.js', type: 'js' },
-		{ url: 'smartJs/sj-event.js', type: 'js' },
-		{ url: 'smartJs/sj-components.js', type: 'js' },
-		{ url: 'smartJs/sj-animation.js', type: 'js' },
-		{ url: 'smartJs/sj-communication.js', type: 'js' },
-		{ url: 'smartJs/sj-ui.js', type: 'js' },
-		//{ url: 'pocketCode/libs/smartJs/sj.custom.min.js', type: 'js' },
+		//{ url: 'smartJs/sj.css', type: 'css' },
+		//{ url: 'smartJs/sj.js', type: 'js' },
+		//{ url: 'smartJs/sj-core.js', type: 'js' },
+		//{ url: 'smartJs/sj-event.js', type: 'js' },
+		//{ url: 'smartJs/sj-components.js', type: 'js' },
+		//{ url: 'smartJs/sj-animation.js', type: 'js' },
+		//{ url: 'smartJs/sj-communication.js', type: 'js' },
+		//{ url: 'smartJs/sj-ui.js', type: 'js' },
+		{ url: 'pocketCode/libs/smartJs/sj.custom.min.js', type: 'js' },
 
 		{ url: 'pocketCode/libs/soundjs/soundjs-0.6.1.custom.min.js', type: 'js' },
 		{ url: 'pocketCode/libs/iscroll/iscroll-5.3.1.custom.min.js', type: 'js' },
@@ -1150,6 +1151,7 @@ PocketCode.Web.resources = {
 		{ url: 'pocketCode/scripts/components/imageStore.js', type: 'js' },
 		{ url: 'pocketCode/scripts/components/gameEngine.js', type: 'js' },    //make sure includes are in the right order (inheritance)
 		{ url: 'pocketCode/scripts/components/i18nProvider.js', type: 'js' },
+		{ url: 'pocketCode/scripts/components/math.js', type: 'js' },
 		{ url: 'pocketCode/scripts/components/loggingProvider.js', type: 'js' },
 		{ url: 'pocketCode/scripts/components/parser.js', type: 'js' },
 		{ url: 'pocketCode/scripts/components/proxy.js', type: 'js' },

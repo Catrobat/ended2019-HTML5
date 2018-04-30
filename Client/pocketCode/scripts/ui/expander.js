@@ -15,15 +15,14 @@ PocketCode.Ui.Expander = (function () {
         //header
         this._header = new SmartJs.Ui.ContainerControl({ className: 'pc-expanderHeader' });
         this._appendChild(this._header);
-        var checkbox = new PocketCode.Ui.I18nCheckbox(i18nKey, undefined, { className: '' });
-        checkbox.onCheckedChange.addEventListener(new SmartJs.Event.EventListener(this._onChangeHandler, this));
-        this._header.appendChild(checkbox);
+        this._checkbox = new PocketCode.Ui.I18nCheckbox(i18nKey, undefined, { className: '' });
+        this._checkbox.onCheckedChange.addEventListener(new SmartJs.Event.EventListener(this._onChangeHandler, this));
+        this._header.appendChild(this._checkbox);
 
         //body
         this._container = new SmartJs.Ui.ContainerControl({ className: 'pc-expanderBody' });
         this._appendChild(this._container);
 
-        this._opened = false;
         //events
         this._onVisibilityChange = new SmartJs.Event.Event(this);
     }
@@ -41,7 +40,7 @@ PocketCode.Ui.Expander = (function () {
     Object.defineProperties(Expander.prototype, {
         opened: {
             get: function () {
-                return this._opened;
+                return this._checkbox.checked;
             }
         },
     });
@@ -51,27 +50,22 @@ PocketCode.Ui.Expander = (function () {
         _onChangeHandler: function (e) {
             if (e.checked) {
                 this._container.addClassName("pc-bodyVisible");
-                this._opened = true;
                 this._onVisibilityChange.dispatchEvent({ opened: true });
             }
             else {
                 this._container.removeClassName("pc-bodyVisible");
-                this._opened = false;
                 this._onVisibilityChange.dispatchEvent({ opened: false });
             }
 
-            window.setTimeout(function () {
-                this.verifyResize();
-            }.bind(this), 20);
-            window.setTimeout(function () {
-                this.verifyResize();
-            }.bind(this), 1000);
+            window.setTimeout(this.verifyResize.bind(this), 400);
+            window.setTimeout(this.verifyResize.bind(this), 800);
         },
-        /* override */
-        //verifyResize: function () {
-        //    SmartJs.Ui.ContainerControl.prototype.verifyResize.call(this);  //call super
-        //    this._container.verifyResize();
-        //},
+        open: function () {
+            this._checkbox.checked = true;
+        },
+        close: function () {
+            this._checkbox.checked = false;
+        }
     });
 
     return Expander;
