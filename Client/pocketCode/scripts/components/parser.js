@@ -161,13 +161,9 @@ PocketCode.merge({
                     case 'SelectCameraBrick':
                     case 'CameraBrick':
                         //bubbles
-                    case 'SayBrick':
-                    case 'SayForBrick':
-                    case 'ThinkBrick':
-                    case 'ThinkForBrick':
-
-                        brick = new PocketCode.Model.UnsupportedBrick(this._device, currentSprite, jsonBrick);
-                        break;
+                    //case 'showBubbleBrick':
+                       // brick = new PocketCode.Model.UnsupportedBrick(this._device, currentSprite, jsonBrick);
+                        //break;
                         //    //^^ in development: delete/comment out bricks for testing purpose (but do not push these changes until you've finished implementation + testing)
 
                         //active:
@@ -245,6 +241,24 @@ PocketCode.merge({
                             jsonBrick.wait = true;  //currently as a workaround to implement ..AndWaitBricks for sounds like in v0.4
                             type = 'SpeakBrick';
                         }
+                        if(type =='SayBrick' || type == 'ThinkBrick'){
+                        jsonBrick.duration = null;
+                        }
+                        if (type == 'ThinkBrick' || type =='ThinkForBrick') {
+                            jsonBrick.bubbleType = PocketCode.Ui.BubbleType.THINK;
+                            type = 'showBubbleBrick';
+
+                        }
+                        if (type == 'SayBrick' || type =='SayForBrick') {
+                            jsonBrick.bubbleType = PocketCode.Ui.BubbleType.SPEECH;
+                            type = 'showBubbleBrick';
+
+                        }
+
+                    //case 'SayBrick':
+                    //case 'SayForBrick':
+                    //case 'ThinkBrick':
+                    //case 'ThinkForBrick':
 
                         //case 'SetVolumeBrick':
                         //case 'ChangeVolumeBrick':

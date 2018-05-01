@@ -313,36 +313,7 @@ QUnit.test("ShowBrick", function (assert) {
 
 });
 
-
-QUnit.test("SayBrick", function (assert) {
-
-    var done1 = assert.async();
-
-    var device = "device";
-    var gameEngine = new PocketCode.GameEngine();
-    var scene = new PocketCode.Model.Scene(gameEngine, undefined, []);
-    var sprite = new PocketCode.Model.Sprite(gameEngine, scene, { id: "spriteId", name: "spriteName" });
-    var text = JSON.parse('{"type":"STRING","value":"good morning","right":null,"left":null}');
-
-    var b = new PocketCode.Model.SayBrick(device, sprite, { text: text });
-
-    assert.ok(b._device === device && b._sprite === sprite && b._text instanceof PocketCode.Formula, "brick created and properties set correctly");
-    assert.ok(b instanceof PocketCode.Model.SayBrick, "instance check");
-    assert.ok(b.objClassName === "SayBrick", "objClassName check");
-
-    //execute
-    var handler = function (e) {
-        assert.ok(true, "executed");
-        assert.equal(e.loopDelay, true, "loopDelay received");
-        assert.equal(e.id, "thread_id", "threadId handled correctly");
-        done1();
-    };
-    b.execute(new SmartJs.Event.EventListener(handler, this), "thread_id");
-
-});
-
-
-QUnit.test("SayForBrick", function (assert) {
+QUnit.test("showBubbleBrick", function (assert) {
 
     //assert.expect(10);   //init async asserts (to wait for)
     var done1 = assert.async();
@@ -354,11 +325,11 @@ QUnit.test("SayForBrick", function (assert) {
     var sprite = new PocketCode.Model.Sprite(gameEngine, scene, { id: "spriteId", name: "spriteName" });
     var text = JSON.parse('{"type":"STRING","value":"good morning","right":null,"left":null}');
     var duration = JSON.parse('{"type":"NUMBER","value":"0.5","right":null,"left":null}');
-    var b = new PocketCode.Model.SayForBrick(device, sprite, { text: text, duration: duration });
+    var b = new PocketCode.Model.showBubbleBrick(device, sprite, { text: text, duration: duration });
 
     assert.ok(b._device === device && b._sprite === sprite && b._text instanceof PocketCode.Formula, "brick created and properties set correctly");
-    assert.ok(b instanceof PocketCode.Model.SayForBrick, "instance check");
-    assert.ok(b.objClassName === "SayForBrick", "objClassName check");
+    assert.ok(b instanceof PocketCode.Model.showBubbleBrick, "instance check");
+    assert.ok(b.objClassName === "showBubbleBrick", "objClassName check");
 
     var h = function (e) {  //async
         assert.ok(true, "executed");
@@ -380,93 +351,14 @@ QUnit.test("SayForBrick", function (assert) {
             lastType = type;
         },
     };
-    b = new PocketCode.Model.SayForBrick(device, spriteMock, { text: text, duration: duration });
+    b = new PocketCode.Model.showBubbleBrick(device, spriteMock, { text: text, duration: duration, bubbleType : PocketCode.Ui.BubbleType.SPEECH });
     var mockHandler = function (e) {
-        assert.equal(lastType, PocketCode.Ui.BubbleType.SPEECH, "show bubble ok: type");
         done2();
     }
     b.execute(new SmartJs.Event.EventListener(mockHandler, this), "sdf");
     assert.equal(lastText, "good morning", "show bubble ok: text");
-    assert.equal(lastType, PocketCode.Ui.BubbleType.SPEECH, "show bubble ok: type");
-    lastType = undefined;
-});
+    assert.equal(lastType, PocketCode.Ui.BubbleType.SPEECH, "show bubble speech ok: type");
 
-
-QUnit.test("ThinkBrick", function (assert) {
-
-    var done1 = assert.async();
-
-    var device = "device";
-    var gameEngine = new PocketCode.GameEngine();
-    var scene = new PocketCode.Model.Scene(gameEngine, undefined, []);
-    var sprite = new PocketCode.Model.Sprite(gameEngine, scene, { id: "spriteId", name: "spriteName" });
-    var text = JSON.parse('{"type":"STRING","value":"good morning","right":null,"left":null}');
-
-    var b = new PocketCode.Model.ThinkBrick(device, sprite, { text: text });
-
-    assert.ok(b._device === device && b._sprite === sprite && b._text instanceof PocketCode.Formula, "brick created and properties set correctly");
-    assert.ok(b instanceof PocketCode.Model.ThinkBrick, "instance check");
-    assert.ok(b.objClassName === "ThinkBrick", "objClassName check");
-
-    //execute
-    var handler = function (e) {
-        assert.ok(true, "executed");
-        assert.equal(e.loopDelay, true, "loopDelay received");
-        assert.equal(e.id, "thread_id", "threadId handled correctly");
-        done1();
-    };
-    b.execute(new SmartJs.Event.EventListener(handler, this), "thread_id");
-
-});
-
-
-QUnit.test("ThinkForBrick", function (assert) {
-
-    //assert.expect(10);   //init async asserts (to wait for)
-    var done1 = assert.async();
-    var done2 = assert.async();
-
-    var device = "device";
-    var gameEngine = new PocketCode.GameEngine();
-    var scene = new PocketCode.Model.Scene(gameEngine, undefined, []);
-    var sprite = new PocketCode.Model.Sprite(gameEngine, scene, { id: "spriteId", name: "spriteName" });
-    var text = JSON.parse('{"type":"STRING","value":"sdf","right":null,"left":null}');
-    var duration = JSON.parse('{"type":"NUMBER","value":"0.5","right":null,"left":null}');
-
-    var b = new PocketCode.Model.ThinkForBrick(device, sprite, { text: text, duration: duration });
-
-    assert.ok(b._device === device && b._sprite === sprite && b._text instanceof PocketCode.Formula, "brick created and properties set correctly");
-    assert.ok(b instanceof PocketCode.Model.ThinkForBrick, "instance check");
-    assert.ok(b.objClassName === "ThinkForBrick", "objClassName check");
-
-    var h = function (e) {  //async
-        assert.ok(true, "executed");
-        assert.equal(e.loopDelay, true, "loopDelay received");
-        assert.equal(e.id, "thread_id", "threadId handled correctly");
-        done1();
-    };
-
-    b.execute(new SmartJs.Event.EventListener(h, this), "thread_id");
-
-    var lastType, lastText;
-    var spriteMock = {
-        showBubble: function (type, text) {
-            lastType = type;
-            lastText = text;
-        },
-        hideBubble: function (type) {
-            lastType = type;
-        },
-    };
-    b = new PocketCode.Model.ThinkForBrick(device, spriteMock, { text: text, duration: duration });
-    var mockHandler = function (e) {
-        assert.equal(lastType, PocketCode.Ui.BubbleType.THINK, "show bubble ok: type");
-        done2();
-    }
-    b.execute(new SmartJs.Event.EventListener(mockHandler, this), "sdf");
-    assert.equal(lastText, "sdf", "show bubble ok: text");
-    assert.equal(lastType, PocketCode.Ui.BubbleType.THINK, "show bubble ok: type");
-    lastType = undefined;
 });
 
 

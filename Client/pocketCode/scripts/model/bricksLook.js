@@ -234,38 +234,18 @@ PocketCode.Model.merge({
         return AskBrick;
     })(),
 
-    SayBrick: (function () {
-        SayBrick.extends(PocketCode.Model.BaseBrick, false);
+    showBubbleBrick: (function () {
+        showBubbleBrick.extends(PocketCode.Model.WaitBrick, false);
 
-        function SayBrick(device, sprite, propObject) {
-            PocketCode.Model.BaseBrick.call(this, device, sprite, propObject);
-
-            this._text = new PocketCode.Formula(device, sprite, propObject.text);
-        }
-
-        SayBrick.prototype._execute = function (scope) {
-            var value = this._text.calculate(scope);//.toString().trim();
-
-            if (value === '' || value === undefined || value === null)  //bubble not shown
-                this._return(this._sprite.hideBubble());
-            else
-                this._return(this._sprite.showBubble(PocketCode.Ui.BubbleType.SPEECH, value));
-        };
-
-        return SayBrick;
-    })(),
-
-    SayForBrick: (function () {
-        SayForBrick.extends(PocketCode.Model.WaitBrick, false);
-
-        function SayForBrick(device, sprite, propObject) {
+        function showBubbleBrick(device, sprite, propObject) {
             PocketCode.Model.WaitBrick.call(this, device, sprite, propObject);
 
             this._text = new PocketCode.Formula(device, sprite, propObject.text);
+            this._bubbleType = propObject.bubbleType;
             this._changed = false;
         }
 
-        SayForBrick.prototype.merge({
+        showBubbleBrick.prototype.merge({
             /* override */
             _timerExpiredHandler: function (e) {
                 this._changed = this._changed || this._sprite.hideBubble();
@@ -278,67 +258,12 @@ PocketCode.Model.merge({
                     this._return(id, this._sprite.hideBubble());
                 }
                 else {
-                    this._changed = this._changed || this._sprite.showBubble(PocketCode.Ui.BubbleType.SPEECH, value);
+                    this._changed = this._sprite.showBubble(this._bubbleType, value);
                     PocketCode.Model.WaitBrick.prototype._execute.call(this, id, scope); //call super
                 }
             },
         });
-
-        return SayForBrick;
-    })(),
-
-    ThinkBrick: (function () {
-        ThinkBrick.extends(PocketCode.Model.BaseBrick, false);
-
-        function ThinkBrick(device, sprite, propObject) {
-            PocketCode.Model.BaseBrick.call(this, device, sprite, propObject);
-
-            this._text = new PocketCode.Formula(device, sprite, propObject.text);
-        }
-
-        ThinkBrick.prototype._execute = function (scope) {
-            var value = this._text.calculate(scope);
-
-            if (value === '' || value === undefined || value === null)  //bubble not shown
-                this._return(this._sprite.hideBubble());
-            else
-                this._return(this._sprite.showBubble(PocketCode.Ui.BubbleType.THINK, value));
-        };
-
-        return ThinkBrick;
-    })(),
-
-    ThinkForBrick: (function () {
-        ThinkForBrick.extends(PocketCode.Model.WaitBrick, false);
-
-        function ThinkForBrick(device, sprite, propObject) {
-            PocketCode.Model.WaitBrick.call(this, device, sprite, propObject);
-
-            this._text = new PocketCode.Formula(device, sprite, propObject.text);
-            this._changed = false;
-        }
-
-        ThinkForBrick.prototype.merge({
-            /* override */
-            _timerExpiredHandler: function (e) {
-                this._changed = this._changed || this._sprite.hideBubble();
-                this._return(e.callId, this._changed); //PocketCode.Model.WaitBrick.prototype._timerExpiredHandler.call(this, e.callId); //call super
-            },
-            /* override */
-            _execute: function (id, scope) {
-                var value = this._text.calculate(scope);
-
-                if (value === '' || value === undefined || value === null) {    //bubble not shown
-                    this._return(id, this._sprite.hideBubble());
-                }
-                else {
-                    this._changed = this._changed || this._sprite.showBubble(PocketCode.Ui.BubbleType.THINK, value);
-                    PocketCode.Model.WaitBrick.prototype._execute.call(this, id, scope); //call super
-                }
-            },
-        });
-
-        return ThinkForBrick;
+        return showBubbleBrick;
     })(),
 
     SetTransparencyBrick: (function () {

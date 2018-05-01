@@ -340,7 +340,7 @@ PocketCode.merge({
             },
             type: {
                 set: function (value) {
-                    this._type = type;
+                    this._type = value;
                     this._redrawCache();
                 },
             },
