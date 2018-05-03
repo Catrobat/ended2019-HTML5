@@ -13,17 +13,21 @@
     <style>
         div {
             width: 100%;
-            height: 500px;
+            /*min-height: 250px;*/
         }
 
-        svg g path {
+        svg path {
             stroke: red;
             fill: blue;
-            stroke-width: 4px;
+            fill-opacity: 0.2;
+            stroke-linecap:round;
+            stroke-linejoin:round;
         }
-        svg g path:nth-child(even) {
-            stroke: green;
-        }
+
+            svg .dark {
+                stroke: green;
+                fill: none;
+            }
     </style>
 </head>
 <body>
@@ -36,8 +40,7 @@
             </g>
         </svg>
     </div-->
-    <div id="default"></div>
-    <br />
+    <div id="default" style="height:40px;"></div>
     <div id="defaultEnd"></div>
     <br />
     <div id="loopIfElse"></div>
@@ -46,5 +49,6 @@
     <br />
     <div id="ifThenElse"></div>
     <br />
+    <div id="event"></div>
 </body>
 </html>

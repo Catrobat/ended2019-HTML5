@@ -17,7 +17,7 @@ PocketCode.Ui.BrickSvg = (function () {
 
     function BrickSvg() {
         SmartJs.Ui.Control.call(this, 'svg', { namespace: 'http://www.w3.org/2000/svg' });
-        
+
         //this._dom.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
         //this._dom.setAttribute('xmlns:xlink', 'http://www.w3.org/1999/xlink');
     }
@@ -25,11 +25,14 @@ PocketCode.Ui.BrickSvg = (function () {
     //settings
     Object.defineProperties(BrickSvg.prototype, {
         _borderWidth: {
-            value: 4,
+            value: 3,
+        },
+        _cornerOffset: {
+            value: 3,
         },
         _arm: {
             value: {
-                offset: 15,
+                offset: 14,
                 innerWidth: 20,
                 outherWidth: 14,
                 height: 4,
@@ -42,20 +45,25 @@ PocketCode.Ui.BrickSvg = (function () {
 
     //methods
     BrickSvg.prototype.merge({
-        _setViewBoxSize:function(width, height){
-            this._dom.setAttribute('viewBox', '0,0,' + width + ',' + height);
+        _setViewBoxSize: function (width, height) {
+            this._dom.setAttribute('viewBox', '0,0,{0},{1}'.format(width, height));
         },
-        _updatePaths: function(paths) {
-            if (this._group)
-                this._group.dispose();
-            this._group = new SmartJs.Ui.HtmlTag('g', { namespace: 'http://www.w3.org/2000/svg' });
+        _updatePaths: function (paths) {
+            for (var i = this._childs.length - 1; i >= 0 ; i--)
+                this._childs[i].dispose();
+            //if (this._group)
+            //    this._group.dispose();
+            //this._group = new SmartJs.Ui.HtmlTag('g', { namespace: 'http://www.w3.org/2000/svg' });
             var path;
             for (var i = 0, l = paths.length; i < l; i++) {
                 path = new SmartJs.Ui.HtmlTag('path', { namespace: 'http://www.w3.org/2000/svg' });
+                path.style.strokeWidth = this._borderWidth + 'px';
+                if (i % 2 == 1)
+                    path.setDomAttribute('class', 'dark');
                 path.setDomAttribute('d', paths[i]);
-                this._group.appendChild(path);
+                this._appendChild(path);
             }
-            this._appendChild(this._group);
+            //this._appendChild(this._group);
         },
         draw: function (type, width, height, scaling, showIndents, isEndBrick) {
             var totalHeight = 0;
@@ -64,7 +72,7 @@ PocketCode.Ui.BrickSvg = (function () {
                     totalHeight += height[i];
             else
                 totalHeight = height;
-            if(!isEndBrick)
+            if (!isEndBrick)
                 totalHeight += this._arm.height;
 
             this.width = width;
@@ -74,36 +82,33 @@ PocketCode.Ui.BrickSvg = (function () {
             var paths = [];
             switch (type) {
                 case PocketCode.BrickType.DEFAULT:
-                    //d += 'M' + (width - this._borderWidth) + ',' + this._borderWidth;   //start position
                     paths = this._drawDefaultBrick(0, width, height, scaling, isEndBrick);
-
-                    //TODO: set d as new path
                     break;
 
                 case PocketCode.BrickType.EVENT:
-                    //TODO
+                    paths = this._drawEventBrick(width, height, scaling, showIndents);
                     break;
                 case PocketCode.BrickType.LOOP:
                     if (!height instanceof Array)
                         throw new Error('width argument has to be of type array to calculate all y offsets');
-                    if (!showIndents) {
-                        paths = this._drawDefaultBrick(0, width, height[0], scaling, isEndBrick);
-                        paths = paths.concat(this._drawDefaultBrick(height[0] + height[1], width, height[2], scaling, isEndBrick));
+                    if (showIndents) {
+                        //TODO
                     }
                     else {
-                        //TODO
+                        paths = this._drawDefaultBrick(0, width, height[0], scaling);
+                        paths = paths.concat(this._drawDefaultBrick(height[0] + height[1], width, height[2], scaling, isEndBrick));
                     }
                     break;
                 case PocketCode.BrickType.IF_THEN_ELSE:
                     if (!height instanceof Array)
                         throw new Error('width argument has to be of type array to calculate all y offsets');
-                    if (!showIndents) {
-                        paths = this._drawDefaultBrick(0, width, height[0], scaling, isEndBrick);
-                        paths = paths.concat(this._drawDefaultBrick(height[0] + height[1], width, height[2], scaling, isEndBrick));
-                        paths = paths.concat(this._drawDefaultBrick(height[0] + height[1] + height[2] + height[3], width, height[4], scaling, isEndBrick));
+                    if (showIndents) {
+                        //TODO
                     }
                     else {
-                        //TODO
+                        paths = this._drawDefaultBrick(0, width, height[0], scaling);
+                        paths = paths.concat(this._drawDefaultBrick(height[0] + height[1], width, height[2], scaling));
+                        paths = paths.concat(this._drawDefaultBrick(height[0] + height[1] + height[2] + height[3], width, height[4], scaling));
                     }
                     break;
             }
@@ -113,52 +118,79 @@ PocketCode.Ui.BrickSvg = (function () {
         _drawDefaultBrick: function (offsetY, width, height, scaling, isEndBrick) {
             offsetY = offsetY || 0;
             var paths = [],
-                d = 'M' + (width - this._borderWidth * 0.5) + ',' + (offsetY + this._borderWidth * 0.5);   //start position
-            
-            //var h = height - this._borderWidth;
-            //if (isEndBrick)
-            //    h -= this._arm.height;
-            d += 'v' + (height - this._borderWidth);
-            d += this._drawBottomLineRtl(width - this._borderWidth, isEndBrick);
+                d = 'M{0},{1}'.format(width - this._borderWidth * .5, offsetY + this._cornerOffset + this._borderWidth * .5);   //start position
+
+            d += 'v{0}'.format(height - this._cornerOffset * 2 - this._borderWidth);
+            d += 'l{0},{1}'.format(-this._cornerOffset, this._cornerOffset);
+            d += this._drawBottomLineRtl(width - this._cornerOffset * 2 - this._borderWidth, isEndBrick);
             paths.push(d);
 
-            d = 'M' + this._borderWidth * 0.5 + ',' + (height - this._borderWidth * 0.5);
-            d += 'V' + (offsetY + this._borderWidth * 0.5);
-            d += this._drawTopLineLtr(width - this._borderWidth);
-            paths.push(d);
+            d = 'l{0},{1}'.format(-this._cornerOffset, -this._cornerOffset);
+            d += 'V{0}'.format(offsetY + this._cornerOffset + this._borderWidth * .5);
+            d += 'l{0},{1}'.format(this._cornerOffset, -this._cornerOffset);
+            d += this._drawTopLineLtr(width - this._cornerOffset * 2 - this._borderWidth);
+            d += 'l{0},{1}'.format(this._cornerOffset, this._cornerOffset);
+
+            paths[1] = paths[0];
+            paths[0] += d;
+            return paths;
+        },
+        _drawEventBrick: function (width, height, scaling, showIndents) {
+            var curveHeight = 25,   //TODO: you will have to replace this with the actual height
+                paths = [],
+                d = 'M{0},{1}'.format(width - this._borderWidth * .5, curveHeight + this._cornerOffset + this._borderWidth * .5);   //start position;
+            if (showIndents) {
+                //TODO
+            }
+            else {
+                d += 'v{0}'.format(height - curveHeight - this._cornerOffset * 2 - this._borderWidth);
+                d += 'l{0},{1}'.format(-this._cornerOffset, this._cornerOffset);
+                d += this._drawBottomLineRtl(width - this._cornerOffset * 2 - this._borderWidth);
+                paths.push(d);
+
+                d = 'l{0},{1}'.format(-this._cornerOffset, -this._cornerOffset);
+                d += 'V{0}'.format(curveHeight + this._cornerOffset + this._borderWidth * .5);
+                d += 'l{0},{1}'.format(this._cornerOffset, -this._cornerOffset);
+                d += this._drawEventTopLineLtr(width - this._cornerOffset * 2 - this._borderWidth, curveHeight);
+                d += 'l{0},{1}'.format(this._cornerOffset, this._cornerOffset);
+
+                paths[1] = paths[0];
+                paths[0] += d;
+                return paths;
+            }
+
             return paths;
         },
         _drawTopLineLtr: function (width) {
             var arm = this._arm,
-                ax = (arm.innerWidth - arm.outherWidth) * 0.5;
-            var d = 'h' + (arm.offset - this._borderWidth * 0.5);
-            d += 'l' + ax + ',' + arm.height;
-            d += 'h' + (arm.outherWidth + this._borderWidth);
-            d += 'l' + ax + ',-' + arm.height;
-            d += 'h' + (width - (arm.offset + arm.innerWidth));// + this._borderWidth * 0.5));
+                ax = (arm.innerWidth - arm.outherWidth) * .5;
+            var d = 'h{0}'.format(arm.offset - this._borderWidth * .5);
+            d += 'l{0},{1}'.format(ax, arm.height);
+            d += 'h{0}'.format(arm.outherWidth + this._borderWidth * 1.5);
+            d += 'l{0},{1}'.format(ax, -arm.height);
+            d += 'h{0}'.format(width - (arm.offset + arm.innerWidth + this._borderWidth));
             return d;
         },
-        _drawEventTopLineLtr: function(width) {
+        _drawEventTopLineLtr: function (width) {
             //TODO:
-            var d = 'h' + width
+            var d = 'h{0}'.format(width);
             return d;
         },
         _drawBottomLineRtl: function (width, isEndBrick) {
             if (isEndBrick) {
-                return 'h-' + width;
+                return 'h{0}'.format(-width);
             }
             else {
                 var arm = this._arm,
-                    ax = (arm.innerWidth - arm.outherWidth) * 0.5;
-                var d = 'h-' + (width - arm.innerWidth - arm.offset + this._borderWidth * 0.5);
-                d += 'l-' + ax + ',' + arm.height;
-                d += 'h-' + (arm.innerWidth - this._borderWidth);
-                d += 'l-' + ax + ',-' + arm.height;
-                d += 'h-' + arm.offset;
+                    ax = (arm.innerWidth - arm.outherWidth) * .5;
+                var d = 'h{0}'.format(-(width - arm.offset - arm.innerWidth - this._borderWidth * .5));
+                d += 'l{0},{1}'.format(-ax, arm.height);
+                d += 'h{0}'.format(-(arm.outherWidth + this._borderWidth * .5));
+                d += 'l{0},{1}'.format(-ax, -arm.height);
+                d += 'h{0}'.format(-arm.offset);
                 return d;
             }
-
-        }
+        },
     })
 
     return BrickSvg;
