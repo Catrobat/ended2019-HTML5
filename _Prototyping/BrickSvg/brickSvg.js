@@ -48,7 +48,7 @@ PocketCode.Ui.BrickSvg = (function () {
         _setViewBoxSize: function (width, height) {
             this._dom.setAttribute('viewBox', '0,0,{0},{1}'.format(width, height));
         },
-        _updatePaths: function (paths) {
+        _updatePaths: function (paths, shadows) {
             for (var i = this._childs.length - 1; i >= 0 ; i--)
                 this._childs[i].dispose();
             //if (this._group)
@@ -58,9 +58,14 @@ PocketCode.Ui.BrickSvg = (function () {
             for (var i = 0, l = paths.length; i < l; i++) {
                 path = new SmartJs.Ui.HtmlTag('path', { namespace: 'http://www.w3.org/2000/svg' });
                 path.style.strokeWidth = this._borderWidth + 'px';
-                if (i % 2 == 1)
-                    path.setDomAttribute('class', 'dark');
                 path.setDomAttribute('d', paths[i]);
+                this._appendChild(path);
+            }
+            for (var i = 0, l = shadows.length; i < l; i++) {
+                path = new SmartJs.Ui.HtmlTag('path', { namespace: 'http://www.w3.org/2000/svg' });
+                path.style.strokeWidth = this._borderWidth + 'px';
+                path.setDomAttribute('class', 'shadowBorder');
+                path.setDomAttribute('d', shadows[i]);
                 this._appendChild(path);
             }
             //this._appendChild(this._group);
@@ -79,14 +84,18 @@ PocketCode.Ui.BrickSvg = (function () {
             this.height = totalHeight;
             this._setViewBoxSize(width, totalHeight);
 
-            var paths = [];
+            var paths = [],
+                shadows = [];
             switch (type) {
                 case PocketCode.BrickType.DEFAULT:
                     paths = this._drawDefaultBrick(0, width, height, scaling, isEndBrick);
+                    shadows.push(paths.pop());
                     break;
 
                 case PocketCode.BrickType.EVENT:
                     paths = this._drawEventBrick(width, height, scaling, showIndents);
+                    for (i = paths.length; i > 1; i--)
+                        shadows.push(paths.pop());
                     break;
                 case PocketCode.BrickType.LOOP:
                     if (!height instanceof Array)
@@ -96,7 +105,9 @@ PocketCode.Ui.BrickSvg = (function () {
                     }
                     else {
                         paths = this._drawDefaultBrick(0, width, height[0], scaling);
+                        shadows.push(paths.pop());
                         paths = paths.concat(this._drawDefaultBrick(height[0] + height[1], width, height[2], scaling, isEndBrick));
+                        shadows.push(paths.pop());
                     }
                     break;
                 case PocketCode.BrickType.IF_THEN_ELSE:
@@ -107,12 +118,15 @@ PocketCode.Ui.BrickSvg = (function () {
                     }
                     else {
                         paths = this._drawDefaultBrick(0, width, height[0], scaling);
+                        shadows.push(paths.pop());
                         paths = paths.concat(this._drawDefaultBrick(height[0] + height[1], width, height[2], scaling));
+                        shadows.push(paths.pop());
                         paths = paths.concat(this._drawDefaultBrick(height[0] + height[1] + height[2] + height[3], width, height[4], scaling));
+                        shadows.push(paths.pop());
                     }
                     break;
             }
-            this._updatePaths(paths);
+            this._updatePaths(paths, shadows);
         },
         //helpers
         _drawDefaultBrick: function (offsetY, width, height, scaling, isEndBrick) {
