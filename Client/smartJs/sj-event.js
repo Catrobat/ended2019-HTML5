@@ -3,11 +3,6 @@
 /// <reference path="sj-core.js" />
 'use strict';
 
-
-//https://github.com/kbjr/Events.js
-//see: _helpers/Events
-
-
 SmartJs.Event = {
     Event: (function () {
         Event.extends(SmartJs.Core.Component);
@@ -85,7 +80,8 @@ SmartJs.Event = {
                     throw new Error('invalid argument: expected optional bubbles type: boolean');
 
                 var li = this._listeners || []; //necessary due to the fact that bound events may call a disposed event
-                var item;
+                var item,
+                    dispatchedAt = Date.now();
                 for (var i = 0, l = li.length; i < l; i++) {
                     item = li[i];
                     if (!item || !item.handler || (item.scope && item.scope._disposed)) {
@@ -99,7 +95,7 @@ SmartJs.Event = {
                     //try {    //notice: params change if an event is passed as the properties are read only
                     a.target = target || this.target;
                     a.bubbles = bubbles || false;
-                    a.dispatchedAt = new Date();
+                    a.dispatchedAt = dispatchedAt;
                     //}
                     //catch (e) {
                     //    a.sjTarget = target || this.target;

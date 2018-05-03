@@ -1,4 +1,5 @@
-﻿/// <reference path="i18nProvider.js" />
+﻿/// <reference path="../core.js" />
+/// <reference path="i18nProvider.js" />
 'use strict';
 
 PocketCode.RenderingItem = (function () {
@@ -6,8 +7,6 @@ PocketCode.RenderingItem = (function () {
     function RenderingItem(propObject) {    //{ id: s01, x: 0, y: 0, visible: false }
 
         propObject = propObject || {};
-        //if (!propObject || !propObject.id)
-        //    throw new Error('The rendering item has to be initialized using an id');
 
         this._id = propObject.id;
         delete propObject.id;
@@ -16,6 +15,7 @@ PocketCode.RenderingItem = (function () {
         this.visible = propObject.visible != undefined ? propObject.visible : true;
 
         this._cacheCanvas = document.createElement('canvas');
+        this._cacheCanvas.height = this._cacheCanvas.width = 0; //empty
         this._cacheCtx = this._cacheCanvas.getContext('2d');
     }
 
@@ -44,57 +44,69 @@ PocketCode.RenderingItem = (function () {
     RenderingItem.prototype.merge({
         draw: function (ctx) {
             if (!this.visible)
-                return;
-            this._draw(ctx);
+                return false;
+            return this._draw(ctx);
         },
         _draw: function (ctx) {
-            var canvas = this._cacheCanvas,
-                width = canvas.width,
+            var canvas = this._cacheCanvas;
+            if (!canvas)    //disposed
+                return false;
+            var width = canvas.width,
                 height = canvas.height;
-            if (width === 0 && height === 0)
-                return; //drawing a canvas with size = 0 will throw an error
+            if (width == 0 || height == 0)
+                return false; //drawing a canvas with size = 0 will throw an error
 
             ctx.save();
             ctx.translate(this.x, -this.y);
             ctx.drawImage(canvas, 0, 0, width, height);
             ctx.restore();
+            return true;
+        },
+        dispose: function () {
+            this.visible = false;
+            this._cacheCanvas = undefined;
         },
     });
 
     return RenderingItem;
 })();
 
-
 PocketCode.merge({
 
     RenderingText: (function () {
         RenderingText.extends(PocketCode.RenderingItem, false);
 
-        function RenderingText(propObject) {    //{ id: v, text: vars[v].toString(), x: 0, y: 0, visible: false }
+        function RenderingText(propObject) {    //{ scopeId: , id: , value: vars[v].toString(), x: 0, y: 0, visible: false }
             PocketCode.RenderingItem.call(this, propObject);
+            PocketCode.I18nProvider.onLanguageChange.addEventListener(new SmartJs.Event.EventListener(this._onLanguageChangeHandler, this));
 
             propObject = propObject || {};
-            this._UNDEFINED_TEXT = '';  //add a string to show if text (variable) is undefined/uninitialized
-            //^^ this may be a PocketCode.Core.I18nString Object to support i18n
-            this._objectId = propObject.objectId;   //var ids not unique due to cloning: the id is the sprite (local scope) or project (global scope) id
-            delete propObject.objectId;
+            this._value = undefined;
+            this._maxLineWidth = undefined;
+
+            this._scopeId = propObject.scopeId;   //var ids not unique due to cloning: the id is the sprite (local scope) or project (global scope) id
+            delete propObject.scopeId;
             this._textAlign = propObject.textAlign || 'left';
             delete propObject.textAlign;
 
+            //event
+            this._onCacheUpdate = new SmartJs.Event.Event(this);
+
             this.merge(propObject);
-            //this.text = propObject.text;
-            //this._fontFamily = 'Arial';
-            //this._fontSize = 46;
-            //this._fontWeight = 'bold';
-            //this._fontStyle = '';
-            //this._lineHeight = 54;
         }
+
+        //events
+        Object.defineProperties(RenderingText.prototype, {
+            onCacheUpdate: {
+                get: function () { return this._onCacheUpdate },
+            },
+        });
 
         //properties
         Object.defineProperties(RenderingText.prototype, {
-            objectId: {
+            scopeId: {
                 get: function () {
-                    return this._objectId;
+                    return this._scopeId;
                 },
             },
             width: {
@@ -107,18 +119,11 @@ PocketCode.merge({
                     return this._cacheCanvas.height;
                 },
             },
-            text: {
-                //get: function (value) {
-                //    return this._text;
-                //},
+            value: {
                 set: function (value) {
-                    var text = this._UNDEFINED_TEXT.toString();
-                    if (value)
-                        text = value.toString();
-
-                    if (this._text == text)
+                    if (this._value === value)
                         return;
-                    this._text = text;
+                    this._value = value;
                     this._redrawCache();
                 },
             },
@@ -143,192 +148,151 @@ PocketCode.merge({
                 writable: true,
             },
             maxLineWidth: {
-                value: undefined,
-                writable: true,
+                set: function (value) {
+                    this._maxLineWidth = value;
+                    if (this.width > value)
+                        this._redrawCache();
+                },
             },
-            //textAlign: {
-            //    value: 'left',
-            //    writable: true,
-            //},
         });
 
         //methods
         RenderingText.prototype.merge({
-            _getTextBlock: function () {
+            _getTextBlock: function (string) {
                 var block = {
                     width: 0,
                     height: 0,
                     lines: [],
                 };
+
                 var ctx = this._cacheCtx,
-                    maxLineWidth = this.maxLineWidth,
-                    textLines = this._text.split(/\r?\n/),
-                    line,// = '',
+                    maxLineWidth = this._maxLineWidth,
+                    textLines = string.split(/\r?\n/),
+                    line,
                     metrics;
 
                 if (!maxLineWidth) {
                     for (var i = 0, l = textLines.length; i < l; i++) {
                         line = textLines[i].trim();
                         metrics = ctx.measureText(line);
-                        block.lines.push(line);
+                        block.lines.push({ text: line, width: metrics.width });
                         block.width = Math.max(block.width, metrics.width);
                     }
-
                 }
                 else {  //split lines and words to fit maxLineWidth
                     var words,
-                        testLine = '';
+                        testLine = '',
+                        width;
 
                     for (var i = 0, l = textLines.length; i < l; i++) {
                         line = textLines[i].trim();
-                        if (line.length == 0) { //empty lines
-                            block.lines.push(line);
-                            continue;
-                        }
+                        metrics = ctx.measureText(line),
+                        width = metrics.width;
 
-                        words = line.split(' ');
-                        for (var n = 0, wl = words.length; n < wl; n++) {
-                            testLine += words[n];
-                            metrics = ctx.measureText(testLine);
-                            if (metrics.width < maxLineWidth) {
-                                line = testLine;
-                                testLine += ' ';
+                        if (width > maxLineWidth) {//else {  //line.width > maxLineWidth -> split
+                            words = line.split(/\s+/);
+                            line = '';
+                            width = 0;
+                            for (var n = 0, wl = words.length; n < wl; n++) {
+                                testLine += words[n];//.trim();
+                                metrics = ctx.measureText(testLine);
+                                if (metrics.width <= maxLineWidth) {
+                                    width = metrics.width;
+                                    line = testLine;
+                                    testLine += ' ';
+                                }
+                                else if (line == '') {  //word does not fit but line is empty: split word
+                                    var chars = Math.max(1, Math.floor(maxLineWidth / metrics.width * words[n].length * 0.97)), //-3% to make sure the resulting word fits
+                                        splitWord = words[n].substr(0, chars);
+                                    metrics = ctx.measureText(splitWord);
+                                    block.lines.push({ text: splitWord, width: metrics.width });
+                                    block.width = Math.max(block.width, metrics.width);
+                                    words[n] = words[n].substring(chars, testLine.length);  //store remaining chars
+                                    n--;
+                                    testLine = '';
+                                }
+                                else {
+                                    block.lines.push({ text: line, width: width });
+                                    block.width = Math.max(block.width, width);
+                                    n--;
+                                    testLine = line = '';
+                                }
                             }
-                            else if (line == '') {  //word does not fit but line is empty: break word
-                                var chars = Math.floor(maxLineWidth / metrics.width * testLine.length) - 3, //-3 to make sure the resulting word fits
-                                    splitWord = testLine.substr(0, chars);
-                                block.lines.push(splitWord);
-                                metrics = ctx.measureText(splitWord);
-                                block.width = Math.max(block.width, metrics.width);
-                                words[n] = testLine.substring(chars + 1, testLine.length);
-                                n--;
-                                testLine = '';
-                            }
-                            else {
-                                block.lines.push(line);
-                                block.width = Math.max(block.width, metrics.width);
-                                testLine = '';
-                            }
-
                         }
+                        //add line
+                        block.lines.push({ text: line, width: width });
+                        block.width = Math.max(block.width, width);
+                        testLine = line = '';
                     }
                 }
 
-                block.height = block.lines.length * this.lineHeight - (this.lineHeight - this.fontSize);
+                block.width = Math.ceil(block.width);
+                block.height = Math.ceil(block.lines.length * this.lineHeight);// - (this.lineHeight - this.fontSize) * 0.5);
                 return block;
             },
-            //_drawTextBlock: function (ctx, maxWidth, x, y) {
-            //    x = x || this.x;
-            //    y = -y || -this.y;
-            //    var newLines = this._text.split(/\r?\n/),
-            //        line = '',
-            //        //lineWidth = 0,
-            //        testLine = '',
-            //        metrics;//,
-            //    //maxLineWidth = 0;
-
-            //    for (var i = 0, l = newLines.length; i < l; i++) {
-            //        var words = newLines[i].trim().split(' ');
-
-            //        var wl = words.length;
-            //        if (wl > 0) {
-            //            for (var n = 0; n < wl; n++) {
-            //                testLine += words[n];// + ' ');
-            //                metrics = ctx.measureText(testLine);
-            //                //preLineWidth = lineWidth;
-
-            //                if (!maxWidth || maxWidth && metrics.width < maxWidth || line.length == 0) {
-            //                    line = (testLine += ' ');
-            //                    //lineWidth = metrics.width;
-            //                    //maxLineWidth = Math.max(maxLineWidth, lineWidth);
-            //                }
-            //                else {
-            //                    ctx.fillText(line.trim(), x, y);
-            //                    //maxLineWidth = Math.max(maxLineWidth, lineWidth);
-            //                    //lineWidth = metrics.width - lineWidth;
-            //                    y -= this._lineHeight;
-            //                    line = testLine = words[n] + ' ';
-            //                    //testLine = '';
-            //                    //lineWidth = metrics.width;
-            //                }
-            //                //lineWidth = metrics.width;
-            //            }
-            //            ctx.fillText(line.trim(), x, y);
-            //            //maxLineWidth = Math.max(maxLineWidth, lineWidth);
-            //            //lineWidth = 0;
-            //            testLine = '';
-            //        }
-            //        y -= this._lineHeight;
-            //    }
-            //    //return { width: Math.ceil(maxLineWidth), height: y - lineHeight };
-            //},
             _redrawCache: function () {
                 var canvas = this._cacheCanvas,
-                    ctx = this._cacheCtx;
+                    ctx = this._cacheCtx,
+                    string = PocketCode.Math.Cast.toI18nString(this._value, PocketCode.I18nProvider.currentLanguage),
+                    string = string.replace(/\n+/g, '\n'),   //only single line feeds allowed
+                    dir = PocketCode.I18nProvider.getTextDirection(string),
+                    rtl = (dir == PocketCode.Ui.Direction.RTL),
+                    translation = 0,
+                    //fontSize = (string.length <=2 && string.slice(-1) == '\u221E') ? this.fontSize * 1.2 : this.fontSize,
+                    font = this.fontStyle + ' ' + this.fontWeight + ' ' + this.fontSize + 'px' + ' ' + this.fontFamily;
 
-                ctx.save();
-                ctx.textBaseline = 'top';   //'hanging';
-                ctx.font = this.fontStyle + ' ' + this.fontWeight + ' ' + this.fontSize + 'px' + ' ' + this.fontFamily;
+                if (string == '') {  //clear cache
+                    canvas.width = canvas.height = 0;
+                    return;
+                }
 
-                var textBlock = this._getTextBlock(); //{ width: ?, height: ?, lines: [] }
-                canvas.width = textBlock.width;
+                ctx.textBaseline = 'middle';
+                ctx.font = font;
+                ctx.textAlign = 'left'; //always left even if set to 'center'
+                var textBlock = this._getTextBlock(string);
+                canvas.width = textBlock.width;//resize sets ctx to default
                 canvas.height = textBlock.height;
 
-                var dir = PocketCode.I18nProvider.getTextDirection(this._text);
-                canvas.dir = dir;
-                //if(this._textAlign == 'center')
-                //    ctx.moveTo(textBlock.width * 0.5, 0);
-                /*else*/ if (dir == PocketCode.Ui.Direction.RTL) {
-                    //ctx.moveTo(textBlock.width, 0);
-                    ctx.translate(textBlock.width, 0);
-                    ctx.textAlign = 'right';
-                }
+                ctx.save();
+                //apply settings again (due to canvas resize)
+                ctx.textBaseline = 'middle';
+                ctx.font = font;
+                ctx.textAlign = 'left';
 
                 //draw
                 var textLines = textBlock.lines,
-                    yOffset;
-                for (var i = 0, l = textLines.length; i < l; i++) //{
-                    //yOffset = /*this._fontSize * */this._lineHeight * i;
-                    ctx.fillText(textLines[i], 0, this._lineHeight * i);
-                //    ctx.fillText(textLines[i], this.x, -this.y - heightOfLine);
-                //}
+                    line,
+                    text,
+                    offset = 0;
+                for (var i = 0, l = textLines.length; i < l; i++) {
+                    line = textLines[i];
+                    if (rtl) {
+                        //please notice: as our cache is not part of the DOM, rendering texts correctly is tricky
+                        text = '\u202E' + line.text;    //force to RTL text
+                        if (this._textAlign != 'center')
+                            offset = textBlock.width - line.width;  //make sure all texts are visible and aligned correctly
+                    }
+                    else
+                        text = line.text;
+
+                    //text may be centered (for bubbles)
+                    if (this._textAlign == 'center')
+                        offset = (textBlock.width - line.width) * 0.5;  //works much better (RTL) than ctx.translate(textBlock.width * 0.5, 0);
+
+                    ctx.fillText(text, offset, this.lineHeight * (i + 0.5));
+                }
                 ctx.restore();
+                this._onCacheUpdate.dispatchEvent({ size: { width: textBlock.width, height: textBlock.height } });
+            },
+            _onLanguageChangeHandler: function () {
+                //wait for the i18nStrings to updated and then redraw the cache: timeout needed because this handler may be called first
+                window.setTimeout(this._redrawCache.bind(this), 0);
             },
             /* override */
-            //_draw: function (ctx, maxWidth) {
-            //    if (this._text === '')
-            //        return;
-
-            //    ctx.textBaseline = 'top';   //'hanging';
-            //    ctx.font = this.fontStyle + ' ' + this.fontWeight + ' ' + this.fontSize + 'px' + ' ' + this.fontFamily;
-
-            //    var text = this._text;
-            //    var lineFeeds = text.split(/\r?\n/).length > 1,
-            //        rtl = PocketCode.I18nProvider.getTextDirection(text) == PocketCode.Ui.Direction.RTL;
-
-            //    if (lineFeeds || maxWidth) {
-            //        //if (rtl) {
-            //        //    var size = this._getTextBlockSize(ctx, maxWidth, rtl);
-            //        //    this._drawTextBlock(ctx, maxWidth, rtl, this.x + size.width);
-            //        //}
-            //        //else
-            //        this._drawTextBlock(ctx, maxWidth);
-            //    }
-            //    else //draw in one line
-            //        ctx.fillText(text, this.x, -this.y);
-
-            //    //if maxWidth: check for breaks
-            //    //if rtl: and breaks
-
-            //    //// wrap lines
-            //    //var newline = /\r?\n/;
-            //    //var textLines = this._text.split(newline);
-
-            //    //for (var i = 0, len = textLines.length; i < len; i++) {
-            //    //    var heightOfLine = this._fontSize * this._lineHeight * i;
-            //    //    ctx.fillText(textLines[i], this.x, -this.y - heightOfLine);
-            //    //}
-            //},
+            dispose: function () {
+                PocketCode.I18nProvider.onLanguageChange.removeEventListener(new SmartJs.Event.EventListener(this._onLanguageChangeHandler, this));
+                PocketCode.RenderingItem.prototype.dispose.call(this);
+            }
         });
 
         return RenderingText;
@@ -342,19 +306,22 @@ PocketCode.merge({
     },
 
     RenderingBubble: (function () {
-        RenderingBubble.extends(PocketCode.RenderingItem/*, false*/);
+        RenderingBubble.extends(PocketCode.RenderingItem);
 
         function RenderingBubble() {
-            //PocketCode.RenderingItem.call(this);
 
-            //definition
             this._lineWidth = 6,
             this._strokeStyle = '#a0a0a0',
             this._fillStyle = '#ffffff';
             this._type = PocketCode.Ui.BubbleType.SPEECH;
             this._orientation = PocketCode.BubbleOrientation.TOPRIGHT;
 
+            this._radius = 15;
+            this._minHeight = 50;
+            this._minWidth = 75;
+
             this._textObject = new PocketCode.RenderingText({ fontWeight: 'normal', fontSize: 31, lineHeight: 36, textAlign: 'center', maxLineWidth: 270 });
+            this._textObject.onCacheUpdate.addEventListener(new SmartJs.Event.EventListener(this._redrawCache, this));
             //propObject = propObject || {};
             this._offsetX = 0;
             this._offsetY = 0;
@@ -398,8 +365,8 @@ PocketCode.merge({
             text: {
                 //Todo:
                 set: function (value) {
-                    this._textObject.text = value;
-                    this._redrawCache();
+                    this._textObject.value = value;
+                    //this._redrawCache();
                     //if (!value)
                     //  this._text = this._UNDEFINED_TEXT.toString();
                     //else if (typeof value == 'number' && Math.round(value) == value)
@@ -467,8 +434,7 @@ PocketCode.merge({
         //methods
         RenderingBubble.prototype.merge({
             _redrawCache: function () {
-                //Todo: type Abfrage und think oder speak aufrufen
-                //var bType = this.bubbleType.get();
+
                 var type = this._type;
                 //var bX = this.bubblePositionX.get();
                 //var bY = this.bubblePositionY.get();
@@ -480,21 +446,23 @@ PocketCode.merge({
                     this._drawThinkBubble();
                 }
 
-                //Todo: leere Bubbles werden nicht angezeigt
-                //      bricksLook.js behandelt das
+                //Todo: empty bubbles not shown: this._textObject.width == 0 || this._textObject.height == 0
+                //      bricksLook.js handled in bubble bricks
 
 
             },
-            _drawThinkBubble: function (canvas) {
+            _drawThinkBubble: function () {
 
-                var radius = 15;
-                var minHeight = 50;
-                var minWidth = 75;
+                var radius = this._radius,
+                    minHeight = this._minHeight,
+                    minWidth = this._minWidth,
+                    orientation = this._orientation,
+                    canvas = this._cacheCanvas,
+                    ctx = this._cacheCtx;
 
-                var orientation = this._orientation;
-
-                var bubbleHeight = canvas.height;
-                var bubbleWidth = canvas.width;
+                var to = this._textObject,
+                    bubbleHeight = to.height,
+                    bubbleWidth = to.width;
 
                 var height = Math.max(minHeight, bubbleHeight);
                 var width = Math.max(minWidth, bubbleWidth);
@@ -506,8 +474,6 @@ PocketCode.merge({
                 if (orientation === PocketCode.BubbleOrientation.LEFT || orientation === PocketCode.BubbleOrientation.RIGHT) {
                     canvas.width = width;
                     canvas.height = height + offsetBottom;
-
-                    var ctx = canvas.getContext('2d');
 
                     if (orientation === PocketCode.BubbleOrientation.RIGHT) {
                         //Spiegeln
@@ -618,16 +584,18 @@ PocketCode.merge({
                     //ctx.fillText();
                 }
             },
-            _drawSpeechBubble: function (canvas) {
+            _drawSpeechBubble: function () {
 
-                var radius = 15;
-                var minHeight = 50;
-                var minWidth = 75;
+                var radius = this._radius,
+                    minHeight = this._minHeight,
+                    minWidth = this._minWidth,
+                    orientation = this._orientation,
+                    canvas = this._cacheCanvas,
+                    ctx = this._cacheCtx;
 
-                var orientation = this._orientation;
-
-                var bubbleHeight = canvas.height;
-                var bubbleWidth = canvas.width;
+                var to = this._textObject,
+                    bubbleHeight = to.height,
+                    bubbleWidth = to.width;
 
                 var height = Math.max(minHeight, bubbleHeight);
                 var width = Math.max(minWidth, bubbleWidth);
@@ -639,8 +607,6 @@ PocketCode.merge({
                 if (orientation === PocketCode.BubbleOrientation.LEFT || orientation === PocketCode.BubbleOrientation.RIGHT) {
                     canvas.width = width;
                     canvas.height = height + offsetBottom;
-
-                    var ctx = canvas.getContext('2d');
 
                     if (orientation === PocketCode.BubbleOrientation.RIGHT) {
                         //Spiegeln
@@ -862,13 +828,8 @@ PocketCode.merge({
             this._width = 0;
             this._height = 0;
 
-            //this._scaling = 1.0;
-            this._flipX = false;
-            //this._rotation = 0.0;
+            this._penColor = {}; //= { r: undefined, g: undefined, b: undefined };  //default values are only defined on sprite/bricks
             this._shadow = false;
-
-            this.penDown = false;
-            this._penColor; //= { r: undefined, g: undefined, b: undefined };  //default values are only defined on sprite/bricks
 
             this.graphicEffects = propObject.graphicEffects || [];
 
@@ -940,8 +901,12 @@ PocketCode.merge({
                         cache = this._cacheCanvas,
                         ctx = this._cacheCtx;
 
+                    if (width == 0 || height == 0)  //to avoid errors when drawing an image mit height/width = 0
+                        return;
+
                     cache.width = width;
                     cache.height = height;
+                    //reseet image cache to original iamge and re-apply filters 
                     ctx.clearRect(0, 0, width, height);
                     ctx.drawImage(img, 0, 0, width, height);
 
@@ -954,7 +919,7 @@ PocketCode.merge({
                 writable: true,
             },
             penSize: {
-                value: undefined,   //default calues are defined on sprite/bricks only
+                value: undefined,   //default values are defined on sprite/bricks only
                 writable: true,
             },
             penColor: { //providing a setter/getter is important to make sure the object is merged correctly
@@ -1025,7 +990,7 @@ PocketCode.merge({
 
                 ctx.rotate(this.rotation * Math.PI / 180.0);
                 ctx.scale(
-                    this.scaling * (this._flipX ? -1.0 : 1.0),
+                    this.scaling * (this.flipX ? -1.0 : 1.0),
                     this.scaling
                 );
 

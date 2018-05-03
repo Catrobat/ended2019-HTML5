@@ -54,7 +54,7 @@ PocketCode.PhysicsWorld = (function () {
                 throw new Error('invalid argument: expected listeners type of array');
 
             var listener,
-                dispatchedAt = new Date();
+                dispatchedAt = Date.now();
             for (var i = 0, l = listeners.length; i < l; i++) {
                 listener = listeners[i];
                 if (listener instanceof SmartJs.Event.AsyncEventListener)

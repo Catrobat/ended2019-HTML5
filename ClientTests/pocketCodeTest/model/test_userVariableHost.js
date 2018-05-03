@@ -1,4 +1,4 @@
-﻿/// <reference path="../../qunit/qunit-2.1.1.js" />
+﻿/// <reference path="../../qunit/qunit-2.4.0.js" />
 /// <reference path="../../../Client/smartJs/sj.js" />
 /// <reference path="../../../Client/smartJs/sj-core.js" />
 /// <reference path="../../../Client/smartJs/sj-event.js" />
@@ -65,7 +65,7 @@ QUnit.test("UserVariableHost", function (assert) {
     uvhl.getList("id1").append("list test");
     assert.ok(uvhl.getVariable("id1").value == "new text" && uvhl.getList("id1").length == 1, "init reset test");
     uvhl._resetVariables();
-    assert.equal(uvhl.getVariable("id1").value, undefined, "reset variable");
+    assert.equal(uvhl.getVariable("id1").value, 0, "reset variable (to 0)");
     assert.equal(uvhl.getList("id1").length, 0, "reset list");
 
     uvhp.dispose();
@@ -81,7 +81,7 @@ QUnit.test("UserVariableHost", function (assert) {
 
         var valid = true;
         var tmp;
-        for (var i = 0, l = localDefinition.length; i < l;i++) {
+        for (var i = 0, l = localDefinition.length; i < l; i++) {
             tmp = allVarsOrLists.local[localDefinition[i].id];
             if (!tmp) {
                 valid = false;
@@ -142,29 +142,34 @@ QUnit.test("UserVariableHost", function (assert) {
 
     //test ui rendering + updates
     var renderingVars = uvhl._getRenderingVariables();
-    var r0 = renderingVars[0], r1 = renderingVars[1];
-    assert.ok(r0.id === "id1" && r0._text === "txt" && r0.x === 0 && r0.y === 0 && r0.visible === false, "var0 id check (not initialized)");
-    assert.ok(r1.id === "id2" && r1._text === "" && r1.x === 0 && r1.y === 0 && r1.visible === false, "var1 id check (not initialized)");
+    var r0 = renderingVars[0],
+        r1 = renderingVars[1];
+    assert.ok(r1 instanceof PocketCode.RenderingText, "object instance check");
+    assert.ok(r0.id === "id1" && r0._value === "txt" && r0.x === 0 && r0.y === 0 && r0.visible === false, "var0 id check (not initialized)");
+    assert.ok(r1.id === "id2" && r1._value === 0 && r1.x === 0 && r1.y === 0 && r1.visible === false, "var1 id check (not initialized)");
 
     var varChangeCalled = 0;
     var onVarChange = function (e) {
         varChangeCalled++;
-        assert.equal(e.id, "id1", "event args: id");
-        assert.equal(e.properties.text, "new text", "event args: text");
+        assert.equal(e.variableId, "id1", "event args: id");
+        assert.equal(e.value, "new text", "event args: text");
     };
     uvhl._onVariableChange.addEventListener(new SmartJs.Event.EventListener(onVarChange, this));
-    uvhl.getVariable("id1").value = "new text";
-
-    assert.equal(varChangeCalled, 1, "var change: event handler called");
+    var testVar = uvhl.getVariable("id1");
+    testVar.value = "new text (not visible)";
+    assert.equal(varChangeCalled, 0, "var change: event handler NOT called (not visisble)");
+    uvhl._variableViewStates["id1"] = { visible: true, x: 2, y: 3 };   //set to visible
+    testVar.value = "new text";
+    assert.equal(varChangeCalled, 1, "var change: event handler called (visisble)");
 
     uvhl._onVariableChange.removeEventListener(new SmartJs.Event.EventListener(onVarChange, this));
     //show variable
     varChangeCalled = 0;
     var onVarChange = function (e) {
         varChangeCalled++;
-        assert.equal(e.id, "id1", "event args: id (showVariableAt)");
-        var props = e.properties;
-        assert.ok(props.text = "new text" && props.x == 20 && props.y == 50 && props.visible == true, "event args: properties (showVariableAt)");
+        assert.equal(e.variableId, "id1", "event args: id (showVariableAt)");
+        var vs = e.viewState;
+        assert.ok(e.value = "new text" && vs.x == 20 && vs.y == 50 && vs.visible == true, "event args: viewState (showVariableAt)");
     };
     uvhl._onVariableChange.addEventListener(new SmartJs.Event.EventListener(onVarChange, this));
     assert.throws(function () { uvhl.showVariableAt("wrong id", 20, 50); }, Error, "ERRROR: id not found");
@@ -178,9 +183,9 @@ QUnit.test("UserVariableHost", function (assert) {
     varChangeCalled = 0;
     var onVarChange = function (e) {
         varChangeCalled++;
-        assert.equal(e.id, "id1", "event args: id (hideVariable)");
-        var props = e.properties;
-        assert.ok(props.visible == false, "event args: properties (hideVariable)");
+        assert.equal(e.variableId, "id1", "event args: id (hideVariable)");
+        var props = e.viewState;
+        assert.ok(props.visible == false, "event args: viewState (hideVariable)");
     };
     uvhl._onVariableChange.addEventListener(new SmartJs.Event.EventListener(onVarChange, this));
     assert.throws(function () { uvhl.hideVariable("wrong id"); }, Error, "ERRROR: id not found");
@@ -196,7 +201,7 @@ QUnit.test("UserVariableHost", function (assert) {
 
     uvhp.getVariable("id1").value = "txt";
     v = uvhp.getAllVariables();
-    assert.ok(v.procedure !== undefined && v.local !== undefined && v.global!== undefined, "variables: object including procedure, local and global variables");
+    assert.ok(v.procedure !== undefined && v.local !== undefined && v.global !== undefined, "variables: object including procedure, local and global variables");
     l = uvhp.getAllLists();
     assert.ok(l.procedure !== undefined && l.local !== undefined && l.global !== undefined, "lists: object including procedure, local and global variables");
 

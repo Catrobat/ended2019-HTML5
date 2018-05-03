@@ -24,8 +24,12 @@ PocketCode.Ui.PlayerViewportView = (function () {
         this._canvas = new PocketCode.Ui.Canvas();
         this._appendChild(this._canvas);
 
-        //TODO: check if handling is necessary twice
-        //this.onResize.addEventListener(new SmartJs.Event.EventListener(this._updateCanvasSize, this));
+        //rendering
+        this._redrawRequired = false;
+        SmartJs.AnimationFrame.addEventListener(new SmartJs.Event.EventListener(this._redrawCanvas, this));
+        if (PocketCode.I18nProvider)
+            PocketCode.I18nProvider.onLanguageChange.addEventListener(new SmartJs.Event.EventListener(this._onLanguageChangeHandler, this));
+
         this._onResize.addEventListener(new SmartJs.Event.EventListener(function () {
             window.setTimeout(this._updateCanvasSize.bind(this), 120);
         }, this));
@@ -33,7 +37,7 @@ PocketCode.Ui.PlayerViewportView = (function () {
         //canvas events
         this._onUserAction = new SmartJs.Event.Event(this);
         this._canvas.onRenderingSpriteTouched.addEventListener(new SmartJs.Event.EventListener(function (e) {
-            this._onUserAction.dispatchEvent(e.merge({ action: PocketCode.UserActionType.SPRITE_CLICKED }));
+            this._onUserAction.dispatchEvent(e.merge({ action: PocketCode.UserActionType.SPRITE_TOUCHED }));
         }, this));
         this._canvas.onTouchStart.addEventListener(new SmartJs.Event.EventListener(function (e) {
             this._onUserAction.dispatchEvent(e.merge({ action: PocketCode.UserActionType.TOUCH_START }));
@@ -166,6 +170,12 @@ PocketCode.Ui.PlayerViewportView = (function () {
                 dialog.focusInputField();
             }
         },
+        hideAskDialog: function (){
+            var dialog = this._activeAskDialog;
+            if (dialog)
+                dialog.dispose();
+            this._activeAskDialog = undefined;
+        },
         //pen, stamp
         initScene: function (id, screenSize, reinit) {
             this._canvas.initScene(id, screenSize);
@@ -184,8 +194,7 @@ PocketCode.Ui.PlayerViewportView = (function () {
             this._canvas.clearCurrentPenStampCache();
         },
         clear: function () {
-            if (this._activeAskDialog)
-                this._activeAskDialog.dispose();
+            this.hideAskDialog();
             this._canvas.clearPenStampCache();
         },
         //camera
@@ -250,24 +259,24 @@ PocketCode.Ui.PlayerViewportView = (function () {
             var url = this._canvas.toDataURL(this._originalWidth, this._originalHeight);
             return url;
         },
+        _onLanguageChangeHandler: function () {
+            //make sure that variables using a i18nString get updated after updating internal cache
+            window.setTimeout(this.render.bind(this), 200);
+        },
         render: function () {
             this._redrawRequired = true;
-            if (this._redrawInProgress)
-                return;
-            //this works because we have already defined the function in sj-animation.js globally
-            this._redrawInProgress = window.requestAnimationFrame(this._redrawCanvas.bind(this));
         },
         _redrawCanvas: function () {
+            if (!this._redrawRequired)
+                return;
+
             this._redrawRequired = false;
             this._canvas.render();
-            this._redrawInProgress = false;
-            if (this._redrawRequired)
-                this.render();
         },
-        //clear: function () {
-        //    this._canvas.clear();
-        //},
         dispose: function () {
+            SmartJs.AnimationFrame.removeEventListener(new SmartJs.Event.EventListener(this._redrawCanvas, this));
+            if (PocketCode.I18nProvider)
+                PocketCode.I18nProvider.onLanguageChange.removeEventListener(new SmartJs.Event.EventListener(this._onLanguageChangeHandler, this));
             SmartJs.Ui.Window.onResize.removeEventListener(new SmartJs.Event.EventListener(this._windowOrientationChangeHandler, this));
             this.onResize.dispose();
             SmartJs.Ui.Control.prototype.dispose.call(this);
@@ -277,5 +286,3 @@ PocketCode.Ui.PlayerViewportView = (function () {
 
     return PlayerViewportView;
 })();
-
-

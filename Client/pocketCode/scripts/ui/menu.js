@@ -56,7 +56,7 @@ PocketCode.Ui.Menu = (function () {
             if (this._subMenu.hidden) {
                 this._subMenu.show();
                 this.verifyResize();
-                this._menuButton.addClassName('pc-menuButtonOpened');
+                this.addClassName('pc-menuOpened');
                 this._onOpen.dispatchEvent();
             } else {
                 this.close();
@@ -64,7 +64,7 @@ PocketCode.Ui.Menu = (function () {
         },
         close: function (e) {
             this._subMenu.hide();
-            this._menuButton.removeClassName('pc-menuButtonOpened');
+            this.removeClassName('pc-menuOpened');
         },
         /* override */
         verifyResize: function () {

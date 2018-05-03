@@ -1,4 +1,4 @@
-﻿/// <reference path="../../qunit/qunit-2.1.1.js" />
+﻿/// <reference path="../../qunit/qunit-2.4.0.js" />
 /// <reference path="../../../Client/smartJs/sj.js" />
 /// <reference path="../../../Client/smartJs/sj-event.js" />
 /// <reference path="../../../Client/smartJs/sj-core.js" />
@@ -61,7 +61,7 @@ QUnit.test("Dialog: Ask", function (assert) {
     var container = new SmartJs.Ui.ContainerControl({ style: { minHeight: "500px", minWidth: "500px" } });
     dom.appendChild(container._dom);    //this should trigger a resize- code coverage
 
-    var d = new PocketCode.Ui.AskDialog();
+    var d = new PocketCode.Ui.AskDialog("question");
     assert.ok(d instanceof PocketCode.Ui.AskDialog && d instanceof PocketCode.Ui.Dialog, "AskDialog: instance check");
     assert.ok(d.onSubmit instanceof SmartJs.Event.Event, "AskDialog: events");
 
@@ -84,10 +84,12 @@ QUnit.test("Dialog: Ask", function (assert) {
     d.focusInputField();
     assert.equal(document.activeElement.id, input.id, "set focused");
 
+    d = new PocketCode.Ui.AskDialog();
+    assert.ok(d._header.hidden, "dialog header is hidden if no question is applied");
 });
 
 
-QUnit.test("Dialog: error", function (assert) {
+QUnit.test("Dialog: Error", function (assert) {
 
     var dom = document.getElementById("qunit-fixture");
     var container = new SmartJs.Ui.ContainerControl({ style: { minHeight: "500px", minWidth: "500px" } });
@@ -116,6 +118,7 @@ QUnit.test("Dialog: error", function (assert) {
 
 });
 
+
 QUnit.test("Dialog: ProjectLoadingAlert", function (assert) {
 
     var d = new PocketCode.Ui.ProjectLoadingAlertDialog(['aTestKey']);
@@ -134,6 +137,7 @@ QUnit.test("Dialog: ProjectLoadingAlert", function (assert) {
 
 });
 
+
 QUnit.test("Dialog: Screenshot", function (assert) {
 
     var d = new PocketCode.Ui.ScreenshotDialog();
@@ -147,6 +151,7 @@ QUnit.test("Dialog: Screenshot", function (assert) {
     //d.download(); //cannot be testet as a post will lead to a reload or redirect
 
 });
+
 
 QUnit.test("Dialogs: (various)", function (assert) {
 

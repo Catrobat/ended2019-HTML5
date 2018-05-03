@@ -1,4 +1,4 @@
-﻿/// <reference path="../../qunit/qunit-2.1.1.js" />
+﻿/// <reference path="../../qunit/qunit-2.4.0.js" />
 /// <reference path="../../../Client/smartJs/sj.js" />
 /// <reference path="../../../Client/smartJs/sj-event.js" />
 /// <reference path="../../../Client/smartJs/sj-core.js" />
@@ -13,6 +13,10 @@ QUnit.module("components/i18nProvider.js");
 
 QUnit.test("I18nProvider", function (assert) {
 
+    //important: the I18nProvider is a static class or singleton: there is only one instance which is created during loading and cannot be recreated
+    //based on the fact that instances /references) may be used in other classes (e.g. PlayerPageController) there may be some problems/side-effects if
+    //we do not remove all listeners- they get called again and trigger an error in other test classes
+
     var done1 = assert.async();
     var done2 = assert.async();
     var done3 = assert.async();
@@ -21,7 +25,7 @@ QUnit.test("I18nProvider", function (assert) {
     assert.throws(function () { var c = new PocketCode.I18nProvider(); }, Error, "ERROR: static, no class definition/constructor");
     assert.throws(function () { PocketCode.I18nProvider instanceof PocketCode.I18nProvider }, Error, "ERROR: static class: no instanceof allowed");
 
-    var i18n = PocketCode.I18nProvider; //short
+    var i18n = new PocketCode._I18nProvider();   //recreate the static class to avoid side effects in test framework
 
     //init
     assert.ok(i18n.onLanguageChange instanceof SmartJs.Event.Event && i18n.onDirectionChange instanceof SmartJs.Event.Event && i18n.onError instanceof SmartJs.Event.Event, "event getter and type");
@@ -40,44 +44,62 @@ QUnit.test("I18nProvider", function (assert) {
 
     i18n._direction = PocketCode.Ui.Direction.RTL;  //set to get event fired
 
-    var errorHandler = function () {
-        assert.ok(false, "error loading i18n: internet connectivity problem?");
-    };
-    i18n.onError.addEventListener(new SmartJs.Event.EventListener(errorHandler, this));
+    var errorListener,
+        errorHandler = function () {
+            assert.ok(false, "error loading i18n: internet connectivity problem?");
+        };
+    errorListener = new SmartJs.Event.EventListener(errorHandler, this);
+    i18n.onError.addEventListener(errorListener);
 
-    var directionChangeHandler = function (e) {
-        assert.ok(true, "direction change fired");
-        done1();
-    };
-    i18n.onDirectionChange.addEventListener(new SmartJs.Event.EventListener(directionChangeHandler, this));
+    var directionChangeListener,
+        directionChangeHandler = function (e) {
+            assert.ok(true, "direction change fired");
 
-    var languageChangeHandler = function (e) {
-        assert.ok(true, "language change fired");
-        assert.ok(i18n.currentLanguage !== undefined, "language defined after loading");
-        assert.ok(i18n.supportedLanguages.length > 0, "supported languages loaded");
+            i18n.onError.removeEventListener(errorListener);
+            i18n.onDirectionChange.removeEventListener(directionChangeListener);
+            done1();
+        };
+    directionChangeListener = new SmartJs.Event.EventListener(directionChangeHandler, this);
+    i18n.onDirectionChange.addEventListener(directionChangeListener);
 
-        TestCallWithParam();
-        done2();
+    var languageChangeListener,
+        languageChangeHandler = function (e) {
+            i18n.onLanguageChange.removeEventListener(languageChangeListener);
 
-        i18n.loadDictionary(i18n.currentLanguage);  //make sure not loaded again- code coverage only
-    };
-    i18n.onLanguageChange.addEventListener(new SmartJs.Event.EventListener(languageChangeHandler, this));
+            assert.ok(true, "language change fired");
+            assert.ok(i18n.currentLanguage !== undefined, "language defined after loading");
+            assert.ok(i18n.supportedLanguages.length > 0, "supported languages loaded");
+
+            TestCallWithParam();
+            done2();
+
+            i18n.loadDictionary(i18n.currentLanguage);  //make sure not loaded again- code coverage only
+        };
+    languageChangeListener = new SmartJs.Event.EventListener(languageChangeHandler, this);
+    i18n.onLanguageChange.addEventListener(languageChangeListener);
 
     i18n.init();
     //i18n.init(i18n.currentLanguage);
 
     function TestCallWithParam() {
-        //make sure no other listeners are registered
-        i18n._onLanguageChange = new SmartJs.Event.Event(i18n);
+        var languageChangeListener2,
+            languageChangeHandler2 = function (e) {
+                i18n.onLanguageChange.removeEventListener(languageChangeListener2);
+                //^^ remove after 1st call- we will get an error (assert after last done) because the i18nProvider is a static class/singleton
 
-        var languageChangeHandler2 = function (e) {
-            assert.ok(true, "language change fired: using parameter");
-            assert.equal(e.language, "en", "language change event argument check"); //language is "en" even "en-GB" was loaded
-            assert.equal(i18n.currentLanguageDirection, "ltr", "language getter");
+                assert.ok(true, "language change fired: using parameter");
+                assert.equal(e.language, "en", "language change event argument check"); //language is "en" even "en-GB" was loaded
+                assert.equal(i18n.currentLanguageDirection, "ltr", "language getter");
 
-            done3();
-        };
-        i18n.onLanguageChange.addEventListener(new SmartJs.Event.EventListener(languageChangeHandler2, this));
+                //make sure all event listeners are removed
+                i18n._onError = new SmartJs.Event.Event(i18n);
+                i18n._onLanguageChange = new SmartJs.Event.Event(i18n);
+                i18n._onDirectionChange = new SmartJs.Event.Event(i18n);
+
+                done3();
+            };
+        languageChangeListener2 = new SmartJs.Event.EventListener(languageChangeHandler2, this);
+        i18n.onLanguageChange.addEventListener(languageChangeListener2);
 
         i18n.loadDictionary("en-GB");
     }
@@ -92,6 +114,3 @@ QUnit.test("I18nProvider", function (assert) {
 
     done4();
 });
-
-
-

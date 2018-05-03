@@ -3,26 +3,26 @@
 <head>
     <meta charset="utf-8">
     <title>PocketCode Framework Unit Tests</title>
-    <link href="../qunit/qunit-2.1.1.css" rel="stylesheet" />
-    <script src="../qunit/qunit-2.1.1.js"></script>
+    <link href="../qunit/qunit-2.4.0.css" rel="stylesheet" />
+    <script src="../qunit/qunit-2.4.0.js"></script>
     <script src="../qunit/blanket-1.2.2.min.js"></script>
     <!-- libs -->
-    <script src="../../Client/pocketCode/libs/soundjs/soundjs-0.6.1.custom.min.js"></script>
+    <script src="../../Client/pocketCode/libs/soundjs/soundjs-0.6.1.custom.js"></script>
     <script src="../../Client/pocketCode/libs/iscroll/iscroll-5.3.1.custom.min.js"></script>
-    <script src="../../Client/pocketCode/libs/smartJs/sj.custom.min.js"></script>
+    <!--script-- src="../../Client/pocketCode/libs/smartJs/sj.custom.min.js"></script-->
 
     <!-- include player: cross origin error -->
     <script src="../../Client/player/pocketCodePlayer.js"></script>
 
     <!-- smart js -->
-    <!--script src="../../Client/smartJs/sj.js"></!--script>
+    <script src="../../Client/smartJs/sj.js"></script>
     <script src="../../Client/smartJs/sj-core.js"></script>
     <script src="../../Client/smartJs/sj-event.js"></script>
     <script src="../../Client/smartJs/sj-components.js"></script>
     <script src="../../Client/smartJs/sj-animation.js"></script>
     <script src="../../Client/smartJs/sj-communication.js"></script>
     <script src="../../Client/smartJs/sj-ui.js"></script>
-    <script src="../../Client/smartJs/sj-error.js"></script-->
+    <script src="../../Client/smartJs/sj-error.js"></script>
 
     <!-- test data -->
     <script src="_resources/testDataFormula.js"></script>
@@ -62,6 +62,7 @@
     <script src="../../Client/pocketCode/scripts/components/imageHelper.js" data-cover></script>
     <script src="../../Client/pocketCode/scripts/components/gameEngine.js" data-cover></script>
     <script src="../../Client/pocketCode/scripts/components/i18nProvider.js" data-cover></script>
+    <script src="../../Client/pocketCode/scripts/components/math.js" data-cover></script>
     <script src="../../Client/pocketCode/scripts/components/imageStore.js" data-cover></script>
     <script src="../../Client/pocketCode/scripts/components/renderingItem.js" data-cover></script>
     <script src="../../Client/pocketCode/scripts/components/settingsProvider.js" data-cover></script>
@@ -72,10 +73,11 @@
     <script src="../../Client/pocketCode/scripts/controller/playerPageController.js" data-cover></script>
 
     <!-- ui -->
-    <script src="../../Client/pocketCode/scripts/ui/accordion.js" data-cover></script>
     <script src="../../Client/pocketCode/scripts/ui/button.js" data-cover></script>
     <script src="../../Client/pocketCode/scripts/ui/canvas.js" data-cover></script>
+    <script src="../../Client/pocketCode/scripts/ui/deviceEmulator.js" data-cover></script>
     <script src="../../Client/pocketCode/scripts/ui/dialog.js" data-cover></script>
+    <script src="../../Client/pocketCode/scripts/ui/expander.js" data-cover></script>
     <script src="../../Client/pocketCode/scripts/ui/input.js" data-cover></script>
     <script src="../../Client/pocketCode/scripts/ui/menu.js" data-cover></script>
     <script src="../../Client/pocketCode/scripts/ui/playerStartScreen.js" data-cover></script>
@@ -128,6 +130,7 @@
     <script src="components/test_imageHelper.js"></script>
     <script src="components/test_gameEngine.js"></script>
     <script src="components/test_i18nProvider.js"></script>
+    <script src="components/test_math.js"></script>
     <script src="components/test_imageStore.js"></script>
     <script src="components/test_renderingItem.js"></script>
     <script src="components/test_settingsProvider.js"></script>
@@ -138,10 +141,11 @@
     <script src="controller/test_playerPageController.js"></script>
 
     <!-- ui -->
-    <script src="ui/test_accordion.js"></script>
     <script src="ui/test_button.js"></script>
     <script src="ui/test_canvas.js"></script>
+    <script src="ui/test_deviceEmulator.js"></script>
     <script src="ui/test_dialog.js"></script>
+    <script src="ui/test_expander.js"></script>
     <script src="ui/test_input.js"></script>
     <script src="ui/test_menu.js"></script>
     <script src="ui/test_playerStartScreen.js"></script>

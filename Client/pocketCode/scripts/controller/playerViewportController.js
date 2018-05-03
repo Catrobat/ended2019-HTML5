@@ -7,10 +7,9 @@ PocketCode.PlayerViewportController = (function () {
 
     function PlayerViewportController() {
         PocketCode.BaseController.call(this, new PocketCode.Ui.PlayerViewportView());
+
         this._renderingSprite = [];
         this._renderingTexts = [];
-        this._redrawRequired = false;
-        this._redrawInProgress = false;
 
         //init default values
         this._projectScreenWidth = 200;
@@ -69,22 +68,27 @@ PocketCode.PlayerViewportController = (function () {
                 imgs = this._renderingSprite,
                 visible;
 
-            if (properties.showAskDialog) {
-                this._view.showAskDialog(properties.question, properties.callback);
+            if (properties.showAskDialog !== undefined) {
+                if (properties.showAskDialog) {
+                    this._view.showAskDialog(properties.question, properties.callback);
+                    delete properties.question;
+                    delete properties.callback;
+                }
+                else {
+                    this._view.hideAskDialog();
+                }
                 delete properties.showAskDialog;
-                delete properties.question;
-                delete properties.callback;
                 if (Object.keys(properties).length == 0)
                     return;
             }
-            else if (properties.penX || properties.penY) {
+            else if (properties.hasOwnProperty('penX') || properties.hasOwnProperty('penY')) {
                 this._view.movePen(spriteId, properties.penX, properties.penY);
             }
-            else if (properties.drawStamp == true) {
+            else if (properties.hasOwnProperty('drawStamp') && properties.drawStamp) {
                 this._view.drawStamp(spriteId);
                 delete properties.drawStamp;
             }
-            else if (properties.clearBackground == true) {
+            else if (properties.hasOwnProperty('clearBackground') && properties.clearBackground) {
                 this._view.clearCurrentPenStampCache();
                 delete properties.clearBackground;
             }
@@ -110,7 +114,7 @@ PocketCode.PlayerViewportController = (function () {
                 }
             }
         },
-        updateVariable: function (objectId, varId, properties) {  //properties: {text: , x: , y: , visible: }
+        updateVariable: function (scopeId, variableId, value, viewState) {  //properties: { visible: , x: , y: }
             var _text,
                 _texts = this._renderingTexts,
                 _visible;
@@ -118,8 +122,9 @@ PocketCode.PlayerViewportController = (function () {
             for (var i = 0, l = _texts.length; i < l; i++) {
                 _text = _texts[i];
                 _visible = _text.visible;
-                if (_text.objectId == objectId && _text.id === varId) {
-                    _text.merge(properties);
+                if (_text.scopeId == scopeId && _text.id === variableId) {
+                    _text.value = value;
+                    _text.merge(viewState);
                     if (_text.visible != false || _visible != _text.visible)   //visible or visibility changed
                         this._view.render();
                     break;

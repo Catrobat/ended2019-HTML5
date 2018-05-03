@@ -1,4 +1,4 @@
-﻿/// <reference path="../../qunit/qunit-2.1.1.js" />
+﻿/// <reference path="../../qunit/qunit-2.4.0.js" />
 /// <reference path="../../../Client/smartJs/sj.js" />
 /// <reference path="../../../Client/smartJs/sj-event.js" />
 /// <reference path="../../../Client/smartJs/sj-core.js" />
@@ -12,7 +12,7 @@ QUnit.module("components/settingsProvider.js");
 
 QUnit.test("SettingsProvider", function (assert) {
 
-    var adapter = PocketCode.SettingsProvider;  //static
+    var adapter = new PocketCode._SettingsProvider();   //recreate the static class to avoid side effects in test framework
     adapter.clear();    //clear cookie before running the tests
 
     assert.ok(adapter.onChange instanceof SmartJs.Event.Event, "event check");
