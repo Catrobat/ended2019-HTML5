@@ -1,0 +1,50 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title></title>
+    <script src="../../Client/smartJs/sj.js"></script>
+    <script src="../../Client/smartJs/sj-core.js"></script>
+    <script src="../../Client/smartJs/sj-event.js"></script>
+    <script src="../../Client/smartJs/sj-components.js"></script>
+    <script src="../../Client/smartJs/sj-ui.js"></script>
+    <script src="brickSvg.js"></script>
+    <script src="index.js"></script>
+    <style>
+        div {
+            width: 100%;
+            height: 500px;
+        }
+
+        svg g path {
+            stroke: red;
+            fill: blue;
+            stroke-width: 4px;
+        }
+        svg g path:nth-child(even) {
+            stroke: green;
+        }
+    </style>
+</head>
+<body>
+    <!--div>
+        test
+        <svg id="sj0" viewBox="0,0,300,64" style="width:300px; height:64px;">
+            <g id="sj5">
+                <path id="sj6" d="M298,2v56h-263l-3,4h-16l-3,-4h-15"></path>
+                <path id="sj7" d="M2,298V2h13l3,4h18l3,-4h261"></path>
+            </g>
+        </svg>
+    </div-->
+    <div id="default"></div>
+    <br />
+    <div id="defaultEnd"></div>
+    <br />
+    <div id="loopIfElse"></div>
+    <br />
+    <div id="loopEnd"></div>
+    <br />
+    <div id="ifThenElse"></div>
+    <br />
+</body>
+</html>

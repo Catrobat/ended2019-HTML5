@@ -50,7 +50,7 @@ SmartJs.Ui._Window = (function () {  //static class
             visibilityChangeEventName = 'webkitvisibilitychange';
         }
 
-        if (visibilityChangeEventName !== '') 
+        if (visibilityChangeEventName !== '')
             this._addDomListener(document, visibilityChangeEventName, this._visibilityChangeHandler);
 
         if (visibilityChangeEventName == '' || SmartJs.Device.isIOs) {    //attach for iOs as well
@@ -149,13 +149,13 @@ SmartJs.Ui._Window = (function () {  //static class
             //    this._visible = e.target.visibilityState == 'visible' ? true : false;
             //}
             //else {
-                //onfocusin and onfocusout are required for IE 9 and lower, while all others make use of onfocus and onblur, except for iOS, which uses onpageshow and onpagehide
-                //var visible = {focus: true, focusin: true, pageshow: true};
-                var hidden = { blur: false, focusout: false, pagehide: false };
-                if (e.type in hidden)
-                    this._visible = false;
-                else
-                    this._visible = document[this._hiddenProperty] === true ? false : true;//true;	//default
+            //onfocusin and onfocusout are required for IE 9 and lower, while all others make use of onfocus and onblur, except for iOS, which uses onpageshow and onpagehide
+            //var visible = {focus: true, focusin: true, pageshow: true};
+            var hidden = { blur: false, focusout: false, pagehide: false };
+            if (e.type in hidden)
+                this._visible = false;
+            else
+                this._visible = document[this._hiddenProperty] === true ? false : true;//true;	//default
             //}
             this._onVisibilityChange.dispatchEvent({ visible: this._visible }.merge(e));
         },
@@ -238,9 +238,14 @@ SmartJs.Ui.merge({
 
             if (element instanceof HTMLElement)
                 this._dom = element;
-            else if (typeof element === 'string')
-                this._dom = document.createElement(element);
-
+            else if (typeof element === 'string') {
+                if (propObject.namespace) {
+                    this._dom = document.createElementNS(propObject.namespace, element);
+                    delete propObject.namespace;    //prevent auto-merege
+                }
+                else
+                    this._dom = document.createElement(element);
+            }
             if (!this._dom)  // || this._dom instanceof HTMLUnknownElement)
                 throw new Error('invalid argument: expected parameter "element" as valid HTMLElement or string');
 
@@ -680,9 +685,9 @@ SmartJs.Ui.merge({
                 //    }
                 //}
 
-                
+
                 if (this._childs)
-                //    this._childs.length = 0;   //do not dispose the ui DOM chain, as controls may be bound and reused
+                    //    this._childs.length = 0;   //do not dispose the ui DOM chain, as controls may be bound and reused
                     this._childs.dispose();
 
                 //this._dom = undefined;
@@ -873,7 +878,7 @@ SmartJs.Ui.merge({
                     return cont.appendChild(uiControl);
                 return this._appendChild(uiControl);
             },
-            insertAt: function(idx, uiControl) {
+            insertAt: function (idx, uiControl) {
                 var cont = this.__container;
                 if (cont !== this)
                     return cont.insertAt(idx, uiControl);
