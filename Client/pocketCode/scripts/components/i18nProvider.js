@@ -54,7 +54,7 @@ PocketCode._I18nProvider = (function (propObject) {
             "variableInfinity": "Infinity",
 
             "lbLanguage": "Sprache",
-        };
+        
             "menuNavigation": "Navigation",
 
             //bricks
