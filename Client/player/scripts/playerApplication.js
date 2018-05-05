@@ -61,6 +61,7 @@ PocketCode.merge({
 
                 SmartJs.Components.Application.call(this, vp);
                 this._mobileInitialized = mobileInitialized;
+
                 this._noPromtOnLeave = false;   //TODO: settings (do not show promt on leave again?)
                 this._forwardNavigationAllowed = false;
                 this._loadingError = false;
@@ -78,6 +79,9 @@ PocketCode.merge({
                 this._onEmulatorLoaded = new SmartJs.Event.Event(this);     //triggered to notify weboverlay to embed emulator configuration
 
                 this._onError.addEventListener(new SmartJs.Event.EventListener(this._globalErrorHandler, this));
+
+                SmartJs.Ui.Window.onVisibilityChange.addEventListener(new SmartJs.Event.EventListener(this._visibilityChangeHandler, this));
+                SmartJs.Ui.Window.onMobileFullscreenChange.addEventListener(new SmartJs.Event.EventListener(this._mobileFullscreenChangeHandler, this));
 
                 //init i18n
                 PocketCode.I18nProvider.onError.addEventListener(new SmartJs.Event.EventListener(this._i18nControllerErrorHandler, this));
@@ -104,11 +108,26 @@ PocketCode.merge({
                     _InitialPopStateController: new PocketCode._InitialPopStateController(),
                     PlayerPageController: new PocketCode.PlayerPageController(),
                 };
+                this._pages.PlayerPageController.onButtonClick.addEventListener(new SmartJs.Event.EventListener(function () { this._menu.close(); }, this));
 
-                this._project = new PocketCode.GameEngine();
-                this._project.onLoadingError.addEventListener(new SmartJs.Event.EventListener(this._projectLoadingErrorHandler, this));
-                this._project.onLoad.addEventListener(new SmartJs.Event.EventListener(this._projectLoadHandler, this));
-                this._project.onSceneChange.addEventListener(new SmartJs.Event.EventListener(this._sceneChangedHandler, this));
+                this._menu = new PocketCode.Player.Ui.Menu();
+                this._menu.fitToScreenCheckbox.disabled = true;
+                if (!SmartJs.Ui.Window.mobileLockSupported) {
+                    this._menu.lockScreenCheckbox.disabled = true;
+                }
+                else if (SmartJs.Device.isMobile) {
+                    this._menu.lockScreenCheckbox.checked = true;   //TODO: load from settings provider
+                    this._pages.PlayerPageController.lockScreen = true;
+                }
+                this._menu.onMenuAction.addEventListener(new SmartJs.Event.EventListener(this._menuActionHandler, this));
+                this._menu.onOpen.addEventListener(new SmartJs.Event.EventListener(function () {
+                    this._pages.PlayerPageController.pauseOrHistoryBack();
+                }, this));
+
+                this._gameEngine = new PocketCode.GameEngine();
+                this._gameEngine.onLoadingError.addEventListener(new SmartJs.Event.EventListener(this._projectLoadingErrorHandler, this));
+                this._gameEngine.onLoad.addEventListener(new SmartJs.Event.EventListener(this._projectLoadHandler, this));
+                this._gameEngine.onSceneChange.addEventListener(new SmartJs.Event.EventListener(this._sceneChangedHandler, this));
                 this._currentProjectId = undefined;
 
                 //webOverlay is undefined if running in mobile page, no viewport defined
@@ -160,7 +179,7 @@ PocketCode.merge({
                     }
                 },
                 onEmulatorLoaded: {
-                    get: function(){
+                    get: function () {
                         return this._onEmulatorLoaded;
                     }
                 }
@@ -177,6 +196,16 @@ PocketCode.merge({
 
             //methods
             Application.prototype.merge({
+                _visibilityChangeHandler: function (e) {
+                    if (e.visible == true)
+                        return;
+                    this._pages.PlayerPageController.pauseOrHistoryBack();
+                },
+                _mobileFullscreenChangeHandler: function (e) {
+                    if (e.fullscreen == true)
+                        return;
+                    this._pages.PlayerPageController.pauseOrHistoryBack();
+                },
                 _globalErrorHandler: function (e) {
                     var error = e.error,
                         msg = error.message,
@@ -188,25 +217,22 @@ PocketCode.merge({
                         stack = error.error.stack;
 
                     try {
-                        this._project.stopProject();
+                        this._gameEngine.stopProject();
                     }
                     catch (e) { }
                     if (this._currentPage)
                         this._currentPage.actionOnGlobalError();
 
                     var d = new PocketCode.Ui.GlobalErrorDialog();
-                    //d.bodyInnerHTML += '<br /><br />Details: ';
-                    //d.bodyInnerHTML += '{msg: ' + msg + ', file: ' + file.replace(new RegExp('/', 'g'), '/&shy;') + ', ln: ' + line + ', col: ' + column /*+ ', stack: ' + stack*/ + '}';
-                    //d.bodyInnerHTML += '<br /><br />Application will be closed.';
                     d.onOK.addEventListener(new SmartJs.Event.EventListener(this._onExit.dispatchEvent, this._onExit));
                     this._onInit.dispatchEvent();   //hide splash screen
                     this._showDialog(d, false);
                     PocketCode.LoggingProvider.sendMessage(error, this._currentProjectId);
 
                     //stop gameEngine + loading
-                    if (this._project)
-                        this._project.dispose();
-                    this._project = undefined;
+                    if (this._gameEngine)
+                        this._gameEngine.dispose();
+                    this._gameEngine = undefined;
                 },
                 _i18nControllerErrorHandler: function (e) {
                     PocketCode.I18nProvider.onError.removeEventListener(new SmartJs.Event.EventListener(this._i18nControllerErrorHandler, this));
@@ -224,7 +250,7 @@ PocketCode.merge({
                         d.onRetry.addEventListener(new SmartJs.Event.EventListener(function (e) {
                             e.target.dispose();
                             this._loadingError = false;
-                            this._project.reloadProject();
+                            this._gameEngine.reloadProject();
                         }, this));
                         this._showDialog(d, false);
                         return;
@@ -282,16 +308,19 @@ PocketCode.merge({
                     if (this._disposing || this._disposed)
                         return;
                     var json = e.target.responseJson;
-                    if (SmartJs.Device.isMobile)
+                    if (SmartJs.Device.isMobile) {
+                        this._pages.PlayerPageController.menu = this._menu;
                         this._onInit.dispatchEvent();
-                    else
-                        this._onInit.dispatchEvent({ menu: this._pages.PlayerPageController.menu });
+                    }
+                    else {
+                        this._onInit.dispatchEvent({ menu: this._menu });
+                    }
                     this._pages.PlayerPageController.projectDetails = json;
                     this._viewport.show();
                     this._requestProject();
                 },
                 _projectDetailsRequestErrorHandler: function (e) {
-                    if (PocketCode._serviceEndpoint.indexOf('http://localhost/') >= 0) {   //disable error on details-service for local debugging
+                    if (PocketCode._serviceEndpoint.indexOf('http://localhost') >= 0) {   //disable error on details-service for local debugging
                         this._projectDetailsRequestLoadHandler({ target: { responseJson: { title: 'DEBUG MODE', baseUrl: '', thumbnailUrl: '' } } });
                         return;
                     }
@@ -345,7 +374,7 @@ PocketCode.merge({
                         var view = this._pages.PlayerPageController.view;
                         view.onResize.dispatchEvent();   //make sure the control is notified about the resize
                     }
-                    this._project.loadProject(json);
+                    this._gameEngine.loadProject(json);
                 },
                 _projectRequestErrorHandler: function (e) {
                     if (this._disposing || this._disposed)
@@ -391,6 +420,45 @@ PocketCode.merge({
                     this._onInit.dispatchEvent();   //hide splash screen
                     this._showDialog(d, false);
                 },
+                //menu
+                _menuActionHandler: function (e) {
+                    switch (e.command) {
+                        case PocketCode.Player.MenuCommand.SCALE_TO_FIT_SCREEN:
+                            //this._playerViewportController.zoomToFit = e.checked;
+                            break;
+                        case PocketCode.Player.MenuCommand.LOCK_SCREEN:
+                            this._pages.PlayerPageController.lockScreen = e.checked;
+                            break;
+                        case PocketCode.Player.MenuCommand.LANGUAGE_CHANGE:
+                            PocketCode.I18nProvider.loadDictionary(e.languageCode);
+                            break;
+                        case PocketCode.Player.MenuCommand.TERMS_OF_USE:
+                            var win = window.open('https://share.catrob.at/pocketcode/termsOfUse', '_blank');
+                            if (win)    //browser has allowed new tab
+                                win.focus();
+                            break;
+                        case PocketCode.Player.MenuCommand.IMPRINT:
+                            var win = window.open('http://developer.catrobat.org/imprint', '_blank');
+                            if (win)    //browser has allowed new tab
+                                win.focus();
+                            break;
+                        case PocketCode.Player.MenuCommand.HELP:
+                            var win = window.open('https://share.catrob.at/pocketcode/help', '_blank');
+                            if (win)    //browser has allowed new tab
+                                win.focus();
+                            break;
+                        case PocketCode.Player.MenuCommand.GITHUB:
+                            var win = window.open('https://github.com/Catrobat/HTML5', '_blank');
+                            if (win)    //browser has allowed new tab
+                                win.focus();
+                            break;
+                        case PocketCode.Player.MenuCommand.REPORT_ISSUE:
+                            var win = window.open('https://jira.catrob.at/secure/CreateIssue.jspa?pid=11100&issuetype=1', '_blank');
+                            if (win)    //browser has allowed new tab
+                                win.focus();
+                            break;
+                    }
+                },
                 //navigation
                 _escKeyHandler: function (e) {
                     var l = this._dialogs.length;
@@ -420,7 +488,7 @@ PocketCode.merge({
                     if (page.objClassName === '_InitialPopStateController') {
                         //        //TODO:
                         if (page.historyLength > 1) {    //there was a history when entering the app: stored in _InitialPopStateController
-                            if (this._noPromtOnLeave || !this._project.projectLoaded)
+                            if (this._noPromtOnLeave || !this._gameEngine.projectLoaded)
                                 this._onExit.dispatchEvent();
                             else {
                                 var d = new PocketCode.Ui.ExitWarningDialog();
@@ -521,31 +589,34 @@ PocketCode.merge({
                     //show
                     this._showPage(this._pages.PlayerPageController);
                     //set project in page controller
-                    this._currentPage.project = this._project;
+                    this._currentPage.project = this._gameEngine;
 
                     this._currentProjectId = projectId;
                     this._requestProjectDetails();
                 },
                 toggleMuteSounds: function () {
                     this._muted = this._muted ? false : true;
-                    this._project.muted = this._muted;
+                    this._gameEngine.muted = this._muted;
                     return this._muted;
                 },
                 dispose: function () {
                     this._vp.hide();
+                    SmartJs.Ui.Window.onVisibilityChange.removeEventListener(new SmartJs.Event.EventListener(this._visibilityChangeHandler, this));
+                    SmartJs.Ui.Window.onMobileFullscreenChange.removeEventListener(new SmartJs.Event.EventListener(this._mobileFullscreenChangeHandler, this));
+
                     if (this._popstateListener)
                         this._removeDomListener(window, 'popstate', this._popstateListener);
                     if (this._escKeyListener)
                         this._removeDomListener(document, 'keyup', this._escKeyListener);
-                    if (this._project) {
-                        if (this._project.onLoadingError)
-                            this._project.onLoadingError.removeEventListener(new SmartJs.Event.EventListener(this._projectLoadingErrorHandler, this));
-                        if (this._project.onLoad)
-                            this._project.onLoad.removeEventListener(new SmartJs.Event.EventListener(this._projectLoadHandler, this));
-                        if (this._project.onSceneChange)
-                            this._project.onSceneChange.removeEventListener(new SmartJs.Event.EventListener(this._sceneChangedHandler, this));
+                    if (this._gameEngine) {
+                        if (this._gameEngine.onLoadingError)
+                            this._gameEngine.onLoadingError.removeEventListener(new SmartJs.Event.EventListener(this._projectLoadingErrorHandler, this));
+                        if (this._gameEngine.onLoad)
+                            this._gameEngine.onLoad.removeEventListener(new SmartJs.Event.EventListener(this._projectLoadHandler, this));
+                        if (this._gameEngine.onSceneChange)
+                            this._gameEngine.onSceneChange.removeEventListener(new SmartJs.Event.EventListener(this._sceneChangedHandler, this));
                     }
-                    //this._project.dispose();    //make sure the project gets disposed befor disposing the UI  -> ? -> this way the ui cannot unbind
+                    //this._gameEngine.dispose();    //make sure the project gets disposed befor disposing the UI  -> ? -> this way the ui cannot unbind
 
                     this._currentPage = undefined;
                     for (var page in this._pages) {  //objects (dictionaries) are not handled by the core dispose functionality- make sure we do not miss them

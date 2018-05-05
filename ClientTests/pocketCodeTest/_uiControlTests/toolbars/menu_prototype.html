@@ -1,0 +1,306 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+    <meta charset="utf-8" />
+    <style>
+        .container-h {
+            height: 48px;
+            width: 900px;
+            overflow: hidden;
+            margin: 3px;
+        }
+
+        .container-v {
+            height: 700px; /* 100% */
+            width: 48px;
+            overflow: hidden;
+            margin: 3px;
+            position: relative;
+            float: left;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        .pc-footer {
+            position: relative;
+            width: 100%;
+            height: 100%;
+        }
+
+        .pc-android {
+            background-color: rgba(0, 0, 0, 0.4);
+            /*padding: 0 8%;
+            */
+        }
+
+        .pc-pocketCode {
+            background-color: #00475E;
+        }
+
+        .pc-footer div {
+            text-align: center;
+            float: left;
+        }
+
+        [dir='rtl'] .pc-footer div {
+            float: right;
+        }
+
+        .container-v .right {
+            transform: rotate(180deg);
+        }
+
+        .pc-android .pc-tbButton {
+            width: 28%;
+        }
+
+        .container-v .pc-android .pc-tbButton {
+            width: 100%;
+            height: 28%;
+        }
+
+        .container-v .pc-pocketCode .pc-tbButton {
+            width: 100%;
+            height: 50%;
+        }
+
+        .container-v .right svg {
+            transform: rotate(180deg);
+        }
+
+        [dir='rtl'] .container-v svg {
+            transform: rotate(180deg);
+        }
+
+        [dir='rtl'] .container-v .right svg {
+            transform: none;
+        }
+
+        .pc-pocketCode div {
+            width: 50%;
+        }
+
+        .pc-pocketCode .border, .pc-pocketCode .separator {
+            position: absolute;
+            width: 1px;
+            height: 34px;
+            background-color: #A8DFF4;
+            opacity: 0.4;
+            margin: 8px 50%;
+            /*margin-top: 6px;*/
+        }
+        .container-v .pc-pocketCode .separator {
+            position: relative;
+            width: 34px;
+            height: 1px;
+            margin: 0px 7px;
+        }
+
+        /*[dir='rtl'] .container-v .pc-pocketCode .border {
+            right: auto;
+            left: 0px;
+        }*/
+        .container-v .pc-pocketCode .border, [dir='rtl'] /*.container-v .right .border*/ {
+            right: 0px;
+            width: 2px;
+            height: 100%;
+        }
+
+        .pc-android .spacing {
+            width: 8%;
+            height: 8%;
+        }
+
+        .pc-footer .border {
+            height: 2px;
+            width: 100%;
+            margin: 0px;
+        }
+
+        .pc-footer button {
+            width: 100%;
+            height: 100%;
+            padding: 0;
+            display: inline-block;
+            background-color: transparent;
+            border: none;
+            outline: none;
+        }
+
+        .pc-footer svg {
+            width: 48px;
+            height: 48px;
+        }
+
+            .pc-footer svg * {
+                stroke: #FFF;
+                fill: transparent;
+                stroke-linejoin: round;
+                stroke-width: 3px;
+            }
+
+        .pc-pocketCode svg * {
+            stroke: #A8DFF4;
+            fill: #A8DFF4;
+        }
+
+        .pc-footer button:disabled svg * {
+            stroke-opacity: 0.4;
+            fill-opacity: 0.4;
+        }
+
+        [dir='rtl'] .container-h .pc-footer button svg {
+            transform: rotate(180deg);
+        }
+    </style>
+</head>
+<body dir="ltr" style="position: relative; width: 100%;">
+    <div class="container-h">
+        <div class="pc-footer pc-android">
+            <div class="spacing"></div>
+            <div class="pc-tbButton">
+                <button onclick="alert('back');">
+                    <svg viewBox="0 0 48 48">
+                        <path d="M 30,16.5 L 18,24 L 30,31.5 Z" />
+                    </svg>
+                </button>
+            </div>
+            <div class="pc-tbButton">
+                <button onclick="alert('back');" disabled="disabled">
+                    <svg viewBox="0 0 48 48">
+                        <circle r="7.5" cx="24" cy="24" />
+                    </svg>
+                </button>
+            </div>
+            <div class="pc-tbButton">
+                <button onclick="alert('back');" disabled="disabled">
+                    <svg viewBox="0 0 48 48">
+                        <rect width="15" height="15" x="16.5" y="16.5" rx="1.5" ry="1.5" />
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </div>
+    <br />
+    <div class="container-h">
+        <div class="pc-footer pc-pocketCode">
+            <div class="border"></div>
+            <div class="pc-tbButton">
+                <button onclick="alert('add');" disabled="disabled">
+                    <svg viewBox="0 0 48 48">
+                        <path d="M 24,15 L 24,33 M 15,24 L 33,24" style="stroke-width: 5px;" />
+                    </svg>
+                </button>
+            </div>
+            <div class="separator"></div>
+            <div class="pc-tbButton">
+                <button onclick="alert('start');">
+                    <svg viewBox="0 0 48 48">
+                        <path d="M 17,15 L17,33 L31.5,24 Z" style="stroke-width: 0px;" />
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </div>
+    <br />
+    <div class="container-v">
+        <div class="pc-footer pc-android">
+            <div class="spacing"></div>
+            <div class="pc-tbButton">
+                <button onclick="alert('back');">
+                    <svg viewBox="0 0 48 48">
+                        <path d="M 30,16.5 L 18,24 L 30,31.5 Z" />
+                    </svg>
+                </button>
+            </div>
+            <div class="pc-tbButton">
+                <button onclick="alert('back');" disabled="disabled">
+                    <svg viewBox="0 0 48 48">
+                        <circle r="7.5" cx="24" cy="24" />
+                    </svg>
+                </button>
+            </div>
+            <div class="pc-tbButton">
+                <button onclick="alert('back');" disabled="disabled">
+                    <svg viewBox="0 0 48 48">
+                        <rect width="15" height="15" x="16.5" y="16.5" rx="1.5" ry="1.5" />
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </div>
+    <br />
+    <div class="container-v">
+        <div class="pc-footer pc-android right">
+            <div class="spacing"></div>
+            <div class="pc-tbButton">
+                <button onclick="alert('back');">
+                    <svg viewBox="0 0 48 48">
+                        <path d="M 30,16.5 L 18,24 L 30,31.5 Z" />
+                    </svg>
+                </button>
+            </div>
+            <div class="pc-tbButton">
+                <button onclick="alert('back');" disabled="disabled">
+                    <svg viewBox="0 0 48 48">
+                        <circle r="7.5" cx="24" cy="24" />
+                    </svg>
+                </button>
+            </div>
+            <div class="pc-tbButton">
+                <button onclick="alert('back');" disabled="disabled">
+                    <svg viewBox="0 0 48 48">
+                        <rect width="15" height="15" x="16.5" y="16.5" rx="1.5" ry="1.5" />
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </div>
+    <br />
+    <div class="container-v">
+        <div class="pc-footer pc-pocketCode">
+            <div class="border"></div>
+            <div class="pc-tbButton">
+                <button onclick="alert('add');" disabled="disabled">
+                    <svg viewBox="0 0 48 48">
+                        <path d="M 24,15 L 24,33 M 15,24 L 33,24" style="stroke-width: 5px;" />
+                    </svg>
+                </button>
+            </div>
+            <div class="separator"></div>
+            <div class="pc-tbButton">
+                <button onclick="alert('start');">
+                    <svg viewBox="0 0 48 48">
+                        <path d="M 17,15 L17,33 L31.5,24 Z" style="stroke-width: 0px;" />
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </div>
+    <br />
+    <div class="container-v">
+        <div class="pc-footer pc-pocketCode right">
+            <div class="border"></div>
+            <div class="pc-tbButton">
+                <button onclick="alert('add');" disabled="disabled">
+                    <svg viewBox="0 0 48 48">
+                        <path d="M 24,15 L 24,33 M 15,24 L 33,24" style="stroke-width: 5px;" />
+                    </svg>
+                </button>
+            </div>
+            <div class="separator"></div>
+            <div class="pc-tbButton">
+                <button onclick="alert('start');">
+                    <svg viewBox="0 0 48 48">
+                        <path d="M 17,15 L17,33 L31.5,24 Z" style="stroke-width: 0px;" />
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </div>
+    <br />
+</body>
+</html>

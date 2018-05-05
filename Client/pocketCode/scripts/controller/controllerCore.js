@@ -114,3 +114,27 @@ PocketCode.PageController = (function () {
     return PageController;
 })();
 
+PocketCode.FullscreenPageController = (function () {
+    FullscreenPageController.extends(PocketCode.PageController, false);
+
+    function FullscreenPageController(view) {
+        if (!(view instanceof PocketCode.Ui.PageView))
+            throw new Error('invalid argument: view: expected type PageView');
+        PocketCode.PageController.call(this, view);
+    }
+
+    //properties
+    //Object.defineProperties(FullscreenPageController.prototype, {
+    //});
+
+    //methods
+    FullscreenPageController.prototype.merge({
+        tryToAccessFullscreen: function (orientation) {
+            //TODO: 
+            //save screen resolution to check for fullscreen (onResize)
+            //use SmartJs.Window event to access fullscreen mode
+        },
+    });
+
+    return FullscreenPageController;
+})();

@@ -6,7 +6,6 @@
 /// <reference path="../ui.js" />
 'use strict';
 
-
 PocketCode.Ui.PageView = (function () {
     PageView.extends(SmartJs.Ui.ContainerControl, false);
 
@@ -92,4 +91,21 @@ PocketCode.Ui.PageView = (function () {
     });
 
     return PageView;
+})();
+
+PocketCode.Ui.FullscreenPageView = (function () {
+    FullscreenPageView.extends(SmartJs.Ui.PageView, false);
+
+    //cntr
+    function FullscreenPageView(propObject) {
+        SmartJs.Ui.PageView.call(this, propObject);
+
+    }
+
+    //methods
+    FullscreenPageView.prototype.merge({
+
+    });
+
+    return FullscreenPageView;
 })();

@@ -53,7 +53,10 @@ PocketCode._I18nProvider = (function (propObject) {
             "variableNaN": "NaN",
             "variableInfinity": "Infinity",
 
-            "lbLanguage": "Language",
+            "menuFitToScreen": "Fit/Scale to screen",
+            "menuLockScreen": "Lock screen (when started)",
+
+            "menuChangeLanguage": "Change language",
         };
 
         this._onLanguageChange = new SmartJs.Event.Event(this);

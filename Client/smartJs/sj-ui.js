@@ -6,6 +6,12 @@
 
 SmartJs.Ui = {};    //user interface namespace
 
+
+SmartJs.ScreenOrientation = {
+    PORTRAIT: 'portrait',
+    LANDSCAPE: 'landscape',
+};
+
 SmartJs.Ui._Window = (function () {  //static class
     Window.extends(SmartJs.Core.EventTarget);
 
@@ -19,6 +25,7 @@ SmartJs.Ui._Window = (function () {  //static class
         //this._onLoad = new SmartJs.Event.Event(window);
         this._onResize = new SmartJs.Event.Event(window);
         this._onVisibilityChange = new SmartJs.Event.Event(window);
+        this._onMobileFullscreenChange = new SmartJs.Event.Event(this);
 
         //this._addDomListener(window, 'load', this._onLoadHandler);
 
@@ -26,6 +33,7 @@ SmartJs.Ui._Window = (function () {  //static class
         var resizeEventName = 'resize';
         if (window.orientationchange)
             resizeEventName = 'orientationchange';
+        this._fullscreenChangeListener = undefined;
 
         this._addDomListener(window, resizeEventName, function (e) { this._onResize.dispatchEvent({ height: this.height, width: this.width }); });
         //else
@@ -50,7 +58,7 @@ SmartJs.Ui._Window = (function () {  //static class
             visibilityChangeEventName = 'webkitvisibilitychange';
         }
 
-        if (visibilityChangeEventName !== '') 
+        if (visibilityChangeEventName !== '')
             this._addDomListener(document, visibilityChangeEventName, this._visibilityChangeHandler);
 
         if (visibilityChangeEventName == '' || SmartJs.Device.isIOs) {    //attach for iOs as well
@@ -75,18 +83,15 @@ SmartJs.Ui._Window = (function () {  //static class
     Object.defineProperties(Window.prototype, {
         //onLoad: {
         //    get: function () { return this._onResize; },
-        //    //enumerable: false,
-        //    //configurable: true,
         //},
         onResize: {
             get: function () { return this._onResize; },
-            //enumerable: false,
-            //configurable: true,
         },
         onVisibilityChange: {
             get: function () { return this._onVisibilityChange; },
-            //enumerable: false,
-            //configurable: true,
+        },
+        onMobileFullscreenChange: {
+            get: function () { return this._onMobileFullscreenChange; },
         },
     });
 
@@ -135,6 +140,21 @@ SmartJs.Ui._Window = (function () {  //static class
             //enumerable: false,
             //configurable: true,
         },
+        mobileLockSupported: {
+            get: function () {
+                var html = document.documentElement;
+                return (html.requestFullscreen || html.webkitRequestFullscreen || html.mozRequestFullScreen || html.msRequestFullscreen) &&
+                    (document.exitFullscreen || document.webkitExitFullscreen || document.mozCancelFullScreen || document.msExitFullscreen);
+            },
+        },
+        isFullscreen: {
+            get: function () {
+                return !!(document.fullscreenElement ||
+					document.webkitFullscreenElement ||
+					document.mozFullScreenElement ||
+					document.msFullscreenElement);
+            },
+        },
     });
 
     //methods
@@ -149,15 +169,118 @@ SmartJs.Ui._Window = (function () {  //static class
             //    this._visible = e.target.visibilityState == 'visible' ? true : false;
             //}
             //else {
-                //onfocusin and onfocusout are required for IE 9 and lower, while all others make use of onfocus and onblur, except for iOS, which uses onpageshow and onpagehide
-                //var visible = {focus: true, focusin: true, pageshow: true};
-                var hidden = { blur: false, focusout: false, pagehide: false };
-                if (e.type in hidden)
-                    this._visible = false;
-                else
-                    this._visible = document[this._hiddenProperty] === true ? false : true;//true;	//default
+            //onfocusin and onfocusout are required for IE 9 and lower, while all others make use of onfocus and onblur, except for iOS, which uses onpageshow and onpagehide
+            //var visible = {focus: true, focusin: true, pageshow: true};
+            var hidden = { blur: false, focusout: false, pagehide: false };
+            if (e.type in hidden)
+                this._visible = false;
+            else
+                this._visible = document[this._hiddenProperty] === true ? false : true;//true;	//default
             //}
             this._onVisibilityChange.dispatchEvent({ visible: this._visible }.merge(e));
+        },
+        _fullscreenChangeHandler: function (e) {
+            if (this.isFullscreen) {    //fullscreen openend
+                this.onMobileFullscreenChange.dispatchEvent({ fullscreen: true });
+                return;
+            }
+            this._exitFullscreen(); //make sure handlers are removed
+            this.onMobileFullscreenChange.dispatchEvent({ fullscreen: false });
+            //history.back();
+            //window.setTimeout(function () {  //needed in some browsers (UI update)
+            //    if (!this.isFullscreen && this._fullscreenChangeListener)   //fullscreen closed
+                    //history.back();
+            //}.bind(this), 10);
+        },
+        _requestFullscreen: function () {
+            var html = document.documentElement;
+
+            if (html.requestFullscreen) {
+                //return function () {
+                html.requestFullscreen();
+                this._fullscreenChangeListener = this._addDomListener(document, 'fullscreenchange', this._fullscreenChangeHandler);
+                //}.bind(this);
+            }
+            else if (html.webkitRequestFullscreen) {
+                //return function () {
+                html.webkitRequestFullscreen();
+
+                this._fullscreenChangeListener = this._addDomListener(document, 'webkitfullscreenchange', this._fullscreenChangeHandler);
+                //}.bind(this);
+            }
+            else if (html.mozRequestFullScreen) {
+                //return function () {
+                html.mozRequestFullScreen();
+                this._fullscreenChangeListener = this._addDomListener(document, 'mozfullscreenchange', this._fullscreenChangeHandler);
+                //}.bind(this);
+            }
+            else if (html.msRequestFullscreen) {
+                //return function () {
+                html.msRequestFullscreen();
+                this._fullscreenChangeListener = this._addDomListener(document, 'MSFullscreenChange', this._fullscreenChangeHandler);
+                //}.bind(this);
+            }
+            //return function () { return false; };
+        },
+        _exitFullscreen: function () {
+            if (document.exitFullscreen) {
+                //return function () {
+                this._removeDomListener(document, 'fullscreenchange', this._fullscreenChangeListener);
+                document.exitFullscreen();
+                //    history.back();
+                //}.bind(this);
+            }
+            else if (document.webkitExitFullscreen) {
+                //return function () {
+                this._removeDomListener(document, 'webkitfullscreenchange', this._fullscreenChangeListener);
+                document.webkitExitFullscreen();
+                //    history.back();
+                //}.bind(this);
+            }
+            else if (document.mozCancelFullScreen) {
+                //return function () {
+                this._removeDomListener(document, 'mozfullscreenchange', this._fullscreenChangeListener);
+                document.mozCancelFullScreen();
+                //    history.back();
+                //}.bind(this);
+            }
+            else if (document.msExitFullscreen) {
+                //return function () {
+                this._removeDomListener(document, 'MSFullscreenChange', this._fullscreenChangeListener);
+                document.msExitFullscreen();
+                //    history.back();
+                //}.bind(this);
+            }
+            this._fullscreenChangeListener = undefined;
+            //else
+            //    return;
+            //return function () { return false; };
+            //history.back();
+        },
+        lockMobileScreen: function (orientation) {
+            if (!SmartJs.Device.isMobile)
+                return false;
+            //if (document.documentElement.requestFullscreen) {
+            this._requestFullscreen();
+            if (window.screen && screen.orientation && screen.orientation.lock)
+                try {
+                    return screen.orientation.lock(orientation);    //only allowed in fullscreen mode
+                } catch (e) { } //e.g. uncaught (in promise) DOMException in Chrome
+            else
+                return false;
+            //}
+            //else
+            //    return false;
+        },
+        unlockMobileScreen: function () {
+            if (!SmartJs.Device.isMobile)
+                return false;
+            //if (document.exitFullscreen)
+            this._exitFullscreen();
+            if (window.screen && screen.orientation && screen.orientation.unlock)
+                try {
+                    screen.orientation.unlock();
+                } catch (e) { }
         },
         /* override */
         dispose: function () {
@@ -680,9 +803,9 @@ SmartJs.Ui.merge({
                 //    }
                 //}
 
-                
+
                 if (this._childs)
-                //    this._childs.length = 0;   //do not dispose the ui DOM chain, as controls may be bound and reused
+                    //    this._childs.length = 0;   //do not dispose the ui DOM chain, as controls may be bound and reused
                     this._childs.dispose();
 
                 //this._dom = undefined;
@@ -873,7 +996,7 @@ SmartJs.Ui.merge({
                     return cont.appendChild(uiControl);
                 return this._appendChild(uiControl);
             },
-            insertAt: function(idx, uiControl) {
+            insertAt: function (idx, uiControl) {
                 var cont = this.__container;
                 if (cont !== this)
                     return cont.insertAt(idx, uiControl);

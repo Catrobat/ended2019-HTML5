@@ -20,7 +20,7 @@ QUnit.test("PlayerToolbar", function (assert) {
     assert.throws(function () { new PocketCode.Ui.PlayerToolbar(); }, Error, "ERROR: invalaid ctr call");
     var tb = new PocketCode.Ui.PlayerToolbar(PocketCode.Ui.PlayerToolbarSettings.DESKTOP);
     assert.ok(tb instanceof PocketCode.Ui.PlayerToolbar && tb instanceof SmartJs.Ui.Control, "instance created correctly");
-    assert.ok(tb.onButtonClicked instanceof SmartJs.Event.Event, "event accessor check: onButtonClicked");
+    assert.ok(tb.onButtonClick instanceof SmartJs.Event.Event, "event accessor check: onButtonClick");
     tb.dispose();
     assert.equal(tb._disposed, true, "disposed incl. inheritance");
 

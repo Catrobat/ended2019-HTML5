@@ -126,10 +126,10 @@ PocketCode.Web = {
 
                 if (this.supported) {
                     //bind events
-                    this._addDomListener(document, 'fullscreenchange', this._fullscreenchangeHandler);
-                    this._addDomListener(document, 'webkitfullscreenchange', this._fullscreenchangeHandler);
-                    this._addDomListener(document, 'mozfullscreenchange', this._fullscreenchangeHandler);
-                    this._addDomListener(document, 'MSFullscreenChange', this._fullscreenchangeHandler);
+                    this._addDomListener(document, 'fullscreenchange', this._fullscreenChangeHandler);
+                    this._addDomListener(document, 'webkitfullscreenchange', this._fullscreenChangeHandler);
+                    this._addDomListener(document, 'mozfullscreenchange', this._fullscreenChangeHandler);
+                    this._addDomListener(document, 'MSFullscreenChange', this._fullscreenChangeHandler);
                 }
                 this.lastExitDate = Date.now(); //to prevent re-entering fullscreen in chrome: written when event occurs
 
@@ -215,7 +215,7 @@ PocketCode.Web = {
                         this.requestFullscreen();
                 }
             },
-            _fullscreenchangeHandler: function (e) {
+            _fullscreenChangeHandler: function (e) {
                 window.setTimeout(function () {  //needed to detect fullscreen correctly in IE
                     var fs = this.isJsFullscreen;
                     if (!fs())
@@ -1108,15 +1108,15 @@ PocketCode.Web.resources = {
         return PocketCode.domain + 'html5/';
     }(),
     files: [
-		//{ url: 'smartJs/sj.css', type: 'css' },
-		//{ url: 'smartJs/sj.js', type: 'js' },
-		//{ url: 'smartJs/sj-core.js', type: 'js' },
-		//{ url: 'smartJs/sj-event.js', type: 'js' },
-		//{ url: 'smartJs/sj-components.js', type: 'js' },
-		//{ url: 'smartJs/sj-animation.js', type: 'js' },
-		//{ url: 'smartJs/sj-communication.js', type: 'js' },
-		//{ url: 'smartJs/sj-ui.js', type: 'js' },
-		{ url: 'pocketCode/libs/smartJs/sj.custom.min.js', type: 'js' },
+		{ url: 'smartJs/sj.css', type: 'css' },
+		{ url: 'smartJs/sj.js', type: 'js' },
+		{ url: 'smartJs/sj-core.js', type: 'js' },
+		{ url: 'smartJs/sj-event.js', type: 'js' },
+		{ url: 'smartJs/sj-components.js', type: 'js' },
+		{ url: 'smartJs/sj-animation.js', type: 'js' },
+		{ url: 'smartJs/sj-communication.js', type: 'js' },
+		{ url: 'smartJs/sj-ui.js', type: 'js' },
+		//{ url: 'pocketCode/libs/smartJs/sj.custom.min.js', type: 'js' },
 
 		{ url: 'pocketCode/libs/soundjs/soundjs-0.6.1.custom.min.js', type: 'js' },
 		{ url: 'pocketCode/libs/iscroll/iscroll-5.3.1.custom.min.js', type: 'js' },

@@ -967,8 +967,8 @@
     position: absolute;
     content: '✔';
     top: -2px;
-    left: 3px;
-    font-size: 22px;
+    left: 5px;
+    font-size: 18px;
     font-family: Arial, Helvetica, sans-serif;
     font-weight: bold;
     color: #33B5E5;
@@ -1004,7 +1004,6 @@
     right: 5px;
 }
 
-
 /* checked mark aspect changes */
 .pc-checkbox [type="checkbox"]:not(:checked) + label:after,
 .pc-radio [type="radio"]:not(:checked) + label:after {
@@ -1022,6 +1021,21 @@
     -moz-transform: scale(1);
     -ms-transform: scale(1);
     transform: scale(1);
+}
+
+.pc-checkbox .disabled/*, .pc-checkbox .disabled:focus*/, .pc-radio .disabled/*, .pc-radio .disabled:focus*/ {
+    color: #484848;
+}
+.pc-checkbox .disabled:before, .pc-radio .disabled:before {
+    border-color: #484848;
+}
+
+.pc-checkbox .disabled:after {
+    color: #484848;
+}
+
+.pc-radio .disabled:after {
+    background-color: #484848;
 }
 
 /*Slider Control*/

@@ -22,7 +22,7 @@ PocketCode.Ui.PlayerPageView = (function () {
         else
             this._header.hide();
         this._footer.hide();
-
+        this._menu = undefined;
 
         if (SmartJs.Device.isIOs || SmartJs.Device.isFirefoxOS) //devices with no hardware back button
             this._toolbar = new PocketCode.Ui.PlayerToolbar(PocketCode.Ui.PlayerToolbarSettings.MOBILE_IOS);
@@ -33,13 +33,6 @@ PocketCode.Ui.PlayerPageView = (function () {
         }
 
         this.appendChild(this._toolbar);
-        if (PocketCode.Player.Ui.Menu) {    //only loaded for player
-            this._menu = new PocketCode.Player.Ui.Menu();
-            if (SmartJs.Device.isMobile)
-                this.appendChild(this._menu);
-            else //desktop
-                this.onResize.addEventListener(new SmartJs.Event.EventListener(function () { this._menu.verifyResize(); }, this));
-        }
         this._startScreen = new PocketCode.Ui.PlayerStartScreen();
         this.appendChild(this._startScreen);
         this._startScreen.hide();
@@ -52,9 +45,14 @@ PocketCode.Ui.PlayerPageView = (function () {
     //properties
     Object.defineProperties(PlayerPageView.prototype, {
         menu: {
-            get: function () {
-                return this._menu;
-            },
+            set: function (menu) {
+                if (!(menu instanceof PocketCode.Ui.Menu))
+                    throw new Error('invalid setter argument: menu');
+                if (this._menu)
+                    this.removeChild(this._menu);
+                this._menu = menu;
+                this.appendChild(menu);
+            }
         },
         executionState: {
             get: function () {
@@ -62,7 +60,7 @@ PocketCode.Ui.PlayerPageView = (function () {
             },
             set: function (value) {
                 this._toolbar.executionState = value;
-                if (SmartJs.Device.isMobile) {
+                if (this._menu) {   //SmartJs.Device.isMobile) {
                     switch (value) {
                         case PocketCode.ExecutionState.PAUSED:
                         case PocketCode.ExecutionState.STOPPED:
@@ -105,25 +103,9 @@ PocketCode.Ui.PlayerPageView = (function () {
 
     //events
     Object.defineProperties(PlayerPageView.prototype, {
-        onToolbarButtonClicked: {
+        onToolbarButtonClick: {
             get: function () {
-                return this._toolbar.onButtonClicked;
-            },
-        },
-        onMenuAction: {
-            get: function () {
-                if (this._menu)
-                    return this._menu.onMenuAction;
-                else
-                    return new SmartJs.Event.Event(this);   //create event object if no menu is defined
-            },
-        },
-        onMenuOpen: {
-            get: function () {
-                if (this._menu)
-                    return this._menu.onOpen;
-                else
-                    return new SmartJs.Event.Event(this);   //create event object if no menu is defined
+                return this._toolbar.onButtonClick;
             },
         },
         onStartClicked: {
@@ -156,9 +138,6 @@ PocketCode.Ui.PlayerPageView = (function () {
         },
         setLoadingProgress: function (progress) {
             this._startScreen.setProgress(progress);
-        },
-        closeMenu: function () {
-            this._menu.close();
         },
     });
 

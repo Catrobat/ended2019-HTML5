@@ -86,9 +86,7 @@ QUnit.test("PlayerPageView", function (assert) {
 
     // ********************* events *********************
 
-    assert.ok(PlayerPageView.onToolbarButtonClicked instanceof SmartJs.Event.Event, "onToolbarButtonClicked getter");
-    assert.ok(PlayerPageView.onMenuAction instanceof SmartJs.Event.Event, "onMenuAction getter");
-    assert.ok(PlayerPageView.onMenuOpen instanceof SmartJs.Event.Event, "onMenuOpen getter");
+    assert.ok(PlayerPageView.onToolbarButtonClick instanceof SmartJs.Event.Event, "onToolbarButtonClick getter");
     assert.ok(PlayerPageView.onStartClicked instanceof SmartJs.Event.Event, "onStartClicked getter");
     assert.ok(PlayerPageView.onExitClicked instanceof SmartJs.Event.Event, "onExitClicked getter");
 
@@ -111,7 +109,4 @@ QUnit.test("PlayerPageView", function (assert) {
     PlayerPageView.setLoadingProgress(10.0);
     assert.ok(PlayerPageView._startScreen._progressBar.progressBar.style.width == "10%", "setLoadingProgress: width set to 10%");
 
-    //closeMenu
-    PlayerPageView.closeMenu();
-    assert.ok(PlayerPageView._menu._subMenu._dom.style.display == "none", "close menu, submenu display: none");
 });

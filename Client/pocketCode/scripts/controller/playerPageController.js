@@ -12,49 +12,44 @@ PocketCode.PlayerPageController = (function () {
         PocketCode.PageController.call(this, new PocketCode.Ui.PlayerPageView());
         this._playerViewportController = new PocketCode.PlayerViewportController();
         this._view.insertAt(0, this._playerViewportController.view);
+        this._lockScreenWhenStarted = false;
         this._axesVisible = false;
 
         //bind events
-        this._view.onToolbarButtonClicked.addEventListener(new SmartJs.Event.EventListener(this._buttonClickedHandler, this));
-        this._view.onMenuAction.addEventListener(new SmartJs.Event.EventListener(this._menuActionHandler, this));
-        this._view.onMenuOpen.addEventListener(new SmartJs.Event.EventListener(this._pauseProject, this));
-        this._view.onStartClicked.addEventListener(new SmartJs.Event.EventListener(function (e) { this._buttonClickedHandler(e.merge({ command: PocketCode.Ui.PlayerBtnCommand.START })); }, this));
-        this._view.onExitClicked.addEventListener(new SmartJs.Event.EventListener(function (e) { this._buttonClickedHandler(e.merge({ command: PocketCode.Ui.PlayerBtnCommand.BACK })); }, this));
+        this._view.onToolbarButtonClick.addEventListener(new SmartJs.Event.EventListener(this._buttonClickHandler, this));
+        this._view.onStartClicked.addEventListener(new SmartJs.Event.EventListener(function (e) { this._buttonClickHandler(e.merge({ command: PocketCode.Ui.PlayerBtnCommand.START })); }, this));
+        this._view.onExitClicked.addEventListener(new SmartJs.Event.EventListener(function (e) { this._buttonClickHandler(e.merge({ command: PocketCode.Ui.PlayerBtnCommand.BACK })); }, this));
         this._playerViewportController.onUserAction.addEventListener(new SmartJs.Event.EventListener(this._onUserActionHandler, this));
-        SmartJs.Ui.Window.onVisibilityChange.addEventListener(new SmartJs.Event.EventListener(this._visibilityChangeHandler, this));
 
         this._playerViewportController.setProjectScreenSize(200, 320);
         if (!SmartJs.Device.isMobile || history.length == 0)
             this._view.backButtonDisabled = true;
 
-        //this._view.onHide.addEventListener(new SmartJs.Event.EventListener(this._viewHideHandler, this)); //TODO: onHide event = undefined
-
-        //TODO: loading libs? 
         this._gameEngine = undefined;
 
-        //this._statusDict = {    //TODO: check if necessary
-        //    //init: 'init',
-        //    stopped: 'stopped',
-        //    playing: 'playing',
-        //    paused: 'paused'
-        //};
-        //this._status = 'init';
-        //this._error = undefined;
-
-
-        //TODO:
-        //SmartJs.Ui.Window.onVisibilityChange.addEventListener(new SmartJs.Event.EventListener(this.doSomething like pause, this));
-
-        //this._onNavigateBack = new SmartJs.Event.Event(this);
-        //this._escKeyHandlerRef = undefined;//this._addDomEventListener(document, 'keyup', this._escKeyHandler);
-        //this._load();
+        //events
+        this._onButtonClick = new SmartJs.Event.Event(this);
     }
+
+    //events
+    Object.defineProperties(PlayerPageController.prototype, {
+        onButtonClick: {
+            get: function () {
+                return this._onButtonClick;
+            },
+        },
+    });
 
     //properties
     Object.defineProperties(PlayerPageController.prototype, {
         menu: {
-            get: function () {
-                return this._view.menu;
+            set: function (menu) {
+                this._view.menu = menu;
+            },
+        },
+        lockScreen:{
+            set:function(lock){
+                this._lockScreenWhenStarted = !!lock;
             },
         },
         projectDetails: {
@@ -94,6 +89,18 @@ PocketCode.PlayerPageController = (function () {
 
     //methods
     PlayerPageController.prototype.merge({
+        pauseOrHistoryBack:function(){
+            if (this._gameEngine.executionState != PocketCode.ExecutionState.RUNNING || this._gameEngine.executionState != PocketCode.ExecutionState.PAUSED_USERINTERACTION)
+                return;
+            if (SmartJs.Device.isMobile)
+                history.back();
+            else
+                this._pauseProject();
+        },
+        _pauseProject: function () {
+            if (this._gameEngine && this._gameEngine.pauseProject())   //may be undefined when triggered on onVisibilityChange
+                this._view.executionState = PocketCode.ExecutionState.PAUSED;
+        },
         /* override */
         loadViewState: function (viewState, dialogsLength) {
             PocketCode.PageController.prototype.loadViewState.call(this, viewState, dialogsLength);   //to handle dialogs
@@ -114,32 +121,15 @@ PocketCode.PlayerPageController = (function () {
             this._view.disabled = true;
         },
 
-        //browser
-        _visibilityChangeHandler: function (e) {
-            if (e.visible == true ||
-                this._gameEngine.executionState != PocketCode.ExecutionState.RUNNING && this._gameEngine.executionState != PocketCode.ExecutionState.PAUSED_USERINTERACTION)
-                return;
-            if (SmartJs.Device.isMobile)
-                return history.back();
-            this._pauseProject();
-        },
         //project handler
         _projectLoadingProgressHandler: function (e) {
             this._view.setLoadingProgress(e.progress);
         },
-        //_scenesInitializedHandler: function(e) {
-        //    //console.log( this._playerViewportController._view );
-        //    this._playerViewportController.initCanvas(e.ids);
-        //    //this._view.initCanvasScenes(e.ids);
-        //},
         enableView: function () {
             this._view.disabled = false;
         },
         _beforeProjectStartHandler: function (e) {    //on start event dispatched by gameEngine
-            //if (e.reinit) {
-            //    //this.initOnLoad();
             this._playerViewportController.clearViewport();
-            //}
             this._view.hideStartScreen();
         },
         _sceneChangedHandler: function (e) {    //on start event dispatched by gameEngine
@@ -167,8 +157,8 @@ PocketCode.PlayerPageController = (function () {
             this._playerViewportController.updateCameraUse(e.on, e.src, e.width, e.height, e.transparency, e.orientation);
         },
         //user
-        _buttonClickedHandler: function (e) {
-            this._view.closeMenu();
+        _buttonClickHandler: function (e) {
+            this._onButtonClick.dispatchEvent(e);
             switch (e.command) {
                 case PocketCode.Ui.PlayerBtnCommand.BACK:
                     history.back();
@@ -183,7 +173,7 @@ PocketCode.PlayerPageController = (function () {
                         history.replaceState(new PocketCode.HistoryEntry(state.historyIdx, state.dialogsLength, this, PocketCode.ExecutionState.PAUSED, this._dialogs.length), document.title, '');
                         history.pushState(new PocketCode.HistoryEntry(state.historyIdx + 1, state.dialogsLength, this, PocketCode.ExecutionState.RUNNING, this._dialogs.length), document.title, '');
                     }
-                    this._gameEngine.restartProject();
+                    this._gameEngine.restartProject(this._lockScreenWhenStarted);
                     this._view.executionState = PocketCode.ExecutionState.RUNNING;
                     this._view.screenshotButtonDisabled = false;
                     this._view.axesButtonDisabled = false;
@@ -199,9 +189,9 @@ PocketCode.PlayerPageController = (function () {
                         history.pushState(new PocketCode.HistoryEntry(state.historyIdx + 1, state.dialogsLength, this, PocketCode.ExecutionState.RUNNING, this._dialogs.length), document.title, '');
                     }
                     if (this._view.executionState == PocketCode.ExecutionState.PAUSED)
-                        this._gameEngine.resumeProject();
+                        this._gameEngine.resumeProject(this._lockScreenWhenStarted);
                     else
-                        this._gameEngine.runProject();
+                        this._gameEngine.runProject(this._lockScreenWhenStarted);
                     this._view.executionState = PocketCode.ExecutionState.RUNNING;
                     this._view.screenshotButtonDisabled = false;
                     this._view.axesButtonDisabled = false;
@@ -229,47 +219,8 @@ PocketCode.PlayerPageController = (function () {
                 default:
             }
         },
-        _menuActionHandler: function (e) {
-            switch (e.command) {
-                case PocketCode.Player.MenuCommand.FULLSCREEN:
-                    this._playerViewportController.zoomToFit = e.checked;
-                    break;
-                case PocketCode.Player.MenuCommand.LANGUAGE_CHANGE:
-                    PocketCode.I18nProvider.loadDictionary(e.languageCode);
-                    break;
-                case PocketCode.Player.MenuCommand.TERMS_OF_USE:
-                    var win = window.open('https://share.catrob.at/pocketcode/termsOfUse', '_blank');
-                    if (win)    //browser has allowed new tab
-                        win.focus();
-                    break;
-                case PocketCode.Player.MenuCommand.IMPRINT:
-                    var win = window.open('http://developer.catrobat.org/imprint', '_blank');
-                    if (win)    //browser has allowed new tab
-                        win.focus();
-                    break;
-                case PocketCode.Player.MenuCommand.HELP:
-                    var win = window.open('https://share.catrob.at/pocketcode/help', '_blank');
-                    if (win)    //browser has allowed new tab
-                        win.focus();
-                    break;
-                case PocketCode.Player.MenuCommand.GITHUB:
-                    var win = window.open('https://github.com/Catrobat/HTML5', '_blank');
-                    if (win)    //browser has allowed new tab
-                        win.focus();
-                    break;
-                case PocketCode.Player.MenuCommand.REPORT_ISSUE:
-                    var win = window.open('https://jira.catrob.at/secure/CreateIssue.jspa?pid=11100&issuetype=1', '_blank');
-                    if (win)    //browser has allowed new tab
-                        win.focus();
-                    break;
-            }
-        },
         _onUserActionHandler: function (e) {
             this._gameEngine.handleUserAction(e);
-        },
-        _pauseProject: function () {
-            if (this._gameEngine && this._gameEngine.pauseProject())   //may be undefined when triggered on onVisibilityChange
-                this._view.executionState = PocketCode.ExecutionState.PAUSED;
         },
         _showScreenshotDialog: function (imageSrc) {
             var d = new PocketCode.Ui.ScreenshotDialog();
@@ -299,7 +250,6 @@ PocketCode.PlayerPageController = (function () {
         },
         dispose: function () {
             //this._pauseProject();
-            SmartJs.Ui.Window.onVisibilityChange.removeEventListener(new SmartJs.Event.EventListener(this._visibilityChangeHandler, this));
             if (this._gameEngine && !this._gameEngine._disposing && !this._gameEngine._disposed) {
                 //unbind existing project
                 this._gameEngine.onLoadingProgress.removeEventListener(new SmartJs.Event.EventListener(this._projectLoadingProgressHandler, this));

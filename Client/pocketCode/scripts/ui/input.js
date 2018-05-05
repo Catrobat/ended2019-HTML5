@@ -23,7 +23,8 @@ PocketCode.Ui.I18nCheckbox = (function () {
 
         this._label = new SmartJs.Ui.HtmlTag('label');
         this._label.setDomAttribute('for', this._input.id);
-        this._label.setDomAttribute('onclick', ''); //fix: IOS4+
+        if(SmartJs.Device.isIOs)
+            this._label.setDomAttribute('onclick', ''); //fix: IOS4+
         this._textNode = new PocketCode.Ui.I18nTextNode(i18nKey);
         this._label.appendChild(this._textNode);
         this._appendChild(this._label);
@@ -56,6 +57,18 @@ PocketCode.Ui.I18nCheckbox = (function () {
                     return;
                 this._input.dom.checked = bool;
                 this._onCheckedChange.dispatchEvent({ value: this._value, checked: this.checked });
+            },
+        },
+        disabled: {
+            get: function () {
+                return this._input.getDomAttribute('disabled');
+            },
+            set: function (value) {
+                if (value)
+                    this._label.addClassName('disabled');
+                else
+                    this._label.removeClassName('disabled');
+                this._input.setDomAttribute('disabled', !!value);
             },
         },
     });

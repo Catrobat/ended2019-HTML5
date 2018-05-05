@@ -8,13 +8,14 @@
 'use strict';
 
 PocketCode.Player.MenuCommand = {
-    FULLSCREEN: 1,
-    LANGUAGE_CHANGE: 2,
-    TERMS_OF_USE: 3,
-    IMPRINT: 4,
-    HELP: 5,
-    GITHUB: 6,
-    REPORT_ISSUE: 7,
+    SCALE_TO_FIT_SCREEN: 1,
+    LOCK_SCREEN: 2,
+    LANGUAGE_CHANGE: 3,
+    TERMS_OF_USE: 4,
+    IMPRINT: 5,
+    HELP: 6,
+    GITHUB: 7,
+    REPORT_ISSUE: 8,
 };
 
 PocketCode.Player.Ui.merge({
@@ -23,24 +24,34 @@ PocketCode.Player.Ui.merge({
         Menu.extends(PocketCode.Ui.Menu, false);
 
         //cntr
-        function Menu(args) {
+        function Menu() {
             PocketCode.Ui.Menu.call(this);
 
-            var item;
+            //checkboxes defined for desktop and mobile (public accessors)
+            this._cbxFitToScreen = new PocketCode.Ui.I18nCheckbox('menuFitToScreen');
+            this._cbxLockScreen = new PocketCode.Ui.I18nCheckbox('menuLockScreen');
+
             if (SmartJs.Device.isMobile) {
-                this.hide();
-                //temporarely disabled
-                //item = new PocketCode.Ui.I18nCheckbox('menuFitToScreen');
-                //this.appendChild(item);
-                //item.onCheckedChange.addEventListener(new SmartJs.Event.EventListener(function (e) {
-                //    this.close();
-                //    this._onMenuAction.dispatchEvent({ command: PocketCode.Player.MenuCommand.FULLSCREEN, checked: e.checked });
-                //}, this));
-                //this.appendChild(new PocketCode.Ui.MenuSeparator());
+                this.hide();    //hide menu
+
+                this.appendChild(this._cbxFitToScreen);
+                this._cbxFitToScreen.onCheckedChange.addEventListener(new SmartJs.Event.EventListener(function (e) {
+                    this.close();
+                    this._onMenuAction.dispatchEvent({ command: PocketCode.Player.MenuCommand.SCALE_TO_FIT_SCREEN, checked: e.checked });
+                }, this));
+
+                this.appendChild(this._cbxLockScreen);
+                this._cbxLockScreen.onCheckedChange.addEventListener(new SmartJs.Event.EventListener(function (e) {
+                    this.close();
+                    this._onMenuAction.dispatchEvent({ command: PocketCode.Player.MenuCommand.LOCK_SCREEN, checked: e.checked });
+                }, this));
+
+                this.appendChild(new PocketCode.Ui.MenuSeparator());
             }
 
-            this._languageGroup = new PocketCode.Ui.Expander('lbLanguage');
-            this._languageGroup.open();
+            var item;
+            this._languageGroup = new PocketCode.Ui.Expander('menuChangeLanguage');
+            //this._languageGroup.open();
             this.appendChild(this._languageGroup);
             this._languageRadioGroup = new PocketCode.Ui.RadioGroup();
             this._languageRadioGroup.onCheckedChange.addEventListener(new SmartJs.Event.EventListener(function (e) {
@@ -75,8 +86,25 @@ PocketCode.Player.Ui.merge({
             this._onLanguageChange({ language: PocketCode.I18nProvider.currentLanguage });   //mobile: menu may be created after loading languages
         }
 
+        //properties
+        Object.defineProperties(Menu.prototype, {
+            fitToScreenCheckbox: {
+                get: function () {
+                    return this._cbxFitToScreen;
+                },
+            },
+            lockScreenCheckbox: {
+                get: function () {
+                    return this._cbxLockScreen;
+                },
+            },
+        });
+
         //methods
         Menu.prototype.merge({
+            loadLanguages: function(supported, current){
+                //TODO
+            },
             _onLanguageChange: function (e) {
                 var currentLang = e.language,
                     radios = this._languageRadioGroup.radios;
