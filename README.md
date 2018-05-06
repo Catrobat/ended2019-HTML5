@@ -11,7 +11,7 @@ For more information [oriented towards developers], check out our [developers pa
 
 # Getting Started #
 
-To get ready for development quickly you should start by follow some simple instructions:
+To get ready for development quickly you should start by following some simple instructions:
 
 1. git clone \<repository\>
 2. get to know the code by exploring all the files of the project carefully
