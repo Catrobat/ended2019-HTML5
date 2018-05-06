@@ -76,9 +76,14 @@ PocketCode.merge({
     Camera: (function () {
         Camera.extends(PocketCode.DeviceFeature, false);
 
-        function Camera() {
+        function Camera(device) {
             this._video = document.createElement('video');
             var supported =  this._isCameraSupported();
+
+            if (!(device instanceof PocketCode.Device))
+                throw new Error('invalid argument: device');
+
+            this._device = device;
 
             PocketCode.DeviceFeature.call(this, 'lblDeviceCamera', supported);
             this._cameraStream = undefined;
@@ -390,7 +395,11 @@ PocketCode.merge({
                     this._constraints.video = {};
                 }
                 if(cameraTypeObject.deviceId) {
-                    this._constraints.video.deviceId = { exact: cameraTypeObject.deviceId };
+                    if(this._device.isMobile) {
+                        this._constraints.video = {facingMode: cameraTypeObject.facingMode};
+                    } else {
+                        this._constraints.video.deviceId = { exact: cameraTypeObject.deviceId };
+                    }
                     this._init(true);
                     return true;
                 } else {

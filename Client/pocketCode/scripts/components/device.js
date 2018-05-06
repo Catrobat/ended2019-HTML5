@@ -702,7 +702,7 @@ PocketCode.MediaDevice = (function () {
         this._cameraTransparency = 50.0;    //default
 
         //camera
-        this._features.CAMERA = new PocketCode.Camera();
+        this._features.CAMERA = new PocketCode.Camera(this);
         this._cam = this._features.CAMERA;  //shortcut
         this._cam.onInit.addEventListener(new SmartJs.Event.EventListener(this._featureInitializedHandler, this));
         this._cam.onChange.addEventListener(new SmartJs.Event.EventListener(this._cameraChangeHandler, this));
