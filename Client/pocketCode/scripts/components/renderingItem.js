@@ -308,9 +308,9 @@ PocketCode.merge({
 
         function RenderingBubble() {
 
-            this._lineWidth = 6,
-            this._strokeStyle = '#a0a0a0',
-            this._fillStyle = '#ffffff';
+            this._lineWidth = 8;
+            this._strokeStyle = "red";//'#a0a0a0',
+            this._fillStyle = '#00ff00';//'#ffffff';
             this._type = PocketCode.Ui.BubbleType.SPEECH;
             this._orientation = PocketCode.BubbleOrientation.TOPRIGHT;
 
@@ -321,8 +321,8 @@ PocketCode.merge({
             this._textObject = new PocketCode.RenderingText({ fontWeight: 'normal', fontSize: 31, lineHeight: 36, textAlign: 'center', maxLineWidth: 270 });
             this._textObject.onCacheUpdate.addEventListener(new SmartJs.Event.EventListener(this._redrawCache, this));
             //propObject = propObject || {};
-            this._offsetX = 0;
-            this._offsetY = 0;
+           // this._offsetX = 0;
+            //this._offsetY = 0;
 
             //Todo: offset scaling
             //this._positionX = 0;
@@ -350,16 +350,43 @@ PocketCode.merge({
                     this._redrawCache();
                 },
             },
-            offsetX: {
+            _bubblePadding: {
+                value: {
+                    top:10,
+                    bottom:10,
+                    left:10,
+                    right:10,
+                },
+
+            },
+            _tail: {
+                value : {
+                    height : 20,
+                    offset : 10,
+                    indent : 5,
+                    width : 10,
+                },
+            },
+            _thinkBubbles : {
+                value: {
+
+                }
+            }
+
+
+
+            //,
+           /* offsetX: {
                 get: function () {
                     return this._offsetX;
                 }
-            },
-            offsetY: {
+            },*/
+           /* offsetY: {
                 get: function () {
                     return this._offsetY;
                 }
-            },
+            }*/
+            ,
             text: {
                 //Todo:
                 set: function (value) {
@@ -433,7 +460,8 @@ PocketCode.merge({
         RenderingBubble.prototype.merge({
             _redrawCache: function () {
 
-                var type = this._type;
+                var type = this._type,
+                    ctx = this._cacheCanvas;
                 //var bX = this.bubblePositionX.get();
                 //var bY = this.bubblePositionY.get();
 
@@ -592,8 +620,8 @@ PocketCode.merge({
                     ctx = this._cacheCtx;
 
                 var to = this._textObject,
-                    bubbleHeight = to.height,
-                    bubbleWidth = to.width;
+                    bubbleHeight = to.height + this._bubblePadding.top+ this._bubblePadding.bottom,
+                    bubbleWidth = to.width + this._bubblePadding.left+ this._bubblePadding.right ;
 
                 var height = Math.max(minHeight, bubbleHeight);
                 var width = Math.max(minWidth, bubbleWidth);
@@ -601,77 +629,139 @@ PocketCode.merge({
                 var offsetSide = radius / 2 + 2 * ctx.lineWidth;
                 var offsetBottom = radius + 2 * ctx.lineWidth;
 
+
+
                 //Todo
-                if (orientation === PocketCode.BubbleOrientation.LEFT || orientation === PocketCode.BubbleOrientation.RIGHT) {
-                    canvas.width = width;
-                    canvas.height = height + offsetBottom;
+                //if (orientation === PocketCode.BubbleOrientation.LEFT || orientation === PocketCode.BubbleOrientation.RIGHT) {
 
-                    if (orientation === PocketCode.BubbleOrientation.RIGHT) {
-                        //Spiegeln
-                        ctx.translate(canvas.width, 0);
-                        ctx.scale(-1, 1);
-                    }
-                    //Start
+                //}
+              //  else {
+                    canvas.width = width + this._lineWidth;
+                    canvas.height = height + this._tail.height  + this._lineWidth + this._tail.width;
+
+                    //var ctx = canvas.getContext('2d');
+                    //radius = Math.min(radius, Math.min(width, height)*0.5);
+                    //ctx.setTransform(1,0,0,1, this._lineWidth, this.lineWidth + radius);
+                var x = this._lineWidth,
+                    y = this._lineWidth + radius;
+                //ctx.setTransform(1,0,0,1, x, y);
+                ctx.save();
+
+                    //Does not work with private parameters :
+                    ctx.translate(4,  7);
+                    ctx.moveTo( 0, 0);
+                    ctx.fillStyle = "red";
+                    ctx.strokeStyle= "blue";
+                    ctx.lineWidth = this._lineWidth;
+
+                    // if (orientation === PocketCode.BubbleOrientation.TOPRIGHT) {
+                    //     //Spiegeln
+                    //     ctx.translate(canvas.width, 0);
+                    //     ctx.scale(-1, 1);
+                    // }
+
+                    //Rounded rectangle with arc
+
+                    var pi2 = Math.PI * 2; //Needed for 360 degree
+
+                    radius = radius - this._lineWidth *0.5;
+
+                    //ROTATE HERE :
+                if(orientation === PocketCode.BubbleOrientation.LEFT){
+
+                }else if(orientation === PocketCode.BubbleOrientation.RIGHT){
+
+                }else if( orientation === PocketCode.BubbleOrientation.TOPLEFT){
+
+        }
+
+                //ctx.rotate(90*pi2/360);
+
                     ctx.beginPath();
-                    //Path Begin Top Left Curve
-                    ctx.moveTo(0, radius);
-                    ctx.quadraticCurveTo(0, 0, radius, 0);
-                    //Line to Top Right Curve
-                    ctx.lineTo(width - radius, 0);
-                    ctx.quadraticCurveTo(width, 0, width, radius);
-                    //Line to Bottom Right Curve
-                    ctx.lineTo(width, height - radius);
-                    ctx.quadraticCurveTo(width, height, width - radius, height);
-                    //Mini Line before Think edge
-                    ctx.lineTo(width * (3 / 8) + radius / 2, height);
-                    ctx.lineTo(width * (3 / 8) - radius * (5 / 4), height + radius);
-                    ctx.lineTo(width * (2 / 8) + radius / 2, height);
-                    ctx.lineTo(radius, height);
-                    //Last Curve and Ending Line for Think Bubble
-                    ctx.quadraticCurveTo(0, height, 0, height - radius);
-                    ctx.lineTo(0, radius);
+                    ctx.arc(radius, radius, radius,pi2*0.5 , pi2*0.75);
+                    ctx.arc(width-radius, radius, radius,  pi2*0.75, pi2);
+                    ctx.arc(width-radius, height-radius, radius, 0, pi2*0.25);
+
+                    //Tail
+                    ctx.lineTo(this._tail.offset + this._tail.width, height);
+                    ctx.lineTo( this._tail.offset - this._tail.indent , height + this._tail.height);
+                    ctx.lineTo(this._tail.offset  , height);
+
+                    ctx.arc(radius, height-radius, radius, pi2*0.25, pi2*0.5);
+                    ctx.closePath();
                     ctx.stroke();
-                    //ctx.fillText();
-                }
-                else {
-                    canvas.width = width + offsetSide;
-                    canvas.height = height;
+                    ctx.fill();
+                    ctx.restore();
+                    ctx.save();
+                    ctx.translate(10,10);
+                    to.draw(ctx);
+                    ctx.restore();
 
-                    var ctx = canvas.getContext('2d');
 
-                    if (orientation === PocketCode.BubbleOrientation.TOPRIGHT) {
-                        //Spiegeln
-                        ctx.translate(canvas.width, 0);
-                        ctx.scale(-1, 1);
-                    }
-                    //Start
-                    ctx.beginPath();
-                    //Path Begin Top Left Curve
-                    ctx.moveTo(radius * (3 / 2), radius);
-                    ctx.quadraticCurveTo(radius * (3 / 2), 0, radius * (5 / 2), 0);
-                    //Line to Top Right Curve
-                    ctx.lineTo(width + radius * (3 / 2) - radius, 0);
-                    ctx.quadraticCurveTo(width + radius * (3 / 2), 0, width + radius * (3 / 2), radius);
-                    //Line to Bottom Right Curve
-                    ctx.lineTo(width + radius * (3 / 2), height - radius);
-                    ctx.quadraticCurveTo(width + radius * (3 / 2), height, width + radius * (3 / 2) - radius, height);
-                    //Line to left site
-                    ctx.lineTo(radius * (5 / 2), height);
-                    //Last Curve and Ending Line for Think Bubble
-                    ctx.quadraticCurveTo(radius * (3 / 2), height, radius * (3 / 2), height - radius);
+               // ctx.scale(-1, 1)
+                    //ctx.setTransform(1,0,0,1,0,0);
 
-                    if (height <= 50) {
-                        ctx.lineTo(0, height);
-                        ctx.lineTo(radius * (3 / 2), radius);
-                    }
-                    else {
-                        ctx.lineTo(radius * (3 / 2), height * (3 / 8));
-                        ctx.lineTo(0, height * (3 / 8) + radius);
-                        ctx.lineTo(radius * (3 / 2), radius);
-                    }
-                    ctx.stroke();
-                    //ctx.fillText();
-                }
+
+
+
+                    //  //Start
+                    //  ctx.beginPath();
+                    //  //Path Begin Top Left Curve
+                    //  ctx.moveTo(radius * (3 / 2), radius);
+                    //  ctx.quadraticCurveTo(radius * (3 / 2), 0, radius * (5 / 2), 0);
+                    // // //Line to Top Right Curve
+                    //  ctx.lineTo(width + radius * (3 / 2) - radius, 0);
+                    //  ctx.quadraticCurveTo(width + radius * (3 / 2), 0, width + radius * (3 / 2), radius);
+                    // // //Line to Bottom Right Curve
+                    //  ctx.lineTo(width + radius * (3 / 2), height - radius);
+                    //  ctx.quadraticCurveTo(width + radius * (3 / 2), height, width + radius * (3 / 2) - radius, height);
+                    // // //Line to left site
+                    //  ctx.lineTo(radius * (5 / 2), height);
+                    // // //Last Curve and Ending Line for Think Bubble
+                    //  ctx.quadraticCurveTo(radius * (3 / 2), height, radius * (3 / 2), height - radius);
+                    // //
+                    //  if (height <= 50) {
+                    //      ctx.lineTo(0, height);
+                    //      ctx.lineTo(radius * (3 / 2), radius);
+                    //  }
+                    //  else {
+                    //      ctx.lineTo(radius * (3 / 2), height * (3 / 8));
+                    //      ctx.lineTo(0, height * (3 / 8) + radius);
+                    //      ctx.lineTo(radius * (3 / 2), radius);
+                    //  }
+                    //  ctx.stroke();
+                    //  ctx.closePath();
+                    //  ctx.fill();
+                    //  //ctx.fillText(this._textObject._value, 20,90)
+
+
+                //}
+            },
+
+            _drawSpeechBubbl : function(){
+
+                var radius = this._radius,
+                    minHeight = this._minHeight,
+                    minWidth = this._minWidth,
+                    orientation = this._orientation,
+                    canvas = this._cacheCanvas,
+                    ctx = this._cacheCtx;
+
+                var to = this._textObject,
+                    bubbleHeight = to.height + 10,
+                    bubbleWidth = to.width + 10;
+
+                var height = Math.max(minHeight, bubbleHeight),
+                     width = Math.max(minWidth, bubbleWidth);
+
+                var offsetSide = radius / 2 + 2 * ctx.lineWidth,
+                    offsetBottom = radius + 2 * ctx.lineWidth;
+
+
+
+
+
+
             },
 
             _recalculateBubblePosition: function (screenSize, boundary, canvas) {
@@ -809,6 +899,7 @@ PocketCode.merge({
             /* override */
             _draw: function (ctx, maxWidth) {
                 //TODO: have a look at our prototyping branch for a speech bubble example
+                ctx.drawImage(this._cacheCanvas, 10,10);
 
 
             },

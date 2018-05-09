@@ -1,22 +1,16 @@
 'use strict';
 
 window.onload = function () {
-    var text = JSON.parse('{"type":"STRING","value":"good morning","right":null,"left":null}');
-    var device = "device";
-    var gameEngine = new PocketCode.GameEngine();
-    var scene = new PocketCode.Model.Scene(gameEngine, undefined, []);
-    var sprite = new PocketCode.Model.Sprite(gameEngine, scene, { id: "spriteId", name: "spriteName" });
-    //var outputContainer = document.getElementById('outputContainer');
-    var b = new PocketCode.Model.showBubbleBrick(device, sprite, { text: text, bubbleType : PocketCode.Ui.BubbleType.THINK });
-    PocketCode.RenderingSprite(b);
-    //RenderingSprite(bubble);
 
-//Creation of the bubble
+    var rb = new PocketCode.RenderingBubble();
+    rb.text='s';
 
+    document.body.appendChild(rb._cacheCanvas);
 
+    var canvas = document.getElementById("testCanvas"),
+        ctx = canvas.getContext("2d");
+    rb.draw(ctx);
 
-
-//Call Rendering item bubbles
 
 
 }
