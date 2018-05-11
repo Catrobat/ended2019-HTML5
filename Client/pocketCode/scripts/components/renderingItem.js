@@ -370,6 +370,8 @@ PocketCode.merge({
             _thinkBubbles : {
                 value: {
 
+
+
                 }
             }
 
@@ -628,56 +630,56 @@ PocketCode.merge({
 
                 var offsetSide = radius / 2 + 2 * ctx.lineWidth;
                 var offsetBottom = radius + 2 * ctx.lineWidth;
-
-
-
-                //Todo
-                //if (orientation === PocketCode.BubbleOrientation.LEFT || orientation === PocketCode.BubbleOrientation.RIGHT) {
-
-                //}
-              //  else {
-                    canvas.width = width + this._lineWidth;
-                    canvas.height = height + this._tail.height  + this._lineWidth + this._tail.width;
-
-                    //var ctx = canvas.getContext('2d');
-                    //radius = Math.min(radius, Math.min(width, height)*0.5);
-                    //ctx.setTransform(1,0,0,1, this._lineWidth, this.lineWidth + radius);
                 var x = this._lineWidth,
                     y = this._lineWidth + radius;
-                //ctx.setTransform(1,0,0,1, x, y);
-                ctx.save();
+                var pi2 = Math.PI * 2; //Needed for 360 degree
 
-                    //Does not work with private parameters :
-                    ctx.translate(4,  7);
-                    ctx.moveTo( 0, 0);
-                    ctx.fillStyle = "red";
-                    ctx.strokeStyle= "blue";
-                    ctx.lineWidth = this._lineWidth;
 
-                    // if (orientation === PocketCode.BubbleOrientation.TOPRIGHT) {
-                    //     //Spiegeln
-                    //     ctx.translate(canvas.width, 0);
-                    //     ctx.scale(-1, 1);
-                    // }
 
-                    //Rounded rectangle with arc
+                 canvas.width = width + this._lineWidth;
+                 canvas.height = height + this._tail.height  + this._lineWidth + this._tail.width;
 
-                    var pi2 = Math.PI * 2; //Needed for 360 degree
+                 orientation = PocketCode.BubbleOrientation.LEFT;
 
-                    radius = radius - this._lineWidth *0.5;
+                 //TODO : change the calculation of the height and width for LEFT & Right
+                if(orientation === PocketCode.BubbleOrientation.LEFT || orientation === PocketCode.BubbleOrientation.RIGHT){
 
-                    //ROTATE HERE :
-                if(orientation === PocketCode.BubbleOrientation.LEFT){
 
-                }else if(orientation === PocketCode.BubbleOrientation.RIGHT){
+                    canvas.height = width + this._lineWidth;
+                    canvas.width = height + this._tail.height  + this._lineWidth + this._tail.width;
+                    ctx.save()
+                    ctx.translate(canvas.width/2, canvas.height/2);
+                    ctx.rotate(pi2 * 90 / 360);
+
+                    if(orientation === PocketCode.BubbleOrientation.LEFT){
+                        ctx.scale(1,-1);
+                    }
+
+                    // Move registration point back to the top left corner of canvas
+                    ctx.translate(-canvas.height/2 + radius * 0.3, -canvas.width/2+ this._lineWidth * 0.5);
+
+                    this._tail.indent = -(this._tail.indent*4);
+
 
                 }else if( orientation === PocketCode.BubbleOrientation.TOPLEFT){
 
-        }
+                    ctx.save();
+                    ctx.setTransform(-1,0,0,1,canvas.width ,0);
+                    ctx.translate(4,  7);
+                }else{
+                    ctx.save();
 
-                //ctx.rotate(90*pi2/360);
+                    ctx.translate(this._lineWidth * 0.5, radius * 0.5);
+                }
 
+                ctx.fillStyle = "red";
+                ctx.strokeStyle= "blue";
+                ctx.lineWidth = this._lineWidth;
+
+                radius = radius - this._lineWidth *0.5;
+                    //Bubble
                     ctx.beginPath();
+
                     ctx.arc(radius, radius, radius,pi2*0.5 , pi2*0.75);
                     ctx.arc(width-radius, radius, radius,  pi2*0.75, pi2);
                     ctx.arc(width-radius, height-radius, radius, 0, pi2*0.25);
@@ -691,79 +693,15 @@ PocketCode.merge({
                     ctx.closePath();
                     ctx.stroke();
                     ctx.fill();
+
+                    //Text
                     ctx.restore();
                     ctx.save();
-                    ctx.translate(10,10);
+                    ctx.translate(x + this._bubblePadding.top ,y - this._bubblePadding.left);
                     to.draw(ctx);
                     ctx.restore();
 
-
-               // ctx.scale(-1, 1)
-                    //ctx.setTransform(1,0,0,1,0,0);
-
-
-
-
-                    //  //Start
-                    //  ctx.beginPath();
-                    //  //Path Begin Top Left Curve
-                    //  ctx.moveTo(radius * (3 / 2), radius);
-                    //  ctx.quadraticCurveTo(radius * (3 / 2), 0, radius * (5 / 2), 0);
-                    // // //Line to Top Right Curve
-                    //  ctx.lineTo(width + radius * (3 / 2) - radius, 0);
-                    //  ctx.quadraticCurveTo(width + radius * (3 / 2), 0, width + radius * (3 / 2), radius);
-                    // // //Line to Bottom Right Curve
-                    //  ctx.lineTo(width + radius * (3 / 2), height - radius);
-                    //  ctx.quadraticCurveTo(width + radius * (3 / 2), height, width + radius * (3 / 2) - radius, height);
-                    // // //Line to left site
-                    //  ctx.lineTo(radius * (5 / 2), height);
-                    // // //Last Curve and Ending Line for Think Bubble
-                    //  ctx.quadraticCurveTo(radius * (3 / 2), height, radius * (3 / 2), height - radius);
-                    // //
-                    //  if (height <= 50) {
-                    //      ctx.lineTo(0, height);
-                    //      ctx.lineTo(radius * (3 / 2), radius);
-                    //  }
-                    //  else {
-                    //      ctx.lineTo(radius * (3 / 2), height * (3 / 8));
-                    //      ctx.lineTo(0, height * (3 / 8) + radius);
-                    //      ctx.lineTo(radius * (3 / 2), radius);
-                    //  }
-                    //  ctx.stroke();
-                    //  ctx.closePath();
-                    //  ctx.fill();
-                    //  //ctx.fillText(this._textObject._value, 20,90)
-
-
-                //}
             },
-
-            _drawSpeechBubbl : function(){
-
-                var radius = this._radius,
-                    minHeight = this._minHeight,
-                    minWidth = this._minWidth,
-                    orientation = this._orientation,
-                    canvas = this._cacheCanvas,
-                    ctx = this._cacheCtx;
-
-                var to = this._textObject,
-                    bubbleHeight = to.height + 10,
-                    bubbleWidth = to.width + 10;
-
-                var height = Math.max(minHeight, bubbleHeight),
-                     width = Math.max(minWidth, bubbleWidth);
-
-                var offsetSide = radius / 2 + 2 * ctx.lineWidth,
-                    offsetBottom = radius + 2 * ctx.lineWidth;
-
-
-
-
-
-
-            },
-
             _recalculateBubblePosition: function (screenSize, boundary, canvas) {
 
                 //Screensize
