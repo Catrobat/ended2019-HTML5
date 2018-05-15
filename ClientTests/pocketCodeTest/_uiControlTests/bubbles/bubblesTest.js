@@ -3,7 +3,7 @@
 window.onload = function () {
 
     var rb = new PocketCode.RenderingBubble();
-    rb.text='Je vais faire une phrase simple afin de démontrer que cela s affiche bien sans problème';
+    rb.content='Je vais faire une phrase simple afin de démontrer que cela s affiche bien sans problème';
     //rb.type = PocketCode.Ui.BubbleType.THINK;
     rb.orientation = PocketCode.BubbleOrientation.TOPRIGHT;
 

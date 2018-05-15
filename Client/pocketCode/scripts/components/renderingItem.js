@@ -309,9 +309,9 @@ PocketCode.merge({
         function RenderingBubble() {
 
             this._lineWidth = 8;
-            this._strokeStyle = '#a0a0a0',
-            this._fillStyle = '#ffffff'//"red";
-            this._type = PocketCode.Ui.BubbleType.THINK;
+            this._strokeStyle = '#a0a0a0';
+            this._fillStyle = '#ffffff';
+            this._type = PocketCode.Ui.BubbleType.SPEECH;
             this._orientation = PocketCode.BubbleOrientation.TOPRIGHT;
 
             this._radius = 15;
@@ -397,7 +397,7 @@ PocketCode.merge({
                 }
             }*/
             ,
-            text: {
+            content: {
                 //Todo:
                 set: function (value) {
                     this._textObject.value = value;
@@ -547,7 +547,6 @@ PocketCode.merge({
                 ctx.lineWidth = this._lineWidth;
                 ctx.save();
 
-
                 //Bubble
                 ctx.beginPath();
 
@@ -560,14 +559,6 @@ PocketCode.merge({
                 ctx.fill();
 
 
-
-                //Text
-                //TODO : Add text on Think bubbles
-                //ctx.restore();
-                //ctx.save();
-                //ctx.translate(x + this._bubblePadding.top ,y - this._bubblePadding.left);
-                //to.draw(ctx);
-                //ctx.restore();
 
                 //Ellipse Bubbles
 
@@ -595,6 +586,8 @@ PocketCode.merge({
                 ctx.closePath();
                 ctx.restore();
 
+
+
                 //ctx.translate(0, height+this._thinkBubbles.offsetYBottom);
 
                 if(orientation === PocketCode.BubbleOrientation.LEFT || orientation === PocketCode.BubbleOrientation.RIGHT){
@@ -611,11 +604,22 @@ PocketCode.merge({
                 ctx.beginPath();
                 ctx.arc(this._thinkBubbles.radiusBottom, this._thinkBubbles.radiusBottom, this._thinkBubbles.radiusBottom, 0, pi2);
                 //End ellispse bubbles
-
+                ctx.closePath();
                 // restore to original state
                 ctx.restore();
                 ctx.fill();
                 ctx.stroke();
+
+
+                //TODO : Add text on Think bubbles
+                ctx.restore();
+                ctx.save();
+                ctx.translate(x + this._bubblePadding.top ,y - this._bubblePadding.left);
+                to.draw(ctx);
+                ctx.save()
+                ctx.restore();
+
+
 
 
 
@@ -707,7 +711,13 @@ PocketCode.merge({
                     //TODO : improve text layout for LEFT and RIGHT
                     ctx.restore();
                     ctx.save();
+                if(orientation === PocketCode.BubbleOrientation.RIGHT) {
+
+                    ctx.translate(x + this._bubblePadding.top + this._tail.height ,y - this._bubblePadding.left);
+                }else{
+
                     ctx.translate(x + this._bubblePadding.top ,y - this._bubblePadding.left);
+                }
                     to.draw(ctx);
                     ctx.restore();
 
@@ -846,7 +856,7 @@ PocketCode.merge({
 
             /* override */
             _draw: function (ctx, maxWidth) {
-                //TODO: have a look at our prototyping branch for a speech bubble example
+
                 ctx.drawImage(this._cacheCanvas, 10,10);
 
 
