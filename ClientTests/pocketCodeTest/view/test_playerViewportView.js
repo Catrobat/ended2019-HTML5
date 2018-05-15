@@ -11,8 +11,10 @@ QUnit.module("view/playerViewportView.js");
 
 QUnit.test("PlayerViewportView", function (assert) {
 
+    var done = assert.async();
+
     var view = new PocketCode.Ui.PlayerViewportView();
-    assert.ok(view instanceof  PocketCode.Ui.PlayerViewportView, 'instance check');
+    assert.ok(view instanceof PocketCode.Ui.PlayerViewportView, 'instance check');
     assert.ok(view.axisVisible == false, 'axes hidden initially');
     assert.ok(view.onUserAction instanceof SmartJs.Event.Event, 'click event instance check');
 
@@ -23,7 +25,10 @@ QUnit.test("PlayerViewportView", function (assert) {
 
     //_mobileResizeLocked
     view._mobileResizeLocked = true;
-    assert.ok(view.__resizeLocked == false, "__resizeLocked is false, isMobile = false");
+    if (SmartJs.Device.isMobile)
+        assert.ok(view.__resizeLocked == true, "__resizeLocked is true, isMobile = true");
+    else
+        assert.ok(view.__resizeLocked == false, "__resizeLocked is false, isMobile = false");
 
     var currentIsMobile = SmartJs.Device.isMobile;
     SmartJs.Device.isMobile = true;
@@ -31,8 +36,8 @@ QUnit.test("PlayerViewportView", function (assert) {
 
     view._mobileResizeLocked = true;
     assert.ok(view.__resizeLocked == true, "__resizeLocked is true");
-    assert.ok(view._canvas.style.width == view._canvas.width +"px", "canvas width set");
-    assert.ok(view._canvas.style.height == view._canvas.height +"px", "canvas height set");
+    assert.ok(view._canvas.style.width == view._canvas.width + "px", "canvas width set");
+    assert.ok(view._canvas.style.height == view._canvas.height + "px", "canvas height set");
     assert.ok(SmartJs.Ui.Window.onResize._listeners.length == 1, "add onResize EventListener");
 
     view._mobileResizeLocked = true;
@@ -53,7 +58,7 @@ QUnit.test("PlayerViewportView", function (assert) {
     assert.ok(axisVisible == view._axesVisible, "axisVisible setter");
 
     //renderingSprites
-    var renderingSprite = new PocketCode.RenderingSprite({id: "sprite1"});
+    var renderingSprite = new PocketCode.RenderingSprite({ id: "sprite1" });
     var sprites = [renderingSprite];
     view.renderingSprites = sprites;
     assert.ok(view._canvas._renderingSprites[0] == renderingSprite, "renderingSprite setter");
@@ -67,7 +72,7 @@ QUnit.test("PlayerViewportView", function (assert) {
     // ********************* methods *********************
 
     //_windowOrientationChangeHandler
-    var param = {width: 370.7};
+    var param = { width: 370.7 };
     view._windowOrientationChangeHandler(param);
     assert.ok(view._canvas.style.left == "35px", "_windowOrientationChangeHandler");
 
@@ -88,8 +93,12 @@ QUnit.test("PlayerViewportView", function (assert) {
 
     //showAskDialog
     view.showAskDialog("question1");
-    assert.ok(view._activeAskDialog._captionTextNode._text == "question1" && view._childs[1] instanceof PocketCode.Ui.AskDialog &&
-        view._activeAskDialog._onSubmit._listeners.length == 1, "showAskDialog")
+    window.setTimeout(function () { //needed for mobile tests
+        assert.ok(view._activeAskDialog._captionTextNode._text == "question1" && view._childs[1] instanceof PocketCode.Ui.AskDialog &&
+            view._activeAskDialog._onSubmit._listeners.length == 1, "showAskDialog")
+        view.hideAskDialog();
+        assert.equal(view._activeAskDialog, undefined, "hide ask dialog: removed");
+    }, 550);
 
     //initScene
     var gameEngine = new PocketCode.GameEngine();
@@ -98,27 +107,30 @@ QUnit.test("PlayerViewportView", function (assert) {
 
     var args = {};
     var clear = 0;
-    var mockCanvas =  {
+    var mockCanvas = {
         initScene: function (id, screenSize) {
-            args = {id: id, width: screenSize.width, height: screenSize.height};
+            args = { id: id, width: screenSize.width, height: screenSize.height };
         },
         drawStamp: function (spriteId) {
-            args = {spriteId: spriteId};
+            args = { spriteId: spriteId };
         },
         movePen: function (spriteId, toX, toY) {
-            args = {spriteId: spriteId, x: toX, y: toY};
+            args = { spriteId: spriteId, x: toX, y: toY };
         },
         clearCurrentPenStampCache: function () {
             clear++;
         },
         clearPenStampCache: function () {
             clear++;
-        }
+        },
+        render: function () {
+
+        },
     };
     var tempCanvas = view._canvas;
     view._canvas = mockCanvas;
 
-    view.initScene("scene1", {width: 400, height: 300}, true);
+    view.initScene("scene1", { width: 400, height: 300 }, true);
     assert.ok(args.id == "scene1" && args.width == 400 && args.height == 300, "initScene, id and screenSize set");
 
     view.drawStamp("id1");
@@ -130,11 +142,22 @@ QUnit.test("PlayerViewportView", function (assert) {
     view.clearCurrentPenStampCache();
     assert.ok(clear == 2, "clearCurrentPenStampCache");
 
-    view.clear();
-    assert.ok(clear == 3, "clear");
-    assert.ok(view._activeAskDialog._disposed == true, "clear: askdialog disposed")
+    view.showAskDialog("question1");
+    window.setTimeout(function () { //needed for mobile tests
+        view.clear();
+        //assert.ok(clear == 3, "clear");
+        assert.ok(view._activeAskDialog == undefined, "clear: askdialog disposed");
+
+        runDisposeTests();
+    }, 1000);   //make sure the other dialog was closed
 
     view._canvas = tempCanvas;
+
+    //updateCameraUse
+    var cameraStream = { width: 40, height: 30 };
+    view.updateCameraUse(false, cameraStream);
+    assert.ok(view._canvas._cameraStream == cameraStream, "updateCameraUse");
+
     //showAxes //drawAxes
     view._axesVisible = false;
     var dataUrl = view._canvas._upperCanvasEl.toDataURL('image/png');
@@ -159,18 +182,12 @@ QUnit.test("PlayerViewportView", function (assert) {
     dataUrl = view.getCanvasDataURL();
     assert.ok(dataUrl == "dataUrl", "getCanvasDataURL");
 
-    view._canvas.updateCamera = function(e){
-        assert.ok(true, "update camera calls canvas.updateCamera");
-        assert.ok(e.on, "camera should be on");
-        assert.equal(e.src, "Hello World", "camera src should be hello world");
-    };
-
-    view.updateCameraUse({ on: true, src:"Hello World"});
-
     //dispose
-    view.dispose();
-    assert.ok(view._onResize._disposed == true && view._disposed == true, "disposed");
+    function runDisposeTests() {
+        view.dispose();
+        assert.ok(view._onResize._disposed == true && view._disposed == true, "disposed");
+
+        done();
+    }
+
 });
-
-
-

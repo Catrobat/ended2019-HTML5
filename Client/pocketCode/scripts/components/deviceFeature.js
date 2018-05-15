@@ -1,5 +1,6 @@
 ﻿/// <reference path="../../../smartJs/sj.js" />
 /// <reference path="../../../smartJs/sj-event.js" />
+/// <reference path="../../../smartJs/sj-components.js" />
 /// <reference path="../core.js" />
 /// <reference path="device.js" />
 'use strict';
@@ -9,12 +10,17 @@ PocketCode.DeviceFeature = (function () {
     DeviceFeature.extends(SmartJs.Core.EventTarget);
 
     function DeviceFeature(i18nKey, supported) {
-        this._i18nKey = i18nKey;
-        this._supported = supported !== undefined ? supported : false;
+        if (!i18nKey)
+            throw new Error('invalid cntr argument: i18nKey');
+        this._i18nKey = i18nKey.toString();
+        this._supported = supported != undefined ? !!supported : false;
         this._inUse = false;
         this._initialized = false;
+        this._isActive = false;
+
         //events
         this._onInit = new SmartJs.Event.Event(this);
+        this._onInactive = new SmartJs.Event.Event(this);
     }
 
     //events
@@ -22,6 +28,11 @@ PocketCode.DeviceFeature = (function () {
         onInit: {   //used for onLoad event
             get: function () {
                 return this._onInit;
+            },
+        },
+        onInactive: {   //used for onExecuted event
+            get: function () {
+                return this._onInactive;
             },
         },
     });
@@ -45,20 +56,53 @@ PocketCode.DeviceFeature = (function () {
         },
         initialized: {
             get: function () {
-                return !this.inUse || !this._supported || this._initialized ;
-            }
+                return !this.inUse || this._initialized ? true : false;
+            },
         },
-        on:{
-            get: function(){
-                return this._on;
-            }
-        }
+        isActive: {
+            get: function () {
+                return this._isActive;
+            },
+        },
+        viewState: {
+            get: function () {
+                return this._getViewState();
+            },
+            set: function (viewState) {
+                return this._setViewState(viewState);
+            },
+        },
     });
 
     //methods
     DeviceFeature.prototype.merge({
         disable: function () {
             this._supported = false;
+        },
+        //abstract
+        pause: function () {
+            //this method should be overridden in the inherited classes
+            throw new Error('abstract: missing override');
+        },
+        resume: function () {
+            //this method should be overridden in the inherited classes
+            throw new Error('abstract: missing override');
+        },
+        reset: function () {
+            //this method should be overridden in the inherited classes
+            throw new Error('abstract: missing override');
+        },
+        _getViewState: function () {
+            //this method should be overridden in the inherited classes
+            throw new Error('abstract: missing override');
+        },
+        _setViewState: function (viewState) {
+            //this method should be overridden in the inherited classes
+            throw new Error('abstract: missing override');
+        },
+        dispose: function () {
+            this.reset();
+            SmartJs.Core.EventTarget.prototype.dispose.call(this);
         },
     });
 
@@ -68,9 +112,98 @@ PocketCode.DeviceFeature = (function () {
 
 PocketCode.merge({
 
+    DeviceVibration: (function () {
+        DeviceVibration.extends(PocketCode.DeviceFeature, false);
+
+        function DeviceVibration() {
+            var supported = SmartJs.Device.isMobile && !!(navigator.vibrate || navigator.webkitVibrate || navigator.mozVibrate || navigator.msVibrate);
+            PocketCode.DeviceFeature.call(this, 'lblDeviceVibrate', supported);
+
+            this._timer = new SmartJs.Components.Timer();
+            this._timer.onExpire.addEventListener(new SmartJs.Event.EventListener(this._timerExpiredHandler, this));
+        }
+
+        //methods
+        DeviceVibration.prototype.merge({
+            _timerExpiredHandler: function () {
+                if (!this._isActive)   //notifies device that vibration has stopped (not called if vibrate is not supported)
+                    return;
+                this._isActive = false;
+                this._onInactive.dispatchEvent();
+            },
+            _vibrate: function () {
+                return true;    //add an empty method to avoid errors and keep testability
+            },
+            start: function (duration) {
+                if (!this._inUse) {
+                    this._inUse = true;
+                    var vibrate = navigator.vibrate || navigator.webkitVibrate || navigator.mozVibrate || navigator.msVibrate;
+                    if (vibrate) {
+                        var fnct = vibrate.bind(navigator);
+                        try {
+                            if (fnct(0))    //may throw an error due to mobile restrictions or return false if not inside of a user click event handled
+                                this._vibrate = fnct;
+                        }
+                        catch (e) { }
+                    }
+                    this._initialized = true;
+                }
+                if (!this._supported)
+                    return false;
+                if (typeof duration != 'number')
+                    return false;
+                if (duration == 0)
+                    this.reset();
+
+                var timespan = duration * 1000;
+                if (this._vibrate(timespan)) {    //started
+                    this._timer.delay = timespan;
+                    this._timer.start();
+                    this._isActive = true;
+                    return true;
+                }
+                return false;
+            },
+            /*override*/
+            pause: function () {
+                this._timer.pause();
+                this._vibrate(0);
+            },
+            resume: function () {
+                this._vibrate(this._timer.remainingTime);
+                this._timer.resume();
+            },
+            reset: function () {
+                this._vibrate(0);
+                this._timer.stop();
+                this._isActive = false;
+            },
+            _getViewState: function () {
+                var timespan = this._timer.remainingTime;
+                return { remainingTime: timespan > 0 ? (timespan / 1000.0) : undefined };
+            },
+            _setViewState: function (viewState) {
+                if (!this._supported)
+                    return;
+                this.reset();
+                if (viewState && viewState.remainingTime) {
+                    this.start(viewState.remainingTime);
+                }
+            },
+            //dispose: function () {
+            //    this.reset();
+            //    this._timer.dispose();
+            //    PocketCode.DeviceFeature.prototype.dispose.call(this);
+            //}
+        });
+
+        return DeviceVibration;
+    })(),
+
+
     CameraType: {
         BACK: 0,
-        FRONT: 1
+        FRONT: 1,
     },
 
     Camera: (function () {
@@ -462,6 +595,14 @@ PocketCode.merge({
                 this._resetStream();
                 this._onChange.dispatchEvent({on: false, src: ""});
             },
+
+            /*override*/
+            _getViewState: function () {
+                return {};//TODO: selected cam?, active?
+            },
+            _setViewState: function () {
+                //TODO: selected cam?, active? + reinit
+            },
             dispose: function () {
                 //this.stop();
                 this.stop();
@@ -470,6 +611,7 @@ PocketCode.merge({
 
                 //this._video = undefined;
                 //this._onChange.removeEventListener(new SmartJs.Event.EventListener(this._onChangeHandler, this));
+                PocketCode.DeviceFeature.prototype.dispose.call(this);
             },
         });
 
@@ -548,7 +690,7 @@ PocketCode.merge({
                     if (delay < this._recognitionDelay)
                         return true;
                     return false;
-                }
+                },
             },
             faceSize: {
                 get: function () {
@@ -584,7 +726,7 @@ PocketCode.merge({
                     if (delay < this._recognitionDelay)
                         return this._facePositionY;
                     return 0.0;
-                }
+                },
             },
             /* override */
             inUse: {
@@ -605,7 +747,7 @@ PocketCode.merge({
                     this._inUse = value;
                     //if (value)
                     //    this._initialized = true;
-                }
+                },
             },
             /* override */
             supported: {
@@ -616,10 +758,8 @@ PocketCode.merge({
                     if (typeof value != 'boolean')
                         throw new Error('invalid setter: supported');
 
-                    if (!value){
+                    if (!value)
                         this.stop();
-                    }
-
                     this._supported = value;
                 },
             },
@@ -669,7 +809,7 @@ PocketCode.merge({
             //},
             //_faceDetectionCameraHandler: function (e) {
             //    //var tmp = { on: e.on, height: e.height, width: e.width, orientation: e.orientation, transparency: 50? };
-            //    //console.log´('TODO: ' + JSON.stringify(tmp));
+            //    //console.log('TODO: ' + JSON.stringify(tmp));
 
             //    if (!e.on) {
             //        this._pauseFaceDetection();
@@ -975,8 +1115,8 @@ PocketCode.merge({
                     //no roi: not found
 
                     //Stöcker, Taschenbuch mathematischer Formeln und modernder Verfahren, Harri Deutsch Verlag, 4. Auflage, Seite 331:
-                    //Schwerpunkt eines Systems materieller Punkte M_i(x_i,y_i) mit den Massen m_i(i=1,2,...,n):
-                    //x=sum(m_i*x_i)/sum(m_i)
+                    //Schwerpunkt eines Systems materieller Punkte M_i(x_i,y_i) mit den Massen m_i(i=1,2,...,n): 
+                    //x=sum(m_i*x_i)/sum(m_i) 
                     //y=sum(m_i*y_i)/sum(m_i)
 
                     //test
@@ -1179,16 +1319,16 @@ PocketCode.merge({
             start: function (src, width, height, orientation) { //TODO
                 /* if (!src || !width || !height)
                        throw new Error('invalid arguments: start()');
-
+   
                        if (this._on)
                            this.stop();
-
+   
                        this._src = src;
                        var c = this._canvas;
                            this._scaling = width > height ? this._maxRendering / width : this._maxRendering / height;   //TODO
                            c.width = Math.floor(width * this._scaling);
                            c.height = Math.floor(height * this._scaling);
-
+   
                   if (this._on)
                        return;
                    this._on = true;
@@ -1328,10 +1468,21 @@ PocketCode.merge({
                 searchWindow.h = Math.floor(1.1 * trackObj.h);
             },
 
+            /*override*/
+            reset: function () {
+                  //TODO: faceDetection
+            },
+            _getViewState: function () {
+                return {};  //TODO: faceDetection on/off?
+            },
+            _setViewState: function () {
+                //TODO: faceDetection on/off?   + init()?
+            },
             dispose: function () {
                 this.stop();
                 this._device = undefined;
                 this._src = undefined;
+                PocketCode.DeviceFeature.prototype.dispose.call(this);
             },
         });
 

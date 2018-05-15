@@ -40,15 +40,45 @@ PocketCode._I18nProvider = (function (propObject) {
             //TODO: only add strings required if i18n strings fail to load at startup
 
             //new: add new loc strings here until they are included in crowdin
-            //"msgBlockedWarningCaption": "Disabled features",
-            //"msgBlockedWarning": "One or more features used in this program are disabled in your browser.",
-            //"msgBlockedWarningContinue": "You can enable it and reload this site, or you can continue program execution without these features."
+            "lbDeviceEmulator": "Device Emulator",
+            "lbDeviceMaxDegree": "Maximum Speed",
+            "lbDeviceMaxDegreeDescr": "Represents the maximum angle your device can be rotated, e.g. the max speed a sprite can reach based on the inclination sonsor.",
+            "lbDeviceAcc": "Maximum Acceleration",
+            "lbDeviceAccDescr": "Represents the change (angle per second) the device will move to one side if you start pressing a cusor button, e.g. the maximum acceleration of a sprite based on the inclination sensor.",
+            "lbDeviceIncX": "Inclination X",
+            "lbDeviceIncY": "Inclination Y",
+
+            "variableTrue": "true",  //true
+            "variableFalse": "false",  //false
+            "variableNaN": "NaN",
+            "variableInfinity": "Infinity",
+
+            "lbLanguage": "Language",
         };
 
         this._onLanguageChange = new SmartJs.Event.Event(this);
         this._onDirectionChange = new SmartJs.Event.Event(this);
         this._onError = new SmartJs.Event.Event(this);
     }
+
+    //events
+    Object.defineProperties(I18nProvider.prototype, {
+        onLanguageChange: {
+            get: function () {
+                return this._onLanguageChange;
+            }
+        },
+        onDirectionChange: {
+            get: function () {
+                return this._onDirectionChange;
+            }
+        },
+        onError: {
+            get: function () {
+                return this._onError;
+            }
+        },
+    });
 
     //properties
     Object.defineProperties(I18nProvider.prototype, {
@@ -69,25 +99,6 @@ PocketCode._I18nProvider = (function (propObject) {
             get: function () {
                 return this._supportedLanguages;
             },
-        },
-    });
-
-    //events
-    Object.defineProperties(I18nProvider.prototype, {
-        onLanguageChange: {
-            get: function () {
-                return this._onLanguageChange;
-            }
-        },
-        onDirectionChange: {
-            get: function () {
-                return this._onDirectionChange;
-            }
-        },
-        onError: {
-            get: function () {
-                return this._onError;
-            }
         },
     });
 

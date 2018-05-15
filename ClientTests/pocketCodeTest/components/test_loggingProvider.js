@@ -58,6 +58,3 @@ QUnit.test("LoggingProvider", function (assert) {
     }
 
 });
-
-
-

@@ -55,7 +55,10 @@ QUnit.test("Formula", function (assert) {
         json = JSON.parse('{"type":"NUMBER","value":"500","right":{"type":"NUMBER","value":"500","right":null,"left":null},"left":null}');
         assert.throws(function () { var f = new PocketCode.Formula(undefined, undefined, json); }, Error, "ERROR: formula parsing error detection");
     */
-    assert.throws(function () { f.json = JSON.parse('{"type":"NUMBER","value":"X","right":null,"left":null}'); }, Error, "setter validation check");
+    //old: assert.throws(function () { f.json = JSON.parse('{"type":"NUMBER","value":"X","right":null,"left":null}'); }, Error, "ERROR: setter validation check");
+    f.json = JSON.parse('{"type":"NUMBER","value":"X","right":null,"left":null}');
+    assert.equal(f.calculate(), 0, "invalid number property was replaced by 0");
+    assert.equal(f.json.value, 0, "the JSON itself was corrected");
 
     //dispose
     f.dispose();
@@ -78,7 +81,7 @@ QUnit.test("Formula: string encoding", function (assert) {
     var sprite = new PocketCode.Model.Sprite(gameEngine, scene, { id: "spriteId", name: "spriteName" });
 
     var f = new PocketCode.Formula(device, sprite, encoding1);
-    assert.equal(f.calculate(), "Los seres vivos son los que tienen vida, esto quiere decir, que son toda la variedad de seres que habitan nuestro planeta, desde los más pequeños hasta los más grandes, todas las plantas, animales e incluso nosotros los seres humanos. \nPodemos reconocer a los seres vivos porque tienen en común el ciclo de vida, los cambios que sufren a lo largo de su vida y cómo se van transformando. \nPara conocer mejor las fases que compone el ciclo de vida pulsa “Comenzar”.", "encoding1 output");
+    assert.equal(f.calculate(), "Los seres vivos 'son los que tienen vida', esto quiere decir, que son toda la variedad de seres que habitan nuestro planeta, desde los más pequeños hasta los más grandes, todas las plantas, animales e incluso nosotros los seres humanos. \nPodemos reconocer a los seres vivos porque tienen en común el ciclo de vida, los cambios que sufren a lo largo de su vida y cómo se van transformando. \nPara conocer mejor las fases que compone el ciclo de vida pulsa “Comenzar”.", "encoding1 output");
 
     f = new PocketCode.Formula(device, sprite, encoding2);
     assert.equal(f.calculate(), "Nacen. Todos los seres vivos proceden de otros seres vivos.", "encoding2 output");

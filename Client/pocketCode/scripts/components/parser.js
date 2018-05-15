@@ -49,7 +49,7 @@ PocketCode.merge({
                     throw new Error('invalid argument: expected type: object');
 
                 this._unsupportedBricks = [];
-                var brickFactory = new PocketCode.BrickFactory(this._device, this._gameEngine, currentScene, broadcastMgr, this._minLoopCycleTime);
+                var brickFactory = new PocketCode.BrickFactory(this._device, currentScene, broadcastMgr, this._minLoopCycleTime);
                 brickFactory.onUnsupportedBrickFound.addEventListener(new SmartJs.Event.EventListener(function (e) { this._unsupportedBricks.push(e.unsupportedBrick); }, this));
 
                 var sprite = asBackground ?
@@ -74,7 +74,7 @@ PocketCode.merge({
                 if (typeof jsonSprite !== 'object' || jsonSprite instanceof Array)
                     throw new Error('invalid argument: expected type: object');
 
-                var brickFactory = new PocketCode.BrickFactory(this._device, this._gameEngine, currentScene, broadcastMgr, this._minLoopCycleTime);
+                var brickFactory = new PocketCode.BrickFactory(this._device, currentScene, broadcastMgr, this._minLoopCycleTime);
                 var clone = new PocketCode.Model.SpriteClone(this._gameEngine, currentScene, jsonSprite, definition);
                 var scripts = [];
                 for (var i = 0, l = jsonSprite.scripts.length; i < l; i++)
@@ -97,9 +97,8 @@ PocketCode.merge({
     BrickFactory: (function () {
         BrickFactory.extends(SmartJs.Core.Component);
 
-        function BrickFactory(device, gameEngine, scene, broadcastMgr, minLoopCycleTime) {
+        function BrickFactory(device, scene, broadcastMgr, minLoopCycleTime) {
             this._device = device;
-            this._gameEngine = gameEngine;
             this._scene = scene;
             this._broadcastMgr = broadcastMgr;
             this._minLoopCycleTime = minLoopCycleTime;
@@ -146,12 +145,12 @@ PocketCode.merge({
                     case 'UserScriptBrick':
                     case 'CallUserScriptBrick':
 
-                    //in development:
+                        //in development:
                     case 'WhenCollisionBrick':
 
-                    //case 'SetRotationSpeedBrick':
-                    //case 'RotationSpeedLeftBrick':  //is removed
-                    //case 'RotationSpeedRightBrick': //is removed
+                        //case 'SetRotationSpeedBrick':
+                        //case 'RotationSpeedLeftBrick':  //is removed
+                        //case 'RotationSpeedRightBrick': //is removed
                     case 'SetPhysicsObjectTypeBrick':
                     case 'SetVelocityBrick':
                     case 'SetGravityBrick':
@@ -159,7 +158,9 @@ PocketCode.merge({
                     case 'SetBounceFactorBrick':
                     case 'SetFrictionBrick':
 
-                    //bubbles
+                    case 'SelectCameraBrick':
+                    case 'CameraBrick':
+                        //bubbles
                     case 'SayBrick':
                     case 'SayForBrick':
                     case 'ThinkBrick':
@@ -169,12 +170,13 @@ PocketCode.merge({
                         break;
                         //    //^^ in development: delete/comment out bricks for testing purpose (but do not push these changes until you've finished implementation + testing)
 
-                    //active:
+                        //active:
                     case 'SetPhysicsObjectTypeBrick':
                         brick = new PocketCode.Model[type](this._device, currentSprite, this._scene.physicsWorld, jsonBrick);
                         break;
 
                     case 'WhenProgramStartBrick':
+                    case 'WhenConditionMetBrick':
                         brick = new PocketCode.Model[type](this._device, currentSprite, jsonBrick, this._scene.onStart);
                         break;
 
@@ -186,12 +188,12 @@ PocketCode.merge({
                         brick = new PocketCode.Model[type](this._device, currentSprite, jsonBrick, actions);
                         break;
 
+                    case 'StopAllSoundsBrick':
                     case 'AskSpeechBrick':
                     case 'AskBrick':
                         if (type == 'AskSpeechBrick')  //providing a ask dialog instead the typical askSpeech brick
                             type = 'AskBrick';
                     case 'CloneBrick':
-                    case 'DeleteCloneBrick':
                     case 'GoToBrick':
                         //background
                     case 'SetBackgroundBrick':
@@ -199,6 +201,8 @@ PocketCode.merge({
                     case 'SetBackgroundByIndexBrick':
                     case 'ClearBackgroundBrick':
                     case 'WhenBackgroundChangesToBrick':
+                    case 'StartSceneBrick':
+                    case 'SceneTransitionBrick':
                         brick = new PocketCode.Model[type](this._device, currentSprite, this._scene, jsonBrick);
                         break;
 
@@ -210,21 +214,10 @@ PocketCode.merge({
                         break;
 
                     case 'MoveNStepsBrick':
-                    case 'WaitUntilBrick':
                     case 'ForeverBrick':
                     case 'RepeatBrick':
                     case 'RepeatUntilBrick':
                         brick = new PocketCode.Model[type](this._device, currentSprite, this._minLoopCycleTime, jsonBrick);
-                        break;
-
-                    case 'WhenConditionMetBrick':
-                        brick = new PocketCode.Model[type](this._device, currentSprite, this._minLoopCycleTime, jsonBrick, this._scene.onStart);
-                        break;
-
-                    case 'StartSceneBrick':
-                    case 'SceneTransitionBrick':
-                    case 'CameraBrick':
-                        brick = new PocketCode.Model[type](this._device, currentSprite, this._gameEngine, jsonBrick);
                         break;
 
                     case 'StopBrick':
@@ -232,14 +225,14 @@ PocketCode.merge({
                         break;
 
                     default:
-                        //control: WaitBrick, NoteBrick, WhenStartAsCloneBrick, IfThenElse
+                        //control: WaitBrick, NoteBrick, WhenStartAsCloneBrick, IfThenElse, DeleteCloneBrick
+                        //event: WaitUntilBrick
                         //motion: GoToPositionBrick, SetXBrick, SetYBrick, ChangeXBrick, ChangeYBrick, SetRotationStyleBrick, IfOnEdgeBounce
                         //        TurnLeft, TurnRight, SetDirection, SetDirectionTo, SetRotationStyle, GlideTo, GoBack, ComeToFront, Vibration
                         //motion physics: SetVelocity, RotationSpeedLeft, RotationSpeedRight, SetMass, SetBounceFactor, SetFriction
                         //look: SetLook, SetLookByIndex, NextLook, PreviousLook, SetSize, ChangeSize, Hide, Show, Say, SayFor, Think, ThinkFor, SetTransparency, 
                         //      .. all filters, .. ClearGraphicEffect
                         //sound
-                        //camera: SelectCameraBrick
                         //case 'PlaySoundBrick':
                         //case 'PlaySoundAndWaitBrick':   //disabled
                         //case 'SpeakBrick':
@@ -253,7 +246,6 @@ PocketCode.merge({
                             type = 'SpeakBrick';
                         }
 
-                        //case 'StopAllSoundsBrick':
                         //case 'SetVolumeBrick':
                         //case 'ChangeVolumeBrick':
                         //    brick = new PocketCode.Model[type](this._device, currentSprite, jsonBrick);
@@ -294,7 +286,6 @@ PocketCode.merge({
             },
             dispose: function () {
                 this._device = undefined;
-                this._gameEngine = undefined;
                 this._scene = undefined;
                 this._broadcastMgr = undefined;
                 SmartJs.Core.Component.prototype.dispose.call(this);
@@ -327,107 +318,128 @@ PocketCode.merge({
                     calculate: new Function(
                         'uvh',
                         'uvh || (uvh = this._sprite); ' +
-                        'return ' + formulaString + ';'),
-                    isStatic: this._isStatic
+                        'var cast = PocketCode.Math.Cast; ' +
+                        'return cast.toValue(' + formulaString + ');'),
+                    isStatic: this._isStatic,
                 };
             },
 
-            _parseJsonType: function (jsonFormula, uiString) {
-                if (jsonFormula === null)
-                    return '';
+            _parseJsonType: function (jsonFormula, uiString, type) {
+                var formulaString = uiString ? '' : undefined; //default if null
 
-                /* package org.catrobat.catroid.formulaeditor: class FormulaElement: enum ElementType
-                *  OPERATOR, FUNCTION, NUMBER, SENSOR, USER_VARIABLE, BRACKET, STRING, COLLISION_FORMULA
-                */
-                switch (jsonFormula.type) {
-                    case 'OPERATOR':
-                        return this._parseJsonOperator(jsonFormula, uiString);
+                if (jsonFormula !== null) {
+                    /* package org.catrobat.catroid.formulaeditor: class FormulaElement: enum ElementType
+                    *  OPERATOR, FUNCTION, NUMBER, SENSOR, USER_VARIABLE, BRACKET, STRING, COLLISION_FORMULA
+                    */
+                    switch (jsonFormula.type) {
+                        case 'OPERATOR':
+                            formulaString = this._parseJsonOperator(jsonFormula, uiString);
+                            break;
 
-                    case 'FUNCTION':
-                        return this._parseJsonFunction(jsonFormula, uiString);
+                        case 'FUNCTION':
+                            formulaString = this._parseJsonFunction(jsonFormula, uiString);
+                            break;
 
-                    case 'NUMBER':
-                        if (uiString)
-                            return jsonFormula.value;
+                        case 'NUMBER':
+                            //make sure it's a number: replace JSON property to make sure there will not be errors in our UI (code view)
+                            if (typeof jsonFormula.value != 'number')
+                                jsonFormula.value = PocketCode.Math.Cast.toNumber(jsonFormula.value);
+                            formulaString = jsonFormula.value;
+                            if (uiString)
+                                formulaString = PocketCode.Math.Cast.toString(formulaString);
+                            break;
 
-                        var num = Number(jsonFormula.value);
-                        if (isNaN(num))
-                            throw new Error('invalid operator/type \'number\': string to number conversion failed');
-                        return num;
+                        case 'SENSOR':
+                            this._isStatic = false;
+                            formulaString = this._parseJsonSensor(jsonFormula, uiString);
+                            break;
 
-                    case 'SENSOR':
-                        this._isStatic = false;
-                        return this._parseJsonSensor(jsonFormula, uiString);
+                        case 'USER_VARIABLE':
+                            if (uiString) {
+                                var variable = this._variableNames[PocketCode.UserVariableScope.PROCEDURE][jsonFormula.value] ||
+                                    this._variableNames[PocketCode.UserVariableScope.LOCAL][jsonFormula.value] ||
+                                    this._variableNames[PocketCode.UserVariableScope.GLOBAL][jsonFormula.value];
+                                formulaString = '"' + variable.name + '"';
+                            }
+                            else {
+                                this._isStatic = false;
+                                formulaString = 'uvh.getVariable("' + jsonFormula.value + '")';
+                            }
+                            break;
 
-                    case 'USER_VARIABLE':
-                        if (uiString) {
-                            var variable = this._variableNames[PocketCode.UserVariableScope.PROCEDURE][jsonFormula.value] ||
-                                this._variableNames[PocketCode.UserVariableScope.LOCAL][jsonFormula.value] ||
-                                this._variableNames[PocketCode.UserVariableScope.GLOBAL][jsonFormula.value];
-                            return '"' + variable.name + '"';
-                        }
+                        case 'USER_LIST':
+                            if (uiString) {
+                                var list = this._listNames[PocketCode.UserVariableScope.PROCEDURE][jsonFormula.value] ||
+                                    this._listNames[PocketCode.UserVariableScope.LOCAL][jsonFormula.value] ||
+                                    this._listNames[PocketCode.UserVariableScope.GLOBAL][jsonFormula.value];
+                                formulaString = '*' + list.name + '*';
+                            }
+                            else {
+                                this._isStatic = false;
+                                formulaString = 'uvh.getList("' + jsonFormula.value + '")';
+                            }
+                            break;
 
-                        this._isStatic = false;
-                        return 'uvh.getVariable("' + jsonFormula.value + '").value';
+                        case 'BRACKET':
+                            formulaString = '(' + this._parseJsonType(jsonFormula.right, uiString) + ')';
+                            break;
 
-                    case 'USER_LIST':
-                        if (uiString) {
-                            var list = this._listNames[PocketCode.UserVariableScope.PROCEDURE][jsonFormula.value] ||
-                                this._listNames[PocketCode.UserVariableScope.LOCAL][jsonFormula.value] ||
-                                this._listNames[PocketCode.UserVariableScope.GLOBAL][jsonFormula.value];
-                            return '*' + list.name + '*';
-                        }
+                        case 'STRING':
+                            formulaString = '\'' + jsonFormula.value.replace(/(')/g, '\\$1').replace(/(\n)/g, '\\n') + '\'';
+                            break;
 
-                        this._isStatic = false;
-                        return 'uvh.getList("' + jsonFormula.value + '")';
+                        case 'COLLISION_FORMULA':
+                            //    if (uiString) //TODO
+                            //        formulaString = 'touches_object(' + jsonFormula.value + ')';
 
-                    case 'BRACKET':
-                        return '(' + this._parseJsonType(jsonFormula.right, uiString) + ')';
+                            this._isStatic = false;
+                            //changed backend to deliver ids instead of names
+                            formulaString = 'this._sprite.collidesWithSprite(\'' + jsonFormula.value + '\')';
 
-                    case 'STRING':
-                        return '\'' + jsonFormula.value.replace(/('|\n|\\)/g, '\\\$1') + '\'';
-                        //var tmp = jsonFormula.value.replace(/'/g, '\\\'').replace(/\n/g, '\\n');
-                        //if (uiString)
-                        //    return '\'' + tmp + '\'';
-                        //return '\'' + tmp.replace(/\\/g, '\\\\') + '\'';
+                            //var params = jsonFormula.value.split(' touches ');  //either 'sp1 touches sp2' (v0.992= or 'sp1' (v0.993 - ?)
+                            //if (params.length == 1) { //v0.993
+                            //    if (uiString)
+                            //        return 'touches_object(' + jsonFormula.value + ')';
 
-                    case 'COLLISION_FORMULA':
-                        //    if (uiString) //TODO
-                        //        return 'touches_object(' + jsonFormula.value + ')';
+                            //    return 'this._sprite.collidesWithSprite(\'' + params[0] + '\')';
+                            //}
+                            //else if (params.length == 2) { //v0.992
+                            //    if (uiString)
+                            //        return '\'' + jsonFormula.value + '\'';
 
-                        this._isStatic = false;
-                        //changed backend to deliver ids instead of names
-                        return 'this._sprite.collidesWithSprite(\'' + jsonFormula.value + '\')';
+                            //    return 'this._sprite.collidesWithSprite(\'' + params[1] + '\')';
+                            //}
+                            //else { //not supported
+                            //    if (uiString)
+                            //        return '\'' + jsonFormula.value + '\'';
+                            //    return 'false';
+                            //}
+                            break;
 
-                        //var params = jsonFormula.value.split(' touches ');  //either 'sp1 touches sp2' (v0.992= or 'sp1' (v0.993 - ?)
-                        //if (params.length == 1) { //v0.993
-                        //    if (uiString)
-                        //        return 'touches_object(' + jsonFormula.value + ')';
-
-                        //    return 'this._sprite.collidesWithSprite(\'' + params[0] + '\')';
-                        //}
-                        //else if (params.length == 2) { //v0.992
-                        //    if (uiString)
-                        //        return '\'' + jsonFormula.value + '\'';
-
-                        //    return 'this._sprite.collidesWithSprite(\'' + params[1] + '\')';
-                        //}
-                        //else { //not supported
-                        //    if (uiString)
-                        //        return '\'' + jsonFormula.value + '\'';
-                        //    return 'false';
-                        //}
-
-                    default:
-                        throw new Error('formula parser: unknown type: ' + jsonFormula.type);     //TODO: do we need an onError event? -> new and unsupported operators?
+                        default:
+                            throw new Error('formula parser: unknown type: ' + jsonFormula.type);     //TODO: do we need an onError event? -> new and unsupported operators?
+                    }
                 }
+                //add casts: var cast = PocketCode.Math.Cast; injected in each formula   
+                //null should not be called: but if the formula contains missing entries we add them here by casting null to the expected type
+                if (!type)
+                    return formulaString;
+                if (type == 'value')
+                    return 'cast.toValue(' + formulaString + ')';
+                if (type == 'string')
+                    return 'cast.toString(' + formulaString + ')';
+                if (type == 'boolean')
+                    return 'cast.toBoolean(' + formulaString + ')';
+                if (type == 'number')
+                    return 'cast.toNumber(' + formulaString + ')';
             },
 
-            _concatOperatorFormula: function (jsonFormula, operator, uiString, numeric) {
-                if (uiString) //|| !numeric)
+            _concatOperatorFormula: function (jsonFormula, operator, uiString, type) {
+                if (uiString)
                     return this._parseJsonType(jsonFormula.left, uiString) + operator + this._parseJsonType(jsonFormula.right, uiString);
 
-                return '(' + this._parseJsonType(jsonFormula.left, uiString) + operator + this._parseJsonType(jsonFormula.right, uiString) + ')';
+                type = type || 'value';
+                return '(' + this._parseJsonType(jsonFormula.left, uiString, type) + operator + this._parseJsonType(jsonFormula.right, uiString, type) + ')';
             },
             _parseJsonOperator: function (jsonFormula, uiString) {
                 /* package org.catrobat.catroid.formulaeditor: enum Operators */
@@ -435,61 +447,61 @@ PocketCode.merge({
                     case 'LOGICAL_AND':
                         if (uiString)
                             return this._concatOperatorFormula(jsonFormula, ' AND ', uiString);
-                        return this._concatOperatorFormula(jsonFormula, ' && ');
+                        return this._concatOperatorFormula(jsonFormula, ' && ', uiString, 'boolean');
 
                     case 'LOGICAL_OR':
                         if (uiString)
                             return this._concatOperatorFormula(jsonFormula, ' OR ', uiString);
-                        return this._concatOperatorFormula(jsonFormula, ' || ');
+                        return this._concatOperatorFormula(jsonFormula, ' || ', uiString, 'boolean');
 
                     case 'EQUAL':
                         if (uiString)
                             return this._concatOperatorFormula(jsonFormula, ' = ', uiString);
-                        return this._concatOperatorFormula(jsonFormula, ' == ');
+                        return 'PocketCode.Math.isEqual(' + this._parseJsonType(jsonFormula.left) + ', ' + this._parseJsonType(jsonFormula.right) + ')';
 
                     case 'NOT_EQUAL':
                         if (uiString)
                             return this._concatOperatorFormula(jsonFormula, ' ≠ ', uiString);
-                        return this._concatOperatorFormula(jsonFormula, ' != ');
+                        return '(!PocketCode.Math.isEqual(' + this._parseJsonType(jsonFormula.left) + ', ' + this._parseJsonType(jsonFormula.right) + '))';
 
                     case 'SMALLER_OR_EQUAL':
                         if (uiString)
                             return this._concatOperatorFormula(jsonFormula, ' ≤ ', uiString);
-                        return this._concatOperatorFormula(jsonFormula, ' <= ');
+                        return this._concatOperatorFormula(jsonFormula, ' <= ', uiString, 'number');
 
                     case 'GREATER_OR_EQUAL':
                         if (uiString)
                             return this._concatOperatorFormula(jsonFormula, ' ≥ ', uiString);
-                        return this._concatOperatorFormula(jsonFormula, ' >= ');
+                        return this._concatOperatorFormula(jsonFormula, ' >= ', uiString, 'number');
 
                     case 'SMALLER_THAN':
-                        return this._concatOperatorFormula(jsonFormula, ' < ', uiString);
+                        return this._concatOperatorFormula(jsonFormula, ' < ', uiString, 'number');
 
                     case 'GREATER_THAN':
-                        return this._concatOperatorFormula(jsonFormula, ' > ', uiString);
+                        return this._concatOperatorFormula(jsonFormula, ' > ', uiString, 'number');
 
                     case 'PLUS':
-                        return this._concatOperatorFormula(jsonFormula, ' + ', uiString, true);
+                        return this._concatOperatorFormula(jsonFormula, ' + ', uiString, 'number');
 
                     case 'MINUS':
                         if (jsonFormula.left === null)    //singed number
-                            return this._concatOperatorFormula(jsonFormula, '-', uiString);
-                        return this._concatOperatorFormula(jsonFormula, ' - ', uiString, jsonFormula.left !== null);
+                            return this._concatOperatorFormula(jsonFormula, '-', uiString, 'number');
+                        return this._concatOperatorFormula(jsonFormula, ' - ', uiString, 'number');
 
                     case 'MULT':
                         if (uiString)
-                            return this._concatOperatorFormula(jsonFormula, ' x ', uiString, true);
-                        return this._concatOperatorFormula(jsonFormula, ' * ', uiString, true);
+                            return this._concatOperatorFormula(jsonFormula, ' x ', uiString);
+                        return this._concatOperatorFormula(jsonFormula, ' * ', uiString, 'number');
 
                     case 'DIVIDE':
                         if (uiString)
-                            return this._concatOperatorFormula(jsonFormula, ' ÷ ', uiString, true);
-                        return this._concatOperatorFormula(jsonFormula, ' / ', uiString, true);
+                            return this._concatOperatorFormula(jsonFormula, ' ÷ ', uiString);
+                        return this._concatOperatorFormula(jsonFormula, ' / ', uiString, 'number');
 
                     case 'LOGICAL_NOT':
                         if (uiString)
                             return ' NOT ' + this._parseJsonType(jsonFormula.right, uiString);
-                        return '!' + this._parseJsonType(jsonFormula.right);
+                        return '(!' + this._parseJsonType(jsonFormula.right, uiString, 'boolean') + ')';
 
                     default:
                         throw new Error('formula parser: unknown operator: ' + jsonFormula.value);  //TODO: do we need an onError event? -> new and unsupported operators?
@@ -504,27 +516,27 @@ PocketCode.merge({
                     case 'SIN':
                         if (uiString)
                             return 'sin(' + this._parseJsonType(jsonFormula.left, uiString) + ')';
-                        return 'Math.sin(this._degree2radian(' + this._parseJsonType(jsonFormula.left) + '))';
+                        return 'Math.sin(this._degree2radian(' + this._parseJsonType(jsonFormula.left, uiString, 'number') + '))';
 
                     case 'COS':
                         if (uiString)
                             return 'cos(' + this._parseJsonType(jsonFormula.left, uiString) + ')';
-                        return 'Math.cos(this._degree2radian(' + this._parseJsonType(jsonFormula.left) + '))';
+                        return 'Math.cos(this._degree2radian(' + this._parseJsonType(jsonFormula.left, uiString, 'number') + '))';
 
                     case 'TAN':
                         if (uiString)
                             return 'tan(' + this._parseJsonType(jsonFormula.left, uiString) + ')';
-                        return 'Math.tan(this._degree2radian(' + this._parseJsonType(jsonFormula.left) + '))';
+                        return 'Math.tan(this._degree2radian(' + this._parseJsonType(jsonFormula.left, uiString, 'number') + '))';
 
                     case 'LN':
                         if (uiString)
                             return 'ln(' + this._parseJsonType(jsonFormula.left, uiString) + ')';
-                        return 'Math.log(' + this._parseJsonType(jsonFormula.left) + ')';
+                        return 'Math.log(' + this._parseJsonType(jsonFormula.left, uiString, 'number') + ')';
 
                     case 'LOG':
                         if (uiString)
                             return 'log(' + this._parseJsonType(jsonFormula.left, uiString) + ')';
-                        return 'this._log10(' + this._parseJsonType(jsonFormula.left) + ')';
+                        return 'this._log10(' + this._parseJsonType(jsonFormula.left, uiString, 'number') + ')';
 
                     case 'PI':
                         if (uiString)
@@ -534,7 +546,7 @@ PocketCode.merge({
                     case 'SQRT':
                         if (uiString)
                             return 'sqrt(' + this._parseJsonType(jsonFormula.left, uiString) + ')';
-                        return 'Math.sqrt(' + this._parseJsonType(jsonFormula.left) + ')';
+                        return 'Math.sqrt(' + this._parseJsonType(jsonFormula.left, uiString, 'number') + ')';
 
                     case 'RAND':
                         if (uiString)
@@ -545,8 +557,8 @@ PocketCode.merge({
                         //at runtime to determine which one to use
                         //if both partial results are integers, the random number will be a number without decimal places
                         //for calculation we need the scope of the formula itself! To solve this, the whole logic is included in our dynamic function
-                        var lString = '(' + this._parseJsonType(jsonFormula.left) + ')';
-                        var rString = '(' + this._parseJsonType(jsonFormula.right) + ')';
+                        var lString = '(' + this._parseJsonType(jsonFormula.left, uiString, 'number') + ')';
+                        var rString = '(' + this._parseJsonType(jsonFormula.right, uiString, 'number') + ')';
 
                         var stmt = '((' + lString + ' <= ' + rString + ') ? ';
                         stmt += '((' + lString + ' % 1 === 0 && ' + rString + ' % 1 === 0) ? (Math.floor(Math.random() * (' + rString + '+ 1 -' + lString + ') + ' + lString + ')) : (Math.random() * (' + rString + '-' + lString + ') + ' + lString + ')) : ';
@@ -576,68 +588,68 @@ PocketCode.merge({
                     case 'ABS':
                         if (uiString)
                             return 'abs(' + this._parseJsonType(jsonFormula.left, uiString) + ')';
-                        return 'Math.abs(' + this._parseJsonType(jsonFormula.left) + ')';
+                        return 'Math.abs(' + this._parseJsonType(jsonFormula.left, uiString, 'number') + ')';
 
                     case 'ROUND':
                         if (uiString)
                             return 'round(' + this._parseJsonType(jsonFormula.left, uiString) + ')';
-                        return 'Math.round(' + this._parseJsonType(jsonFormula.left) + ')';
+                        return 'Math.round(' + this._parseJsonType(jsonFormula.left, uiString, 'number') + ')';
 
                     case 'MOD': //http://stackoverflow.com/questions/4467539/javascript-modulo-not-behaving
                         if (uiString)
                             return 'mod(' + this._parseJsonType(jsonFormula.left, uiString) + ', ' + this._parseJsonType(jsonFormula.right, uiString) + ')';
-                        return '(((' + this._parseJsonType(jsonFormula.left) + ') % (' + this._parseJsonType(jsonFormula.right) + ')) + (' + this._parseJsonType(jsonFormula.right) + ')) % (' + this._parseJsonType(jsonFormula.right) + ')';
+                        return '(((' + this._parseJsonType(jsonFormula.left, uiString, 'number') + ') % (' + this._parseJsonType(jsonFormula.right, uiString, 'number') + ')) + (' + this._parseJsonType(jsonFormula.right, uiString, 'number') + ')) % (' + this._parseJsonType(jsonFormula.right, uiString, 'number') + ')';
 
                     case 'ARCSIN':
                         if (uiString)
                             return 'arcsin(' + this._parseJsonType(jsonFormula.left, uiString) + ')';
-                        return 'this._radian2degree(Math.asin(' + this._parseJsonType(jsonFormula.left) + '))';
+                        return 'this._radian2degree(Math.asin(' + this._parseJsonType(jsonFormula.left, uiString, 'number') + '))';
 
                     case 'ARCCOS':
                         if (uiString)
                             return 'arccos(' + this._parseJsonType(jsonFormula.left, uiString) + ')';
-                        return 'this._radian2degree(Math.acos(' + this._parseJsonType(jsonFormula.left) + '))';
+                        return 'this._radian2degree(Math.acos(' + this._parseJsonType(jsonFormula.left, uiString, 'number') + '))';
 
                     case 'ARCTAN':
                         if (uiString)
                             return 'arctan(' + this._parseJsonType(jsonFormula.left, uiString) + ')';
-                        return 'this._radian2degree(Math.atan(' + this._parseJsonType(jsonFormula.left) + '))';
+                        return 'this._radian2degree(Math.atan(' + this._parseJsonType(jsonFormula.left, uiString, 'number') + '))';
 
                     case 'EXP':
                         if (uiString)
                             return 'exp(' + this._parseJsonType(jsonFormula.left, uiString) + ')';
-                        return 'Math.exp(' + this._parseJsonType(jsonFormula.left) + ')';
+                        return 'Math.exp(' + this._parseJsonType(jsonFormula.left, uiString, 'number') + ')';
 
                     case 'POWER':
                         if (uiString)
                             return 'power(' + this._parseJsonType(jsonFormula.left, uiString) + ', ' + this._parseJsonType(jsonFormula.right, uiString) + ')';
-                        return 'Math.pow(' + this._parseJsonType(jsonFormula.left) + ', ' + this._parseJsonType(jsonFormula.right) + ')';
+                        return 'Math.pow(' + this._parseJsonType(jsonFormula.left, uiString, 'number') + ', ' + this._parseJsonType(jsonFormula.right, uiString, 'number') + ')';
 
                     case 'FLOOR':
                         if (uiString)
                             return 'floor(' + this._parseJsonType(jsonFormula.left, uiString) + ')';
-                        return 'Math.floor(' + this._parseJsonType(jsonFormula.left) + ')';
+                        return 'Math.floor(' + this._parseJsonType(jsonFormula.left, uiString, 'number') + ')';
 
                     case 'CEIL':
                         if (uiString)
                             return 'ceil(' + this._parseJsonType(jsonFormula.left, uiString) + ')';
-                        return 'Math.ceil(' + this._parseJsonType(jsonFormula.left) + ')';
+                        return 'Math.ceil(' + this._parseJsonType(jsonFormula.left, uiString, 'number') + ')';
 
                     case 'MAX':
                         if (uiString)
                             return 'max(' + this._parseJsonType(jsonFormula.left, uiString) + ', ' + this._parseJsonType(jsonFormula.right, uiString) + ')';
-                        return 'isNaN(' + this._parseJsonType(jsonFormula.left) + ') ? ' + 
-                                '(isNaN(' + this._parseJsonType(jsonFormula.right) + ') ? undefined : ' + this._parseJsonType(jsonFormula.right) + ') : ' + 
-                               '(isNaN(' + this._parseJsonType(jsonFormula.right) + ') ? (' + this._parseJsonType(jsonFormula.left) + ') : ' +
-                               'Math.max(' + this._parseJsonType(jsonFormula.left) + ', ' + this._parseJsonType(jsonFormula.right) + '))';
+                        return 'isNaN(' + this._parseJsonType(jsonFormula.left, uiString, 'value') + ') ? ' +
+                                '(isNaN(' + this._parseJsonType(jsonFormula.right, uiString, 'value') + ') ? undefined : ' + this._parseJsonType(jsonFormula.right, uiString, 'number') + ') : ' +
+                               '(isNaN(' + this._parseJsonType(jsonFormula.right, uiString, 'value') + ') ? (' + this._parseJsonType(jsonFormula.left, uiString, 'number') + ') : ' +
+                               'Math.max(' + this._parseJsonType(jsonFormula.left, uiString, 'number') + ', ' + this._parseJsonType(jsonFormula.right, uiString, 'number') + '))';
 
                     case 'MIN':
                         if (uiString)
                             return 'min(' + this._parseJsonType(jsonFormula.left, uiString) + ', ' + this._parseJsonType(jsonFormula.right, uiString) + ')';
-                        return 'isNaN(' + this._parseJsonType(jsonFormula.left) + ') ? ' +
-                                '(isNaN(' + this._parseJsonType(jsonFormula.right) + ') ? undefined : ' + this._parseJsonType(jsonFormula.right) + ') : ' +
-                               '(isNaN(' + this._parseJsonType(jsonFormula.right) + ') ? (' + this._parseJsonType(jsonFormula.left) + ') : ' +
-                               'Math.min(' + this._parseJsonType(jsonFormula.left) + ', ' + this._parseJsonType(jsonFormula.right) + '))';
+                        return 'isNaN(' + this._parseJsonType(jsonFormula.left, uiString, 'value') + ') ? ' +
+                                '(isNaN(' + this._parseJsonType(jsonFormula.right, uiString, 'value') + ') ? undefined : ' + this._parseJsonType(jsonFormula.right, uiString, 'number') + ') : ' +
+                               '(isNaN(' + this._parseJsonType(jsonFormula.right, uiString, 'value') + ') ? (' + this._parseJsonType(jsonFormula.left, uiString, 'number') + ') : ' +
+                               'Math.min(' + this._parseJsonType(jsonFormula.left, uiString, 'number') + ', ' + this._parseJsonType(jsonFormula.right, uiString, 'number') + '))';
 
                     case 'TRUE':
                         if (uiString)
@@ -654,44 +666,43 @@ PocketCode.merge({
                         if (uiString)
                             return 'length(' + this._parseJsonType(jsonFormula.left, uiString) + ')';
 
-                        if (jsonFormula.left)
-                            return '(' + this._parseJsonType(jsonFormula.left) + ' + \'\').length';
-                        return 0;
+                        return this._parseJsonType(jsonFormula.left, uiString, 'string') + '.length';
 
                     case 'LETTER':
                         if (uiString)
                             return 'letter(' + this._parseJsonType(jsonFormula.left, uiString) + ', ' + this._parseJsonType(jsonFormula.right, uiString) + ')';
 
-                        var idx = Number(this._parseJsonType(jsonFormula.left)) - 1; //given index (1..n)
-                        return '((' + this._parseJsonType(jsonFormula.right) + ') + \'\').charAt(' + idx + ')';
+                        //var idx = Number(this._parseJsonType(jsonFormula.left)) - 1; //given index (1..n)
+                        // changed: index can also be a variable
+                        return this._parseJsonType(jsonFormula.right, uiString, 'string') + '.charAt(' + this._parseJsonType(jsonFormula.left, uiString, 'number') + ' - 1 )';
 
                     case 'JOIN':
                         if (uiString)
                             return 'join(' + this._parseJsonType(jsonFormula.left, uiString) + ', ' + this._parseJsonType(jsonFormula.right, uiString) + ')';
 
-                        return '((' + this._parseJsonType(jsonFormula.left) + ') + \'\').concat((' + this._parseJsonType(jsonFormula.right) + ') + \'\')';
+                        return this._parseJsonType(jsonFormula.left, uiString, 'string') + '.concat(' + this._parseJsonType(jsonFormula.right, uiString, 'string') + ')';
 
                         //list
                     case 'NUMBER_OF_ITEMS':
                         if (uiString)
                             return 'number_of_items(' + this._parseJsonType(jsonFormula.left, uiString) + ')';
 
-                        this._isStatic = false;
+                        //this._isStatic = false;
                         return this._parseJsonType(jsonFormula.left) + '.length';
 
                     case 'LIST_ITEM':
                         if (uiString)
                             return 'element(' + this._parseJsonType(jsonFormula.left, uiString) + ', ' + this._parseJsonType(jsonFormula.right, uiString) + ')';
 
-                        this._isStatic = false;
-                        return this._parseJsonType(jsonFormula.right) + '.valueAt(' + this._parseJsonType(jsonFormula.left) + ')';
+                        //this._isStatic = false;
+                        return this._parseJsonType(jsonFormula.right) + '.valueAt(' + this._parseJsonType(jsonFormula.left, uiString, 'number') + ')';
 
                     case 'CONTAINS':
                         if (uiString)
                             return 'contains(' + this._parseJsonType(jsonFormula.left, uiString) + ', ' + this._parseJsonType(jsonFormula.right, uiString) + ')';
 
-                        this._isStatic = false;
-                        return this._parseJsonType(jsonFormula.left) + '.contains(' + this._parseJsonType(jsonFormula.right) + ')';
+                        //this._isStatic = false;
+                        return this._parseJsonType(jsonFormula.left) + '.contains(' + this._parseJsonType(jsonFormula.right, uiString, 'value') + ')';
 
                         //touch
                     case 'MULTI_FINGER_X':
@@ -699,21 +710,21 @@ PocketCode.merge({
                             return 'screen_touch_x( ' + this._parseJsonType(jsonFormula.left, uiString) + ' )';
 
                         this._isStatic = false;
-                        return 'this._device.getTouchX(' + this._parseJsonType(jsonFormula.left) + ')';
+                        return 'this._device.getTouchX(' + this._parseJsonType(jsonFormula.left, uiString, 'number') + ')';
 
                     case 'MULTI_FINGER_Y':
                         if (uiString)
                             return 'screen_touch_y( ' + this._parseJsonType(jsonFormula.left, uiString) + ' )';
 
                         this._isStatic = false;
-                        return 'this._device.getTouchY(' + this._parseJsonType(jsonFormula.left) + ')';
+                        return 'this._device.getTouchY(' + this._parseJsonType(jsonFormula.left, uiString, 'number') + ')';
 
                     case 'MULTI_FINGER_TOUCHED':
                         if (uiString)
                             return 'screen_is_touched( ' + this._parseJsonType(jsonFormula.left, uiString) + ' )';
 
                         this._isStatic = false;
-                        return 'this._device.isTouched(' + this._parseJsonType(jsonFormula.left) + ')';
+                        return 'this._device.isTouched(' + this._parseJsonType(jsonFormula.left, uiString, 'number') + ')';
 
                         //arduino
                     case 'ARDUINOANALOG':

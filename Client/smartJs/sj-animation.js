@@ -7,16 +7,6 @@
 SmartJs._AnimationFrame = (function () {
 
     function AnimationFrame() {
-        //helpers
-        this._request = function () {
-            return window.requestAnimationFrame || window.webkitRequestAnimationFrame || window.mozRequestAnimationFrame || window.oRequestAnimationFrame ||
-                    function (callback) { return window.setTimeout(callback, 17); };   //~1000/60 (60fps)
-        }();
-        this._cancel = function () {
-            return window.cancelAnimationFrame || window.webkitCancelAnimationFrame || window.mozCancelAnimationFrame || window.mozCancelRequestAnimationFrame || window.oCancelAnimationFrame ||
-                    function (id) { window.clearTimeout(id) };
-        }();
-
         this._frameId = undefined;
 
         //event (private)
@@ -25,22 +15,34 @@ SmartJs._AnimationFrame = (function () {
 
     //methods
     AnimationFrame.prototype.merge({
+        _request: function () {
+            var request = window.requestAnimationFrame || window.webkitRequestAnimationFrame || window.mozRequestAnimationFrame || window.oRequestAnimationFrame;
+            if (request)
+                return request.bind(window);
+            return function (callback) { return window.setTimeout(callback, 17); };   //~1000/60 (60fps)
+        }(),
+        _cancel: function () {
+            var cancel = window.cancelAnimationFrame || window.webkitCancelAnimationFrame || window.mozCancelAnimationFrame || window.mozCancelRequestAnimationFrame || window.oCancelAnimationFrame;
+            if (cancel)
+                return cancel.bind(window);
+            return function (id) { window.clearTimeout(id) };
+        }(),
         _run: function () {
             this._onUpdate.dispatchEvent();
-            this._frameId = this._request.call(window, this._run.bind(this));
+            this._frameId = this._request(this._run.bind(this));
         },
         addEventListener: function (listener) {
             var e = this._onUpdate,
                 start = !e.listenersAttached;
             e.addEventListener(listener);
             if (start)
-                this._frameId = this._request.call(window, this._run.bind(this));
+                this._frameId = this._request(this._run.bind(this));
         },
         removeEventListener: function (listener) {
-            var e = this._onUpdate
+            var e = this._onUpdate;
             e.removeEventListener(listener);
             if (!e.listenersAttached) {
-                this._cancel.call(window, this._frameId);
+                this._cancel(this._frameId);
                 this._frameId = undefined;
             }
         },
@@ -268,7 +270,7 @@ SmartJs.Animation.Rotation = (function () {
 
                 this._startAngle = angle;
                 this._timer.reset();
-                if (!this._timer.startTimestamp)
+                if (!this._timer.startTimestamp || this._paused)
                     this._onUpdate.dispatchEvent({ value: this.angle });
             },
         },
@@ -283,11 +285,13 @@ SmartJs.Animation.Rotation = (function () {
                     return;
                 this._startAngle = this.angle;  //new start angle due to change
                 this._rotationSpeed = value;
-                if (value === 0.0) {
+                if (value == 0.0) {
                     this.stop();
                     this._onUpdate.dispatchEvent({ value: this.angle });
                 }
-                else if (!this._timer.startTimestamp) //not started
+                else if (this._paused)//reset timer
+                    this._timer.reset();
+                else
                     this._start();
             },
         },
@@ -311,6 +315,7 @@ SmartJs.Animation.Rotation = (function () {
             this._rotationSpeed = obj.rotationSpeed || 0.0;
             if (obj.startTimestamp && !!obj.rotationSpeed)
                 this._start(obj.startTimestamp);
+            this._onUpdate.dispatchEvent({ value: this.angle });
         },
         _start: function (startTimestamp) {   //or restart
             this._timer.start(startTimestamp);
@@ -329,6 +334,7 @@ SmartJs.Animation.Rotation = (function () {
         stop: function () {
             SmartJs.AnimationFrame.removeEventListener(this._afl);
             this._timer.stop();
+            this._rotationSpeed = 0.0;
             this._paused = false;
         },
         dispose: function () {

@@ -123,6 +123,18 @@ Array.prototype.dispose = function () {
 };
 Object.defineProperty(Array.prototype, 'dispose', { enumerable: false });
 
+/**
+ * String.format allowes to format strings like known from printf
+ */
+if (!String.prototype.format) {
+    String.prototype.format = function () {
+        var args = arguments;
+        return this.replace(/{(\d+)}/g, function (match, idx) {
+            return typeof args[idx] != 'undefined' ? args[idx].toString() : match;
+        });
+    };
+    Object.defineProperty(String.prototype, 'format', { enumerable: false });
+}
 
 /* smart js infrastructure */
 

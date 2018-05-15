@@ -9,7 +9,7 @@ if (!PocketCode)
     var PocketCode = {};
 
 //set default server if not set already
-if(!PocketCode.hasOwnProperty('domain'))
+if (!PocketCode.hasOwnProperty('domain'))
     PocketCode.domain = 'https://share.catrob.at/';
 
 //if (!PocketCode.crossOrigin)
@@ -84,7 +84,7 @@ PocketCode.Model = {};  //PocketCode.Model || {};
 PocketCode.merge({
 
     //threadCounter: 35, //SmartJs.Device.isMobile ? 35 : 70,  //to configure the a special amount of loop cycles without delay or broadcasts before a timeout is triggered to avoid call stack overflow
-    //^^ currently disables.. allows several synchroneous calls (without theading timeout) to run script much faster: references: LoopBrick (bricksCore.js) and PublishSubscribeBroker (publishSubscribe.js)
+    //^^ currently disables.. allows several synchronous calls (without theading timeout) to run script much faster: references: LoopBrick (bricksCore.js) and PublishSubscribeBroker (publishSubscribe.js)
     UserActionType: {
         SPRITE_TOUCHED: 'spriteTouched',
         TOUCH_START: 'touchStart',
@@ -193,9 +193,10 @@ PocketCode.Core = {
         function I18nString(i18nKey /*, arguments*/) {
             SmartJs.Core.String.call(this, '');
 
-            //if (typeof i18nKey !== 'string')
-            //    throw new Error('invalid argument: i18nKey');
+            if (PocketCode.I18nProvider)
+                PocketCode.I18nProvider.onLanguageChange.addEventListener(new SmartJs.Event.EventListener(this._updateString, this));
             this.i18nKey = i18nKey;
+            this._updateString();
             this._format = arguments;
         }
 
@@ -207,20 +208,18 @@ PocketCode.Core = {
                         throw new Error('invalid argument: i18nKey');
 
                     this._i18nKey = i18nKey;
+                    this._updateString();
                 },
             },
         });
 
         //methods
         I18nString.prototype.merge({
-            /* override */
-            toString: function () {
+            _updateString: function () {
                 if (!PocketCode.I18nProvider || !PocketCode.I18nProvider.getLocString)
                     this._string = '[' + this._i18nKey + ']';
                 else
                     this._string = PocketCode.I18nProvider.getLocString(this._i18nKey);
-
-                return SmartJs.Core.String.prototype.toString.call(this);    //call super
             },
         });
 

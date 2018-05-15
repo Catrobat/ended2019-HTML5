@@ -43,7 +43,6 @@ QUnit.test("SmartJs.AnimationFrame", function (assert) {
 
         done();
     }
-
 });
 
 
@@ -204,14 +203,105 @@ QUnit.test("SmartJs.Animation.Rotation", function (assert) {
     var r = new SmartJs.Animation.Rotation(370);
     r.onUpdate.addEventListener(new SmartJs.Event.EventListener(onUpdateHandler, this));
 
+    //angle
     assert.equal(r.angle, 10, "angle returns values bewteen 0..360");
     assert.throws(function () { r.angle = "1"; }, Error, "ERRROR: invalid angle setter");
     r.angle = -20.0;
     assert.equal(lastUpdate.value, 340, "angle setter: update triggered (0..360)");
     assert.equal(r.angle, 340, "angle getter (0..360)");
 
+    //rotation speed
+    updateCounter = 0;
+    assert.equal(r.rotationSpeed, 0, "rotation speed = 0 onInit");
+    assert.throws(function () { r.rotationSpeed = "2"; }, Error, "ERROR: rotationSpeed: wrong setter parameter");
 
+    r.rotationSpeed = 0;
+    window.setTimeout(test_validateStart0, 20);
 
-    done1();
-    assert.ok(false, "TODO");
+    function test_validateStart0() {
+        assert.ok(updateCounter == 0, "animation not started if set to = 0");
+        test_start2();
+    }
+
+    function test_start2() {
+        r.rotationSpeed = 2;
+        assert.equal(r.rotationSpeed, 2, "rotationSpeed: getter/setter");
+        window.setTimeout(test_validateStart2, 20);
+    }
+
+    function test_validateStart2() {
+        assert.ok(updateCounter > 0, "animation started on rotationSpeed != 0");
+        assert.ok(lastUpdate.value > 0, "angle increases");
+        r.rotationSpeed = 0;    //should stop now
+        updateCounter = 0;
+        window.setTimeout(test_validateStop0, 20);
+    }
+
+    function test_validateStop0() {
+        assert.equal(updateCounter, 0, "rotation stopped if rotationSpeed set to 0");
+        //start again
+        r.rotationSpeed = 5;
+        runTestsOnMethods();
+    }
+
+    //methods
+    function runTestsOnMethods() {
+        //(roation curretly started)
+        r.angle = 24;
+
+        var obj = r.toObject(),
+            startedAt = obj.startTimestamp;
+        assert.ok(obj.startAngle == 24 && Date.now() - startedAt < 10 && obj.rotationSpeed == 5, "toObject(): received object checked");
+
+        obj.startAngle = 54;
+        obj.rotationSpeed = 7;
+
+        updateCounter = 0;
+        r.setObject(obj);
+        assert.equal(updateCounter, 1, "update event dispatched when calling setObject()");
+        obj = r.toObject();
+        assert.equal(Math.floor(lastUpdate.value), 54, "setObject() update event args");
+        assert.ok(obj.startAngle == 54 && startedAt == obj.startTimestamp && obj.rotationSpeed == 7, "setObject() - cloning");
+
+        window.setTimeout(test_pause, 10);
+    }
+
+    var currentAngle;
+    function test_pause() {
+        r.pause();
+        r.rotationSpeed = 72;   //should not have an impact on paused rotation
+
+        updateCounter = 0;
+        currentAngle = r.angle;
+
+        assert.ok(r._paused, "internal pause check (not required: just to make sure it is set)");
+        window.setTimeout(test_validatePause, 20);
+    }
+
+    function test_validatePause() {
+        assert.equal(updateCounter, 0, "paused: no update event dispatched during pause");
+        assert.equal(currentAngle, r.angle, "paused: angle does not change");
+
+        r.angle = 23;
+        assert.equal(updateCounter, 1, "paused: set angle dispatched update event");
+
+        r.resume();
+        window.setTimeout(test_validateResume, 20);
+    }
+
+    function test_validateResume(){
+        assert.ok(updateCounter > 0, "resume: events dispatched again");
+        assert.ok(currentAngle != r.angle, "resume: angle changed");
+        r.stop();
+        updateCounter = 0;
+        currentAngle = r.angle;
+        window.setTimeout(test_validateStop, 20);
+    }
+
+    function test_validateStop() {
+        assert.equal(updateCounter, 0, "stopped: no update event dispatched when stopped");
+        assert.equal(currentAngle, r.angle, "stopped: angle does not change");
+
+        done1();
+    }
 });

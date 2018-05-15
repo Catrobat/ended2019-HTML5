@@ -65,10 +65,9 @@ SmartJs.Components = {
         Timer.extends(SmartJs.Core.Component);
 
         function Timer(delay, listener, startOnInit, callbackArgs) {
-            if (isNaN(delay) || parseInt(delay) !== delay)
-                throw new Error('invalid argument delay: expected type: int');
-            this._delay = delay;
-            //this._remainingTime = delay;  //init on start()
+            this._delay = 0;
+            this.delay = this._remainingTime = delay || 0;
+
             this._callBackArgs = callbackArgs;  //introduced to enable threaded timer identification
             this._paused = false;
 
@@ -81,12 +80,29 @@ SmartJs.Components = {
                 this.start();
         }
 
-        //events + properties
+        //events
         Object.defineProperties(Timer.prototype, {
             onExpire: {
                 get: function () { return this._onExpire; },
                 //enumerable: false,
                 //configurable: true,
+            },
+        });
+
+        //properties
+        Object.defineProperties(Timer.prototype, {
+            delay: {
+                set: function (value) {
+                    if (parseInt(value) !== value)
+                        throw new Error('invalid argument delay: expected type: int');
+                    if (this._remainingTime === 0)   //not started
+                        this._delay = value;
+                    else {
+                        this.stop();
+                        this._delay = value;
+                        this.start();
+                    }
+                },
             },
             remainingTime: {
                 get: function () {
@@ -120,7 +136,7 @@ SmartJs.Components = {
 
                 this._clearTimeout();
                 this._remainingTime -= (Date.now() - this._startTime);
-                if (this._remainingTime < 0)    //
+                if (this._remainingTime < 0)
                     this._remainingTime = 0;
                 this._paused = true;
             },
@@ -230,10 +246,10 @@ SmartJs.Components = {
         return Stopwatch;
     })(),
 
-    WebWorker: (function () {
-        WebWorker.extends(SmartJs.Core.EventTarget);
+    InlineWorker: (function () {
+        InlineWorker.extends(SmartJs.Core.EventTarget);
 
-        function WebWorker(scope, workerMethod, lookupObject) {
+        function InlineWorker(scope, workerMethod, lookupObject) {
 
             if (!(scope instanceof Object))
                 throw new Error('invalid argument: scope');
@@ -285,7 +301,7 @@ SmartJs.Components = {
         }
 
         //events
-        Object.defineProperties(WebWorker.prototype, {
+        Object.defineProperties(InlineWorker.prototype, {
             onExecuted: {
                 get: function () { return this._onExecuted; },
             },
@@ -295,7 +311,7 @@ SmartJs.Components = {
         });
 
         //properties
-        Object.defineProperties(WebWorker.prototype, {
+        Object.defineProperties(InlineWorker.prototype, {
             isBusy: {
                 get: function () {
                     return this._busy;
@@ -304,7 +320,7 @@ SmartJs.Components = {
         });
 
         //methods
-        WebWorker.prototype.merge({
+        InlineWorker.prototype.merge({
             /*code below is injected to run inside the worker*/
             _internalOnMessage: function (e) {
                 var data = e.data,
@@ -393,7 +409,7 @@ SmartJs.Components = {
             },
         });
 
-        return WebWorker;
+        return InlineWorker;
     })(),
 
     StorageAdapter: (function () {

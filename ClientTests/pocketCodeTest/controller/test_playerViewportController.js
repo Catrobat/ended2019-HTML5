@@ -13,6 +13,9 @@ QUnit.module("controller/playerViewportController.js");
 
 
 QUnit.test("PlayerViewportController", function (assert) {
+
+    var done = assert.async();
+
     var gameEngine = new PocketCode.GameEngine();
     var scene = new PocketCode.Model.Scene(gameEngine, undefined, []);
     var controller = new PocketCode.PlayerViewportController();
@@ -107,21 +110,25 @@ QUnit.test("PlayerViewportController", function (assert) {
 
     //showAskDialog
     var child = controller._view._childs.length;
-    controller.updateSprite("id0", { showAskDialog: updatedX});
-    var lastElement = controller._view._childs.length -1;
-    assert.ok(controller._view._childs.length == child +1 && controller._view._childs[lastElement] instanceof  PocketCode.Ui.AskDialog, "showAskDialog");
+    controller.updateSprite("id0", { showAskDialog: updatedX });
+    window.setTimeout(function () { //needed for mobile tests
+        var lastElement = controller._view._childs.length - 1;
+        assert.ok(controller._view._childs.length == child + 1 && controller._view._childs[lastElement] instanceof PocketCode.Ui.AskDialog, "showAskDialog");
+        
+        runClearTests();
+    }, 600);
 
     var args;
     var render = 0;
-    var mockView =  {
+    var mockView = {
         movePen: function (spriteId, penX, penY) {
-            args = {spriteId: spriteId, penX: penX, penY: penY};
+            args = { spriteId: spriteId, penX: penX, penY: penY };
         },
         drawStamp: function (spriteId) {
-            args = {spriteId: spriteId};
+            args = { spriteId: spriteId };
         },
         clearCurrentPenStampCache: function () {
-            args = {clear: 1};
+            args = { clear: 1 };
         },
         render: function () {
             render++;
@@ -141,7 +148,7 @@ QUnit.test("PlayerViewportController", function (assert) {
     controller.updateSprite("id0", { drawStamp: true });
     assert.ok(args.spriteId == "id0", "updateSprite drawStamp");
 
-    controller.updateSprite("id0", { clearBackground: true  });
+    controller.updateSprite("id0", { clearBackground: true });
     assert.ok(args.clear == 1, "updateSprite clearCurrentPenStampCache");
 
     assert.ok(render == 3, "render called 3 times");
@@ -158,9 +165,8 @@ QUnit.test("PlayerViewportController", function (assert) {
     variables = [];
 
     for (var i = 0; i < 5; i++) {
-        variables.push(new PocketCode.RenderingText({ id: "id" + i, x: i, y: i * 3, text: "placeholder", visible: true }));
+        variables.push(new PocketCode.RenderingText({ scopeId: "id", id: "id" + i, x: i, y: i * 3, text: "placeholder", visible: true }));
     }
-    variables[0]._objectId = "id";
     controller.renderingTexts = variables;
     assert.ok(controller._renderingTexts.length == 5, "Check rendering variables init");
 
@@ -173,7 +179,7 @@ QUnit.test("PlayerViewportController", function (assert) {
         }
     };
 
-    controller.updateVariable("id", "id0", { x: 5, y: 3 });
+    controller.updateVariable("id", "id0", "value", { x: 5, y: 3 });
 
     var testedVariable = getVariableById("id0");
     assert.equal(testedVariable.x, 5, "Updated Variable x position");
@@ -196,17 +202,13 @@ QUnit.test("PlayerViewportController", function (assert) {
     controller.hideAxes();
     assert.ok(controller._view.axisVisible == false, "Axes hidden again");
 
-    child = controller._view._childs.length;
-    controller.clearViewport();
-    assert.ok(controller._view._childs.length == child - 1, "clearViewport, child removed");
-    assert.ok(controller._view._canvas._currentSceneCache == undefined, "clearViewport, _currentSceneCache undefined");
+    function runClearTests() {
+        child = controller._view._childs.length;
+        controller.clearViewport();
+        assert.ok(controller._view._childs.length == child - 1, "clearViewport, child removed");
+        assert.ok(controller._view._canvas._currentSceneCache == undefined, "clearViewport, _currentSceneCache undefined");
 
-    var event = { on: true, src:"Hello World"};
-    controller._view.updateCameraUse = function(e){
-        assert.equal(event, e, "passes correct camera paremeters to the view");
+        done();
     }
-
-    controller.updateCameraUse(event);
-
 });
 
