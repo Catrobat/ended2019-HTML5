@@ -311,10 +311,8 @@ PocketCode.merge({
 
             this._type = PocketCode.Ui.BubbleType.SPEECH;
             this._orientation = PocketCode.BubbleOrientation.TOPRIGHT;
-            this._offsetX = 0;
-            this._offsetY = 0;
 
-            this._textObject = new PocketCode.RenderingText({ fontWeight: 'normal', fontSize: 17, lineHeight: 19, textAlign: 'center', maxLineWidth: 180 });
+            this._textObject = new PocketCode.RenderingText({ fontWeight: 'normal', fontSize: 51, lineHeight: 57, textAlign: 'center', maxLineWidth: 360 });
             this._textObject.onCacheUpdate.addEventListener(new SmartJs.Event.EventListener(this._redrawCache, this));
         }
 
@@ -322,7 +320,7 @@ PocketCode.merge({
         Object.defineProperties(RenderingBubble.prototype, {
             //layout settings
             _lineWidth: {
-                value: 3,
+                value: 9,
             },
             _strokeStyle: {
                 value: '#a0a0a0',
@@ -331,57 +329,57 @@ PocketCode.merge({
                 value: '#ffffff',
             },
             _radius: {
-                value: 10,
+                value: 30,
             },
             _minHeight: {
-                value: 50,
+                value: 150,
             },
             _minWidth: {
-                value: 75,
+                value: 225,
             },
             _textPadding: {
                 value: {
-                    top: 7,
-                    right: 8,
-                    bottom: 6,
-                    left: 8,
+                    top: 21,
+                    right: 24,
+                    bottom: 18,
+                    left: 24,
                 },
             },
             _tail: {
                 value: {
-                    height: 17,
-                    offset: 15,
-                    indent: 6,
-                    width: 16,
+                    height: 51,
+                    offset: 45,
+                    indent: 18,
+                    width: 48,
                 },
             },
             _thinkBubbles: {
                 value: {
-                    offsetX: 33,
-                    offsetY: 26,
+                    offsetX: 99,
+                    offsetY: 78,
                     scalingX: 1.4,
                     bubbles: [{
                         top: {
-                            x: 8,
-                            y: 6,
-                            radius: 4,
+                            x: 24,
+                            y: 18,
+                            radius: 12,
                         },
                         side: {
-                            x: 4,
-                            y: 33,
-                            radius: 4,
+                            x: 12,
+                            y: 99,
+                            radius: 12,
                         },
                     },
                     {
                         top: {
-                            x: 16,
-                            y: 16,
-                            radius: 7,
+                            x: 48,
+                            y: 48,
+                            radius: 21,
                         },
                         side: {
-                            x: 10,
-                            y: 21,
-                            radius: 7,
+                            x: 30,
+                            y: 63,
+                            radius: 21,
                         },
                     }],
                 },
@@ -404,17 +402,6 @@ PocketCode.merge({
                     this._redrawCache();
                 },
             },
-            //tail offsets
-            //offsetX: {
-            //    get: function () {
-            //        return this._offsetX;
-            //    },
-            //},
-            //offsetY: {
-            //    get: function () {
-            //        return this._offsetY;
-            //    },
-            //},
             /*bubblePosition: {
                 set: function (x, y) {
                     //Todo:
@@ -554,25 +541,25 @@ PocketCode.merge({
 
                 //update rendering offsets
                 bubble = settings.bubbles[0]['top'];
-                var borderXOffset = bubble.x - (bubble.radius + lineWidth) * settings.scalingX;
+                var offsetX = bubble.x - (bubble.radius + lineWidth) * settings.scalingX;
                 bubble = settings.bubbles[0]['side'];
-                var borderYOffset = bubble.y + (bubble.radius + lineWidth);
+                var offsetY = bubble.y + (bubble.radius + lineWidth);
                 switch (orientation) {
                     case PocketCode.BubbleOrientation.RIGHT:
-                        this._offsetX = 0;
-                        this._offsetY = borderYOffset;
+                        this.x = 0;
+                        this.y = offsetY;
                         break;
                     case PocketCode.BubbleOrientation.LEFT:
-                        this._offsetX = width;
-                        this._offsetY = borderYOffset;
+                        this.x = -width;
+                        this.y = offsetY;
                         break;
                     case PocketCode.BubbleOrientation.TOPRIGHT:
-                        this._offsetX = borderXOffset;
-                        this._offsetY = height;
+                        this.x = -offsetX;
+                        this.y = height;
                         break;
                     case PocketCode.BubbleOrientation.TOPLEFT:
-                        this._offsetX = width - borderXOffset;
-                        this._offsetY = height;
+                        this.x = offsetX - width;
+                        this.y = height;
                         break;
                 }
             },
@@ -657,24 +644,24 @@ PocketCode.merge({
                 ctx.restore();
 
                 //update rendering offsets
-                var borderXOffset = tail.offset - tail.indent;
-                var borderYOffset = tail.offset + tail.width + tail.indent;
+                var offsetX = tail.offset - tail.indent;
+                var offsetY = tail.offset + tail.width + tail.indent;
                 switch (orientation) {
                     case PocketCode.BubbleOrientation.RIGHT:
-                        this._offsetX = 0;
-                        this._offsetY = borderYOffset;
+                        this.x = 0;
+                        this.y = offsetY;
                         break;
                     case PocketCode.BubbleOrientation.LEFT:
-                        this._offsetX = width;
-                        this._offsetY = borderYOffset;
+                        this.x = -width;
+                        this.y = offsetY;
                         break;
                     case PocketCode.BubbleOrientation.TOPRIGHT:
-                        this._offsetX = borderXOffset;
-                        this._offsetY = height;
+                        this.x = -offsetX;
+                        this.y = height;
                         break;
                     case PocketCode.BubbleOrientation.TOPLEFT:
-                        this._offsetX = width - borderXOffset;
-                        this._offsetY = height;
+                        this.x = offsetX - width;
+                        this.y = height;
                         break;
                 }
             },
@@ -793,9 +780,9 @@ PocketCode.merge({
             //},
 
             /* override */
-            _draw: function (ctx, maxWidth) {
-                ctx.drawImage(this._cacheCanvas, -this._offsetX, -this._offsetY);
-            },
+            //_draw: function (ctx, maxWidth) {
+            //    ctx.drawImage(this._cacheCanvas, -this._offsetX, -this._offsetY);
+            //},
         });
 
         return RenderingBubble;
@@ -921,17 +908,8 @@ PocketCode.merge({
                 writable: true,
             },
             bubble: {
-                set: function (value) { //{ bubble: { type: type, text: text, visible: true } }
+                set: function (value) {
                     this._bubble.merge(value);
-                    ////TOdo set bubble properties
-                    //this._bubble.visible = value.visible;
-                    //if (value.visible) {
-                    //    //Todo
-
-                    //}
-                    //if (value.text)
-                    //    this._bubble.text = value.text;
-                    //this._bubble.type = value.type;
                 }
             }
         });
@@ -961,6 +939,16 @@ PocketCode.merge({
 
                 return (point.x >= left && point.x <= right && point.y <= top && point.y >= bottom);
                 //please notice: toFixed() is a string formatting function and returns a string- try not textObject convert numbers textObject strings textObject number during calculations
+            },
+            drawBubble:function(ctx){
+                ctx.save();
+                var x = this.x + this.boundary.right,
+                    y = -this.y - this.boundary.top;  //TODO: demo only
+
+                ctx.translate(x, y); //move to sprites position
+                //TODO: calc bubble tail position based on boundaries
+                this._bubble.draw(ctx);
+                ctx.restore();
             },
             /* override */
             _draw: function (ctx) {

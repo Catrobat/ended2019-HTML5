@@ -235,11 +235,11 @@ PocketCode.Ui.Canvas = (function () {
         },
 
         clear: function () {
-            this._upperCanvasCtx.clearRect(0, 0, this.width, this.height);
-            this._bubblesCanvasCtx.clearRect(0, 0, this.width, this.height);
-            this._spritesCanvasCtx.clearRect(0, 0, this.width, this.height);
             this._cameraCanvasCtx.clearRect(0, 0, this.width, this.height);
             this._backgroundCanvasCtx.clearRect(0, 0, this.width, this.height);
+            this._spritesCanvasCtx.clearRect(0, 0, this.width, this.height);
+            this._bubblesCanvasCtx.clearRect(0, 0, this.width, this.height);
+            this._upperCanvasCtx.clearRect(0, 0, this.width, this.height);
         },
         _getTouchData: function (e) {
             var pointer;
@@ -386,6 +386,7 @@ PocketCode.Ui.Canvas = (function () {
         render: function () {
             var backgroundCtx = this._backgroundCanvasCtx;
             var ctx = this._spritesCanvasCtx;
+            var bubblesCtx = this._bubblesCanvasCtx;
 
             backgroundCtx.clearRect(0, 0, this.width, this.height);
             backgroundCtx.save();
@@ -397,14 +398,22 @@ PocketCode.Ui.Canvas = (function () {
             ctx.translate(this._translation.x, this._translation.y);
             ctx.scale(this._scalingX, this._scalingY);
 
+            bubblesCtx.clearRect(0, 0, this.width, this.height);
+            bubblesCtx.save();
+            bubblesCtx.translate(this._translation.x, this._translation.y);
+            bubblesCtx.scale(this._scalingX, this._scalingY);
             var ro = this._renderingSprites;
 
             // draw all sprites
             for (var i = 0, l = ro.length; i < l; i++) {
-                if (ro[i].isBackground)
+                if (ro[i].isBackground) {
                     ro[i].draw(backgroundCtx);
-                else
+                    ro[i].drawBubble(bubblesCtx);
+                }
+                else {
                     ro[i].draw(ctx);
+                    ro[i].drawBubble(bubblesCtx);
+                }
             }
 
             //draw rendering texts
@@ -418,6 +427,7 @@ PocketCode.Ui.Canvas = (function () {
 
             backgroundCtx.restore();
             ctx.restore();
+            bubblesCtx.restore();
         },
         //camera
         renderCamera: function () {

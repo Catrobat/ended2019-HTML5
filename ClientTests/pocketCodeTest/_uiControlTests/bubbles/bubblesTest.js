@@ -16,6 +16,7 @@ window.onload = function () {
         sb4 = new PocketCode.RenderingBubble();
 
     sb1.content = sb2.content = sb3.content = 'Je vais faire une phrase simple afin de démontrer que cela s affiche bien sans problème';
+    sb3.content = true;
     sb4.content = 'a';  //minHeight, minWidth
     sb1.orientation = PocketCode.BubbleOrientation.TOPRIGHT;
     sb2.orientation = PocketCode.BubbleOrientation.TOPLEFT;

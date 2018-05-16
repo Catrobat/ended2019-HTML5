@@ -1212,7 +1212,7 @@ PocketCode.Model.Sprite = (function () {
             return this._triggerOnChange({ drawStamp: true });
         },
 
-        showBubble: function (type, text) {
+        showBubble: function (type, content) {
             this._currentBubbleType = type;
             var boundary = { top: 0, right: 0, bottom: 0, left: 0 };
             if (this._currentLook && this._transparency < 100.0) {
@@ -1220,7 +1220,7 @@ PocketCode.Model.Sprite = (function () {
                     flipX = this.rotationStyle === PocketCode.RotationStyle.LEFT_TO_RIGHT && this._direction < 0.0 ? true : false;
                 boundary = this._currentLook.getBoundary(this._scaling, rotationCW, flipX, true);
             }
-            return this._triggerOnChange({ boundary: boundary, bubble: { type: type, text: text, visible: true, screenSize: this._scene.screenSize } });
+            return this._triggerOnChange({ boundary: boundary, bubble: { type: type, content: content, visible: true, screenSize: this._scene.screenSize } });
         },
         hideBubble: function () {
             this._currentBubbleType = undefined;
