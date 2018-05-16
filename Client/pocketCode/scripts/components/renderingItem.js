@@ -84,7 +84,7 @@ PocketCode.merge({
             this._value = undefined;
             this._maxLineWidth = undefined;
 
-            this._scopeId = propObject.scopeId;   //var ids not unique due to cloning: the id is the sprite (local scope) or project (global scope) id
+            this._scopeId = propObject.scopeId;   //var ids not unique due textObject cloning: the id is the sprite (local scope) or project (global scope) id
             delete propObject.scopeId;
             this._textAlign = propObject.textAlign || 'left';
             delete propObject.textAlign;
@@ -179,7 +179,7 @@ PocketCode.merge({
                         block.width = Math.max(block.width, metrics.width);
                     }
                 }
-                else {  //split lines and words to fit maxLineWidth
+                else {  //split lines and words textObject fit maxLineWidth
                     var words,
                         testLine = '',
                         width;
@@ -202,7 +202,7 @@ PocketCode.merge({
                                     testLine += ' ';
                                 }
                                 else if (line == '') {  //word does not fit but line is empty: split word
-                                    var chars = Math.max(1, Math.floor(maxLineWidth / metrics.width * words[n].length * 0.97)), //-3% to make sure the resulting word fits
+                                    var chars = Math.max(1, Math.floor(maxLineWidth / metrics.width * words[n].length * 0.97)), //-3% textObject make sure the resulting word fits
                                         splitWord = words[n].substr(0, chars);
                                     metrics = ctx.measureText(splitWord);
                                     block.lines.push({ text: splitWord, width: metrics.width });
@@ -227,7 +227,7 @@ PocketCode.merge({
                 }
 
                 block.width = Math.ceil(block.width);
-                block.height = Math.ceil(block.lines.length * this.lineHeight);// - (this.lineHeight - this.fontSize) * 0.5);
+                block.height = Math.ceil(block.lines.length * this.lineHeight);
                 return block;
             },
             _redrawCache: function () {
@@ -246,13 +246,13 @@ PocketCode.merge({
 
                 ctx.textBaseline = 'middle';
                 ctx.font = font;
-                ctx.textAlign = 'left'; //always left even if set to 'center'
+                ctx.textAlign = 'left'; //always left even if set textObject 'center'
                 var textBlock = this._getTextBlock(string);
-                canvas.width = textBlock.width;//resize sets ctx to default
+                canvas.width = textBlock.width;//resize sets ctx textObject default
                 canvas.height = textBlock.height;
 
                 ctx.save();
-                //apply settings again (due to canvas resize)
+                //apply settings again (due textObject canvas resize)
                 ctx.textBaseline = 'middle';
                 ctx.font = font;
                 ctx.textAlign = 'left';
@@ -266,7 +266,7 @@ PocketCode.merge({
                     line = textLines[i];
                     if (rtl) {
                         //please notice: as our cache is not part of the DOM, rendering texts correctly is tricky
-                        text = '\u202E' + line.text;    //force to RTL text
+                        text = '\u202E' + line.text;    //force textObject RTL text
                         if (this._textAlign != 'center')
                             offset = textBlock.width - line.width;  //make sure all texts are visible and aligned correctly
                     }
@@ -275,15 +275,15 @@ PocketCode.merge({
 
                     //text may be centered (for bubbles)
                     if (this._textAlign == 'center')
-                        offset = (textBlock.width - line.width) * 0.5;  //works much better (RTL) than ctx.translate(textBlock.width * 0.5, 0);
+                        offset = (textBlock.width - line.width) * .5;  //works much better (RTL) than ctx.translate(textBlock.width * .5, 0);
 
-                    ctx.fillText(text, offset, this.lineHeight * (i + 0.5));
+                    ctx.fillText(text, offset, this.lineHeight * (i + .5));
                 }
                 ctx.restore();
                 this._onCacheUpdate.dispatchEvent({ size: { width: textBlock.width, height: textBlock.height } });
             },
             _onLanguageChangeHandler: function () {
-                //wait for the i18nStrings to updated and then redraw the cache: timeout needed because this handler may be called first
+                //wait for the i18nStrings textObject updated and then redraw the cache: timeout needed because this handler may be called first
                 window.setTimeout(this._redrawCache.bind(this), 0);
             },
             /* override */
@@ -304,39 +304,87 @@ PocketCode.merge({
     },
 
     RenderingBubble: (function () {
-        RenderingBubble.extends(PocketCode.RenderingItem);
+        RenderingBubble.extends(PocketCode.RenderingItem, false);
 
         function RenderingBubble() {
+            PocketCode.RenderingItem.call(this);
 
-            this._lineWidth = 8;
-            this._strokeStyle = '#a0a0a0';
-            this._fillStyle = '#ffffff';
             this._type = PocketCode.Ui.BubbleType.SPEECH;
             this._orientation = PocketCode.BubbleOrientation.TOPRIGHT;
+            this._offsetX = 0;
+            this._offsetY = 0;
 
-            this._radius = 15;
-            this._minHeight = 50;
-            this._minWidth = 75;
-
-            this._textObject = new PocketCode.RenderingText({ fontWeight: 'normal', fontSize: 31, lineHeight: 36, textAlign: 'center', maxLineWidth: 270 });
+            this._textObject = new PocketCode.RenderingText({ fontWeight: 'normal', fontSize: 17, lineHeight: 19, textAlign: 'center', maxLineWidth: 180 });
             this._textObject.onCacheUpdate.addEventListener(new SmartJs.Event.EventListener(this._redrawCache, this));
-            //propObject = propObject || {};
-           // this._offsetX = 0;
-            //this._offsetY = 0;
-
-            //Todo: offset scaling
-            //this._positionX = 0;
-            //this._positionY = 0;
-            //this._width = 0;
-            //this._height = 0;
-
         }
 
         //properties
         Object.defineProperties(RenderingBubble.prototype, {
-            screenSize: {
-                value: { width: 0, height: 0 },
-                writable: true,
+            //layout settings
+            _lineWidth: {
+                value: 3,
+            },
+            _strokeStyle: {
+                value: '#a0a0a0',
+            },
+            _fillStyle: {
+                value: '#ffffff',
+            },
+            _radius: {
+                value: 10,
+            },
+            _minHeight: {
+                value: 50,
+            },
+            _minWidth: {
+                value: 75,
+            },
+            _textPadding: {
+                value: {
+                    top: 7,
+                    right: 8,
+                    bottom: 6,
+                    left: 8,
+                },
+            },
+            _tail: {
+                value: {
+                    height: 17,
+                    offset: 15,
+                    indent: 6,
+                    width: 16,
+                },
+            },
+            _thinkBubbles: {
+                value: {
+                    offsetX: 33,
+                    offsetY: 26,
+                    scalingX: 1.4,
+                    bubbles: [{
+                        top: {
+                            x: 8,
+                            y: 6,
+                            radius: 4,
+                        },
+                        side: {
+                            x: 4,
+                            y: 33,
+                            radius: 4,
+                        },
+                    },
+                    {
+                        top: {
+                            x: 16,
+                            y: 16,
+                            radius: 7,
+                        },
+                        side: {
+                            x: 10,
+                            y: 21,
+                            radius: 7,
+                        },
+                    }],
+                },
             },
             type: {
                 set: function (value) {
@@ -350,68 +398,24 @@ PocketCode.merge({
                     this._redrawCache();
                 },
             },
-            _bubblePadding: {
-                value: {
-                    top:10,
-                    bottom:10,
-                    left:10,
-                    right:10,
-                },
-
-            },
-            _tail: {
-                value : {
-                    height : 20,
-                    offset : 10,
-                    indent : 5,
-                    width : 10,
-                },
-            },
-            _thinkBubbles : {
-                value: {
-                    height : 30,
-                    radiusBottom : 4,
-                    radiusTop : 7,
-                    scaleBottom : 2.1,
-                    scaleTop : 2.1,
-                    offsetXBottom : 0,
-                    offsetXTop : 0,
-                    offsetYBottom : 20,
-                    offsetYTop : 8,
-                    offsetTopBubble : 15
-
-                },
-            }
-
-
-
-            //,
-           /* offsetX: {
-                get: function () {
-                    return this._offsetX;
-                }
-            },*/
-           /* offsetY: {
-                get: function () {
-                    return this._offsetY;
-                }
-            }*/
-            ,
             content: {
-                //Todo:
                 set: function (value) {
                     this._textObject.value = value;
-                    //this._redrawCache();
-                    //if (!value)
-                    //  this._text = this._UNDEFINED_TEXT.toString();
-                    //else if (typeof value == 'number' && Math.round(value) == value)
-                    //    this._text = value.toString() + '.0';   //include 1 decimal for integers
-                    //else
-                    //  this._text = value.toString();
+                    this._redrawCache();
                 },
             },
-            /*
-            bubblePosition: {
+            //tail offsets
+            //offsetX: {
+            //    get: function () {
+            //        return this._offsetX;
+            //    },
+            //},
+            //offsetY: {
+            //    get: function () {
+            //        return this._offsetY;
+            //    },
+            //},
+            /*bubblePosition: {
                 set: function (x, y) {
                     //Todo:
                     if (isNaN(x) || isNaN(y))
@@ -422,15 +426,6 @@ PocketCode.merge({
                 },
     
             },
-            orientation: {
-                set: function (orientation) {
-                    this._orientation = orientation;
-                },
-                get: function () {
-                    return this._orientation;
-                }
-            },
-            //unnötig wenn an recalculateBubbleposition canvas übergeben wird
             bubbleWidth: {
                 get: function () {
                     return this._width;
@@ -452,414 +447,354 @@ PocketCode.merge({
     
                     this._height = height;
                 }
-            },
-            
-            bubblePositionX: {
-                get: function () {
-                    return this._positionX;
-                }
-            },
-            bubblePositionY: {
-                get: function () {
-                    return this._positionY;
-                }
             },*/
         });
 
         //methods
         RenderingBubble.prototype.merge({
             _redrawCache: function () {
-
-                var type = this._type,
-                    ctx = this._cacheCanvas;
-                //var bX = this.bubblePositionX.get();
-                //var bY = this.bubblePositionY.get();
-
-                if (type === PocketCode.Ui.BubbleType.SPEECH) {
-                    this._drawSpeechBubble();
-                }
-                else if (type === PocketCode.Ui.BubbleType.THINK) {
+                if (this._type === PocketCode.Ui.BubbleType.THINK)
                     this._drawThinkBubble();
-                }
-
-                //Todo: empty bubbles not shown: this._textObject.width == 0 || this._textObject.height == 0
-                //      bricksLook.js handled in bubble bricks
-
-
+                else    //default
+                    this._drawSpeechBubble();
             },
             _drawThinkBubble: function () {
 
-                var radius = this._radius,
-                    minHeight = this._minHeight,
-                    minWidth = this._minWidth,
+                var lineWidth = this._lineWidth,
+                    radius = this._radius,
+                    settings = this._thinkBubbles,
                     orientation = this._orientation,
                     canvas = this._cacheCanvas,
                     ctx = this._cacheCtx;
 
-                var to = this._textObject,
-                    bubbleHeight = to.height,
-                    bubbleWidth = to.width;
+                var textObject = this._textObject,
+                    bubbleWidth = Math.max(this._minWidth, textObject.width + this._textPadding.left + this._textPadding.right + 2 * lineWidth),
+                    bubbleHeight = Math.max(this._minHeight, textObject.height + this._textPadding.top + this._textPadding.bottom + 2 * lineWidth);
 
-                var height = Math.max(minHeight, bubbleHeight);
-                var width = Math.max(minWidth, bubbleWidth);
-
-                var x = this._lineWidth,
-                    y = this._lineWidth + radius;
-                var pi2 = Math.PI * 2; //Needed for 360 degree
-
-
-
-                canvas.width = width + this._lineWidth;
-                canvas.height = height + this._thinkBubbles.height  + this._lineWidth;
-
-
-                if(orientation === PocketCode.BubbleOrientation.LEFT || orientation === PocketCode.BubbleOrientation.RIGHT){
-
-                    height = Math.max(minHeight, bubbleWidth);
-                    width = Math.max(minWidth, bubbleHeight);
-
-                    canvas.height = width + this._lineWidth;
-                    canvas.width = height + this._thinkBubbles.height  + this._lineWidth + (this._thinkBubbles.radiusBottom + this._thinkBubbles.radiusTop) *0.5;
-                    //ctx.save();
-                    ctx.translate(canvas.width/2, canvas.height/2);
-                    ctx.rotate(pi2 * 90 / 360);
-
-                    if(orientation === PocketCode.BubbleOrientation.LEFT){
-                        ctx.scale(1,-1);
-                    }
-
-                    // Move registration point back to the top left corner of canvas
-                    ctx.translate(-canvas.height/2 + radius * 0.3, -canvas.width/2+ this._lineWidth * 0.5);
-
-                }else if( orientation === PocketCode.BubbleOrientation.TOPLEFT){
-
-                    //ctx.save();
-                    ctx.setTransform(-1,0,0,1,canvas.width ,0);
-                    ctx.translate(4,  7);
-                }else{
-                    //ctx.save();
-
-                    ctx.translate(this._lineWidth * 0.5, radius * 0.5);
+                //set canvas size
+                var width = bubbleWidth,
+                    height = bubbleHeight + settings.offsetY;
+                if (orientation === PocketCode.BubbleOrientation.LEFT || orientation === PocketCode.BubbleOrientation.RIGHT) {
+                    width = bubbleWidth + settings.offsetX;
+                    height = bubbleHeight;
                 }
-                radius = radius - this._lineWidth *0.5;
+
+                canvas.width = width;
+                canvas.height = height;
+
+                ctx.save(); //save initial state
+
+                //styles
                 ctx.fillStyle = this._fillStyle;
-                ctx.strokeStyle= this._strokeStyle;
-                ctx.lineWidth = this._lineWidth;
-                ctx.save();
+                ctx.strokeStyle = this._strokeStyle;
+                ctx.lineWidth = lineWidth;
 
-                //Bubble
-                ctx.beginPath();
-
-                ctx.arc(radius, radius, radius,pi2*0.5 , pi2*0.75);
-                ctx.arc(width-radius, radius, radius,  pi2*0.75, pi2);
-                ctx.arc(width-radius, height-radius, radius, 0, pi2*0.25);
-                ctx.arc(radius, height-radius, radius, pi2*0.25, pi2*0.5);
-                ctx.closePath();
-                ctx.stroke();
-                ctx.fill();
-
-
-
-                //Ellipse Bubbles
-
-                ctx.translate(this._thinkBubbles.offsetTopBubble, height+this._thinkBubbles.offsetYTop);
-
-                if(orientation === PocketCode.BubbleOrientation.LEFT || orientation === PocketCode.BubbleOrientation.RIGHT){
-
-                    ctx.rotate(pi2 * 90 / 360);
+                //flip X (horizontal)
+                if (orientation == PocketCode.BubbleOrientation.LEFT || orientation == PocketCode.BubbleOrientation.TOPLEFT) {
+                    ctx.translate(canvas.width + .5, 0);
+                    ctx.scale(-1, 1);
                 }
 
-
-                // scale context horizontally
-                ctx.scale(this._thinkBubbles.scaleTop, 1);
-
-                // draw circle which will be stretched into an oval
-                ctx.beginPath();
-                ctx.arc(this._thinkBubbles.radiusTop, this._thinkBubbles.radiusTop, this._thinkBubbles.radiusTop, 0, pi2);
-
-
-                // restore to original state
-                ctx.restore();
-                ctx.fill();
-                ctx.lineWidth = (this._lineWidth*0.5) / Math.max(this._thinkBubbles.scaleTop, this._thinkBubbles.scaleBottom);
-                ctx.stroke();
-                ctx.closePath();
-                ctx.restore();
-
-
-
-                //ctx.translate(0, height+this._thinkBubbles.offsetYBottom);
-
-                if(orientation === PocketCode.BubbleOrientation.LEFT || orientation === PocketCode.BubbleOrientation.RIGHT){
-
-                    ctx.translate(28, height+this._thinkBubbles.offsetYBottom);
-                    ctx.rotate(pi2 * 90 / 360);
-                }else{
-                    ctx.translate(0, height+this._thinkBubbles.offsetYBottom);
-                }
-
-
-
-                ctx.scale(this._thinkBubbles.scaleBottom ,1);
-                ctx.beginPath();
-                ctx.arc(this._thinkBubbles.radiusBottom, this._thinkBubbles.radiusBottom, this._thinkBubbles.radiusBottom, 0, pi2);
-                //End ellispse bubbles
-                ctx.closePath();
-                // restore to original state
-                ctx.restore();
-                ctx.fill();
-                ctx.stroke();
-
-
-                //TODO : Add text on Think bubbles
-                ctx.restore();
+                //save translate 0/0
                 ctx.save();
-                ctx.translate(x + this._bubblePadding.top ,y - this._bubblePadding.left);
-                to.draw(ctx);
-                ctx.save()
+
+                //draw bubble
+                if (orientation == PocketCode.BubbleOrientation.LEFT || orientation == PocketCode.BubbleOrientation.RIGHT)
+                    ctx.translate(settings.offsetX + lineWidth * .5, lineWidth * .5);
+                else
+                    ctx.translate(lineWidth * .5, lineWidth * .5);
+
+                ctx.beginPath();
+                ctx.arc(radius, radius, radius, Math.PI, Math.PI * 1.5);
+                ctx.arc(bubbleWidth - lineWidth - radius, radius, radius, Math.PI * 1.5, Math.PI * 2);
+                ctx.arc(bubbleWidth - lineWidth - radius, bubbleHeight - lineWidth - radius, radius, 0, Math.PI * .5);
+                ctx.arc(radius, bubbleHeight - lineWidth - radius, radius, Math.PI * .5, Math.PI);
+                ctx.closePath();
+                ctx.fill();
+                ctx.stroke();
+
+                //restore translate 0/0
                 ctx.restore();
 
+                //draw small bubbles
+                var type = (orientation == PocketCode.BubbleOrientation.TOPLEFT ||
+                            orientation == PocketCode.BubbleOrientation.TOPRIGHT) ? 'top' : 'side';
 
+                var bubble;
+                ctx.save();
+                ctx.scale(settings.scalingX, 1);
+                ctx.lineWidth = lineWidth / settings.scalingX;
 
+                for (var i = 0, l = settings.bubbles.length; i < l; i++) {
+                    bubble = settings.bubbles[i][type];
 
+                    ctx.beginPath();
+                    if (type == 'top')   //offsets are calculated from the bottom
+                        ctx.arc(bubble.x * settings.scalingX, height - bubble.y, bubble.radius, 0, Math.PI * 2);
+                    else
+                        ctx.arc(bubble.x * settings.scalingX, bubble.y, bubble.radius, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.stroke();
+                    ctx.closePath();
+                }
+                ctx.restore();  //scaling
 
+                //restore initial
+                ctx.restore();
 
+                //draw text
+                ctx.save();
+                if (orientation === PocketCode.BubbleOrientation.RIGHT)
+                    ctx.translate(settings.offsetX + bubbleWidth * .5 - textObject.width * .5, bubbleHeight * .5 - textObject.height * .5);
+                else //default
+                    ctx.translate(bubbleWidth * .5 - textObject.width * .5, bubbleHeight * .5 - textObject.height * .5);
 
+                textObject.draw(ctx);
+                ctx.restore();
 
+                //update rendering offsets
+                bubble = settings.bubbles[0]['top'];
+                var borderXOffset = bubble.x - (bubble.radius + lineWidth) * settings.scalingX;
+                bubble = settings.bubbles[0]['side'];
+                var borderYOffset = bubble.y + (bubble.radius + lineWidth);
+                switch (orientation) {
+                    case PocketCode.BubbleOrientation.RIGHT:
+                        this._offsetX = 0;
+                        this._offsetY = borderYOffset;
+                        break;
+                    case PocketCode.BubbleOrientation.LEFT:
+                        this._offsetX = width;
+                        this._offsetY = borderYOffset;
+                        break;
+                    case PocketCode.BubbleOrientation.TOPRIGHT:
+                        this._offsetX = borderXOffset;
+                        this._offsetY = height;
+                        break;
+                    case PocketCode.BubbleOrientation.TOPLEFT:
+                        this._offsetX = width - borderXOffset;
+                        this._offsetY = height;
+                        break;
+                }
             },
             _drawSpeechBubble: function () {
 
-                var radius = this._radius,
-                    minHeight = this._minHeight,
-                    minWidth = this._minWidth,
+                var lineWidth = this._lineWidth,
+                    radius = this._radius,
+                    tail = this._tail,
                     orientation = this._orientation,
                     canvas = this._cacheCanvas,
                     ctx = this._cacheCtx;
 
-                var to = this._textObject,
-                    bubbleHeight = to.height + this._bubblePadding.top+ this._bubblePadding.bottom,
-                    bubbleWidth = to.width + this._bubblePadding.left+ this._bubblePadding.right ;
+                var textObject = this._textObject,
+                    bubbleWidth = Math.max(this._minWidth, textObject.width + this._textPadding.left + this._textPadding.right + 2 * lineWidth),
+                    bubbleHeight = Math.max(this._minHeight, textObject.height + this._textPadding.top + this._textPadding.bottom + 2 * lineWidth);
 
-                var height = Math.max(minHeight, bubbleHeight);
-                var width = Math.max(minWidth, bubbleWidth);
-
-                var x = this._lineWidth,
-                    y = this._lineWidth + radius;
-                var pi2 = Math.PI * 2; //Needed for 360 degree
-
-
-
-                 canvas.width = width + this._lineWidth;
-                 canvas.height = height + this._tail.height  + this._lineWidth + this._tail.width;
-
-
-                if(orientation === PocketCode.BubbleOrientation.LEFT || orientation === PocketCode.BubbleOrientation.RIGHT){
-
-                    height = Math.max(minHeight, bubbleWidth);
-                    width = Math.max(minWidth, bubbleHeight);
-
-                    canvas.height = width + this._lineWidth;
-                    canvas.width = height + this._tail.height  + this._lineWidth + this._tail.width;
-                    ctx.save();
-                    ctx.translate(canvas.width/2, canvas.height/2);
-                    ctx.rotate(pi2 * 90 / 360);
-
-                    if(orientation === PocketCode.BubbleOrientation.LEFT){
-                        ctx.scale(1,-1);
-                    }
-
-                    // Move registration point back to the top left corner of canvas
-                    ctx.translate(-canvas.height/2 + radius * 0.3, -canvas.width/2+ this._lineWidth * 0.5);
-
-                    this._tail.indent = -(this._tail.indent*4);
-
-
-                }else if( orientation === PocketCode.BubbleOrientation.TOPLEFT){
-
-                    ctx.save();
-                    ctx.setTransform(-1,0,0,1,canvas.width ,0);
-                    ctx.translate(4,  7);
-                }else{
-                    ctx.save();
-
-                    ctx.translate(this._lineWidth * 0.5, radius * 0.5);
+                //set canvas size
+                var width = bubbleWidth,
+                    height = bubbleHeight + tail.height;
+                if (orientation === PocketCode.BubbleOrientation.LEFT || orientation === PocketCode.BubbleOrientation.RIGHT) {
+                    width = bubbleWidth + tail.height;
+                    height = bubbleHeight;
                 }
 
+                canvas.width = width;
+                canvas.height = height;
+
+                ctx.save(); //save initial state
+
+                //styles
                 ctx.fillStyle = this._fillStyle;
-                ctx.strokeStyle= this._strokeStyle;
-                ctx.lineWidth = this._lineWidth;
+                ctx.strokeStyle = this._strokeStyle;
+                ctx.lineWidth = lineWidth;
 
-                radius = radius - this._lineWidth *0.5;
-                    //Bubble
-                    ctx.beginPath();
-
-                    ctx.arc(radius, radius, radius,pi2*0.5 , pi2*0.75);
-                    ctx.arc(width-radius, radius, radius,  pi2*0.75, pi2);
-                    ctx.arc(width-radius, height-radius, radius, 0, pi2*0.25);
-
-                    //Tail
-                    ctx.lineTo(this._tail.offset + this._tail.width, height);
-                    ctx.lineTo( this._tail.offset - this._tail.indent , height + this._tail.height);
-                    ctx.lineTo(this._tail.offset  , height);
-
-                    ctx.arc(radius, height-radius, radius, pi2*0.25, pi2*0.5);
-                    ctx.closePath();
-                    ctx.stroke();
-                    ctx.fill();
-
-                    //Text
-                    //TODO : improve text layout for LEFT and RIGHT
-                    ctx.restore();
-                    ctx.save();
-                if(orientation === PocketCode.BubbleOrientation.RIGHT) {
-
-                    ctx.translate(x + this._bubblePadding.top + this._tail.height ,y - this._bubblePadding.left);
-                }else{
-
-                    ctx.translate(x + this._bubblePadding.top ,y - this._bubblePadding.left);
+                //flip X (horizontal)
+                if (orientation == PocketCode.BubbleOrientation.LEFT || orientation == PocketCode.BubbleOrientation.TOPLEFT) {
+                    ctx.translate(canvas.width + .5, 0);
+                    ctx.scale(-1, 1);
                 }
-                    to.draw(ctx);
-                    ctx.restore();
 
-            },
-            _recalculateBubblePosition: function (screenSize, boundary, canvas) {
-
-                //Screensize
-                var screenWidth = screenSize.width(),
-                    screenHeight = screenSize.height();
-                //x/y coordinates of Boundary top
-                var topY = boundary.top(),
-                    bottomY = boundary.bottom(),
-                    rightX = boundary.right(),
-                    leftX = boundary.left();
-
-                //unnötig wenn canvas übergeben wird
-                //this._calculateBubbleSize(textWidth, textHeight);
-
-                var bWidth = canvas.width,
-                    bHeight = canvas.height;
-
-                /*
-                //Sprite size
-                var sWidth, sHeight;
-        
-                if (leftX > 0 && rightX > 0)
-                    sWidth = rightX - leftX;
-                else if (rightX < 0 && leftX < 0)
-                    sWidth = Math.abs(leftX) - Math.abs(rightX);
+                //draw bubble
+                if (orientation == PocketCode.BubbleOrientation.LEFT || orientation == PocketCode.BubbleOrientation.RIGHT)
+                    ctx.translate(tail.height + lineWidth * .5, lineWidth * .5);
                 else
-                    sWidth = Math.abs(rightX) + Math.abs(leftX);
-        
-                if (bottomY > 0 && topY > 0)
-                    sHeight = topY - bottomY;
-                else if (topY < 0 && bottomY < 0)
-                    sHeight = Math.abs(bottomY) - Math.abs(topY);
-                else
-                    sHeight = Math.abs(topY) + Math.abs(bottomY);
-                */
+                    ctx.translate(lineWidth * .5, lineWidth * .5);
 
-                //Offset for bubbles
-                var bOffsetSide,
-                    bOffsetBottom,
-                    radius = 15,
-                    type = this._type;
+                ctx.beginPath();
+                ctx.arc(radius, radius, radius, Math.PI, Math.PI * 1.5);
+                ctx.arc(bubbleWidth - lineWidth - radius, radius, radius, Math.PI * 1.5, Math.PI * 2);
+                ctx.arc(bubbleWidth - lineWidth - radius, bubbleHeight - lineWidth - radius, radius, 0, Math.PI * .5);
 
-                if (type === PocketCode.Ui.BubbleType.THINK) {
-                    bOffsetSide = 3 * radius + 2 * 2; //radius + linewidth
-                    bOffsetBottom = 2 * radius + 2 * 2;
+                if (orientation == PocketCode.BubbleOrientation.TOPLEFT || orientation == PocketCode.BubbleOrientation.TOPRIGHT) {
+                    //draw tail at bottom left
+                    ctx.lineTo(tail.offset + tail.width, bubbleHeight - lineWidth);
+                    ctx.lineTo(tail.offset - tail.indent, height - lineWidth);
+                    ctx.lineTo(tail.offset, bubbleHeight - lineWidth);
                 }
-                if (type === PocketCode.Ui.BubbleType.SPEECH) {
-                    bOffsetSide = radius / 2 + 2 * 2;
-                    bOffsetBottom = radius + 2 * 2;
+                ctx.arc(radius, bubbleHeight - lineWidth - radius, radius, Math.PI * .5, Math.PI);
+
+                if (orientation == PocketCode.BubbleOrientation.LEFT || orientation == PocketCode.BubbleOrientation.RIGHT) {
+                    //draw tail at the left side
+                    ctx.lineTo(0, tail.offset + tail.width);
+                    ctx.lineTo(-tail.height, tail.offset + tail.width + tail.indent);
+                    ctx.lineTo(0, tail.offset);
                 }
 
-                var bPosition = {
-                    x: 0,
-                    y: 0,
-                };
+                ctx.closePath();
+                ctx.fill();
+                ctx.stroke();
 
-                //Checks to get the Position and Orientation
-                //Height & width checks standard
-                if ((topY > 0 && (topY + bHeight) < (screenHeight / 2)) || (topY < 0 && (topY + bHeight) < screenHeight)) {
-                    //right
-                    if (rightX > 0 && (rightX + bWidth) < (screenWidth / 2)) {
-                        this.orientation = PocketCode.BubbleOrientation.LEFT;
-                        bPosition.x = rightX + bWidth / 2;
-                        bPosition.y = (bHeight + bOffsetBottom) / 2 + (topY - bOffsetBottom);
-                    }
-                        //right screenWidth überschritten
-                    else if ((rightX + bWidth) > (screenWidth / 2)) {
-                        this.orientation = PocketCode.BubbleOrientation.RIGHT;
-                        bPosition.x = leftX - bWidth / 2;
-                        bPosition.y = (bHeight + bOffsetBottom) / 2 + (topY - bOffsetBottom);
-                    }
-                        //left
-                    else if (leftX < 0 && (Math.abs(leftX) + bWidth) < (screenWidth / 2)) {
-                        this.orientation = PocketCode.BubbleOrientation.RIGHT;
-                        bPosition.x = leftX - bWidth / 2;
-                        bPosition.y = (bHeight + bOffsetBottom) / 2 + (topY - bOffsetBottom);
-                    }
-                        //left screenWidth überschritten
-                    else if ((Math.abs(leftX) + bWidth) > (screenWidth / 2)) {
-                        this.orientation = PocketCode.BubbleOrientation.LEFT;
-                        bPosition.x = rightX + bWidth / 2;
-                        bPosition.y = (bHeight + bOffsetBottom) / 2 + (topY - bOffsetBottom);
-                    }
-                }
-                    //Height & width checks, bubbleHeight > screen
-                else if (topY > 0 && (topY + bHeight) >= (screenHeight / 2)) {
-                    if (((rightX + bOffsetSide + bWidth) < (screenWidth / 2)) && rightX > 0) {
-                        this.orientation = PocketCode.BubbleOrientation.TOPLEFT;
-                        bPosition.x = rightX + (bWidth + bOffsetSide) / 2;
-                        bPosition.y = (5 / 8) * topY;
-                    }
-                    else if ((rightX + bOffsetSide + bWidth) < (screenWidth / 2)) {
-                        this.orientation = PocketCode.BubbleOrientation.TOPRIGHT;
-                        bPosition.x = leftX - (bWidth + bOffsetSide) / 2;
-                        bPosition.y = (5 / 8) * topY;
-                    }
-                    else if (leftX < 0 && (Math.abs(leftX) + bOffsetSide + bWidth) < (screenWidth / 2)) {
-                        this.orientation = PocketCode.BubbleOrientation.TOPRIGHT;
-                        bPosition.x = leftX - (bWidth + bOffsetSide) / 2;
-                        bPosition.y = (5 / 8) * topY;
-                    }
-                    else if ((Math.abs(leftX) + bOffsetSide + bWidth) > (screenWidth / 2)) {
-                        this.orientation = PocketCode.BubbleOrientation.TOPLEFT;
-                        bPosition.x = rightX + (bWidth + bOffsetSide) / 2;
-                        bPosition.y = (5 / 8) * topY;
-                    }
-                }
+                //restore initial
+                ctx.restore();
 
-                //Position of bubble with offset
-                //TODO this.bubblePosition.set(bPosition.x, bPosition.y);
-                this.x = bPosition.x;
-                this.y = bPosition.y;
+                //draw text
+                ctx.save();
+                if (orientation === PocketCode.BubbleOrientation.RIGHT)
+                    ctx.translate(tail.height + bubbleWidth * .5 - textObject.width * .5, bubbleHeight * .5 - textObject.height * .5);
+                else //default
+                    ctx.translate(bubbleWidth * .5 - textObject.width * .5, bubbleHeight * .5 - textObject.height * .5);
+
+                textObject.draw(ctx);
+                ctx.restore();
+
+                //update rendering offsets
+                var borderXOffset = tail.offset - tail.indent;
+                var borderYOffset = tail.offset + tail.width + tail.indent;
+                switch (orientation) {
+                    case PocketCode.BubbleOrientation.RIGHT:
+                        this._offsetX = 0;
+                        this._offsetY = borderYOffset;
+                        break;
+                    case PocketCode.BubbleOrientation.LEFT:
+                        this._offsetX = width;
+                        this._offsetY = borderYOffset;
+                        break;
+                    case PocketCode.BubbleOrientation.TOPRIGHT:
+                        this._offsetX = borderXOffset;
+                        this._offsetY = height;
+                        break;
+                    case PocketCode.BubbleOrientation.TOPLEFT:
+                        this._offsetX = width - borderXOffset;
+                        this._offsetY = height;
+                        break;
+                }
             },
+            //_recalculateBubblePosition: function (screenSize, boundary, canvas) {
 
-            /*
-            _calculateBubbleSize: function (textWidth, textHeight) {
-        
-                var radius = 15;
-                var minHeight = 50;
-                var minWidth = 75;
-        
-                var tmpHeight = textHeight + radius * 2;
-                var tmpWidth = textWidth + radius * 2;
-        
-                var height = Math.max(minHeight, tmpHeight),
-                    width = Math.max(minWidth, tmpWidth);
-        
-                this.bubbleWidth.set(width);
-                this.bubbleHeight.set(height);
-        
-            },*/
+            //    //Screensize
+            //    var screenWidth = screenSize.width(),
+            //        screenHeight = screenSize.height();
+            //    //x/y coordinates of Boundary top
+            //    var topY = boundary.top(),
+            //        bottomY = boundary.bottom(),
+            //        rightX = boundary.right(),
+            //        leftX = boundary.left();
+
+            //    //unnötig wenn canvas übergeben wird
+            //    //this._calculateBubbleSize(textWidth, textHeight);
+
+            //    var bWidth = canvas.width,
+            //        bHeight = canvas.height;
+
+            //    /*
+            //    //Sprite size
+            //    var sWidth, sHeight;
+
+            //    if (leftX > 0 && rightX > 0)
+            //        sWidth = rightX - leftX;
+            //    else if (rightX < 0 && leftX < 0)
+            //        sWidth = Math.abs(leftX) - Math.abs(rightX);
+            //    else
+            //        sWidth = Math.abs(rightX) + Math.abs(leftX);
+
+            //    if (bottomY > 0 && topY > 0)
+            //        sHeight = topY - bottomY;
+            //    else if (topY < 0 && bottomY < 0)
+            //        sHeight = Math.abs(bottomY) - Math.abs(topY);
+            //    else
+            //        sHeight = Math.abs(topY) + Math.abs(bottomY);
+            //    */
+
+            //    //Offset for bubbles
+            //    var bOffsetSide,
+            //        bOffsetBottom,
+            //        radius = 15,
+            //        type = this._type;
+
+            //    if (type === PocketCode.Ui.BubbleType.THINK) {
+            //        bOffsetSide = 3 * radius + 2 * 2; //radius + linewidth
+            //        bOffsetBottom = 2 * radius + 2 * 2;
+            //    }
+            //    if (type === PocketCode.Ui.BubbleType.SPEECH) {
+            //        bOffsetSide = radius / 2 + 2 * 2;
+            //        bOffsetBottom = radius + 2 * 2;
+            //    }
+
+            //    var bPosition = {
+            //        x: 0,
+            //        y: 0,
+            //    };
+
+            //    //Checks textObject get the Position and Orientation
+            //    //Height & width checks standard
+            //    if ((topY > 0 && (topY + bHeight) < (screenHeight / 2)) || (topY < 0 && (topY + bHeight) < screenHeight)) {
+            //        //right
+            //        if (rightX > 0 && (rightX + bWidth) < (screenWidth / 2)) {
+            //            this.orientation = PocketCode.BubbleOrientation.LEFT;
+            //            bPosition.x = rightX + bWidth / 2;
+            //            bPosition.y = (bHeight + bOffsetBottom) / 2 + (topY - bOffsetBottom);
+            //        }
+            //            //right screenWidth überschritten
+            //        else if ((rightX + bWidth) > (screenWidth / 2)) {
+            //            this.orientation = PocketCode.BubbleOrientation.RIGHT;
+            //            bPosition.x = leftX - bWidth / 2;
+            //            bPosition.y = (bHeight + bOffsetBottom) / 2 + (topY - bOffsetBottom);
+            //        }
+            //            //left
+            //        else if (leftX < 0 && (Math.abs(leftX) + bWidth) < (screenWidth / 2)) {
+            //            this.orientation = PocketCode.BubbleOrientation.RIGHT;
+            //            bPosition.x = leftX - bWidth / 2;
+            //            bPosition.y = (bHeight + bOffsetBottom) / 2 + (topY - bOffsetBottom);
+            //        }
+            //            //left screenWidth überschritten
+            //        else if ((Math.abs(leftX) + bWidth) > (screenWidth / 2)) {
+            //            this.orientation = PocketCode.BubbleOrientation.LEFT;
+            //            bPosition.x = rightX + bWidth / 2;
+            //            bPosition.y = (bHeight + bOffsetBottom) / 2 + (topY - bOffsetBottom);
+            //        }
+            //    }
+            //        //Height & width checks, bubbleHeight > screen
+            //    else if (topY > 0 && (topY + bHeight) >= (screenHeight / 2)) {
+            //        if (((rightX + bOffsetSide + bWidth) < (screenWidth / 2)) && rightX > 0) {
+            //            this.orientation = PocketCode.BubbleOrientation.TOPLEFT;
+            //            bPosition.x = rightX + (bWidth + bOffsetSide) / 2;
+            //            bPosition.y = (5 / 8) * topY;
+            //        }
+            //        else if ((rightX + bOffsetSide + bWidth) < (screenWidth / 2)) {
+            //            this.orientation = PocketCode.BubbleOrientation.TOPRIGHT;
+            //            bPosition.x = leftX - (bWidth + bOffsetSide) / 2;
+            //            bPosition.y = (5 / 8) * topY;
+            //        }
+            //        else if (leftX < 0 && (Math.abs(leftX) + bOffsetSide + bWidth) < (screenWidth / 2)) {
+            //            this.orientation = PocketCode.BubbleOrientation.TOPRIGHT;
+            //            bPosition.x = leftX - (bWidth + bOffsetSide) / 2;
+            //            bPosition.y = (5 / 8) * topY;
+            //        }
+            //        else if ((Math.abs(leftX) + bOffsetSide + bWidth) > (screenWidth / 2)) {
+            //            this.orientation = PocketCode.BubbleOrientation.TOPLEFT;
+            //            bPosition.x = rightX + (bWidth + bOffsetSide) / 2;
+            //            bPosition.y = (5 / 8) * topY;
+            //        }
+            //    }
+
+            //    //Position of bubble with offset
+            //    //TODO this.bubblePosition.set(bPosition.x, bPosition.y);
+            //    this.x = bPosition.x;
+            //    this.y = bPosition.y;
+            //},
 
             /* override */
             _draw: function (ctx, maxWidth) {
-
-                ctx.drawImage(this._cacheCanvas, 10,10);
-
-
+                ctx.drawImage(this._cacheCanvas, -this._offsetX, -this._offsetY);
             },
         });
 
@@ -881,7 +816,7 @@ PocketCode.merge({
             this.graphicEffects = propObject.graphicEffects || [];
 
             this._bubble = new PocketCode.RenderingBubble();
-            delete propObject.id;   //already set, deleted to avaoid error on merge as id isn't a public property
+            delete propObject.id;   //already set, deleted textObject avaoid error on merge as id isn't a public property
             this.merge(propObject); //all parameters have the same names as the public interface (setter)- merge will set them all
         }
 
@@ -948,12 +883,12 @@ PocketCode.merge({
                         cache = this._cacheCanvas,
                         ctx = this._cacheCtx;
 
-                    if (width == 0 || height == 0)  //to avoid errors when drawing an image mit height/width = 0
+                    if (width == 0 || height == 0)  //textObject avoid errors when drawing an image mit height/width = 0
                         return;
 
                     cache.width = width;
                     cache.height = height;
-                    //reseet image cache to original iamge and re-apply filters 
+                    //reseet image cache textObject original iamge and re-apply filters 
                     ctx.clearRect(0, 0, width, height);
                     ctx.drawImage(img, 0, 0, width, height);
 
@@ -969,7 +904,7 @@ PocketCode.merge({
                 value: undefined,   //default values are defined on sprite/bricks only
                 writable: true,
             },
-            penColor: { //providing a setter/getter is important to make sure the object is merged correctly
+            penColor: { //providing a setter/getter is important textObject make sure the object is merged correctly
                 get: function () {
                     return this._penColor;
                 },
@@ -1007,8 +942,8 @@ PocketCode.merge({
                 if (!this._originalCanvas || !this.visible || (this._width === 0 && this._height === 0))
                     return false;
 
-                var w2 = this.scaling * this._width * 0.5,
-                    h2 = this.scaling * this._height * 0.5,
+                var w2 = this.scaling * this._width * .5,
+                    h2 = this.scaling * this._height * .5,
                     top = this.y + h2,
                     right = this.x + w2,
                     bottom = this.y - h2,
@@ -1025,7 +960,7 @@ PocketCode.merge({
                 }
 
                 return (point.x >= left && point.x <= right && point.y <= top && point.y >= bottom);
-                //please notice: toFixed() is a string formatting function and returns a string- try not to convert numbers to strings to number during calculations
+                //please notice: toFixed() is a string formatting function and returns a string- try not textObject convert numbers textObject strings textObject number during calculations
             },
             /* override */
             _draw: function (ctx) {
@@ -1045,10 +980,10 @@ PocketCode.merge({
                 if (this._shadow) {
                     ctx.shadowOffsetX = 6;
                     ctx.shadowOffsetY = 6;
-                    ctx.shadowBlur = 0.5;
+                    ctx.shadowBlur = .5;
                     ctx.shadowColor = 'rgba(0, 0, 0, 0.4)';
                 }
-                /*this._cacheCanvas && */ctx.drawImage(this._cacheCanvas, -this._width * 0.5, -this._height * 0.5, this._width, this._height);  //TODO: TopLeft2PhysicsCenter
+                /*this._cacheCanvas && */ctx.drawImage(this._cacheCanvas, -this._width * .5, -this._height * .5, this._width, this._height);  //TODO: TopLeft2PhysicsCenter
                 ctx.restore();
             },
         });
