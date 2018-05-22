@@ -32,7 +32,7 @@ PocketCode.Ui.Canvas = (function () {
             offsetY: 0,
             scale: 1,
             flipped: false
-        }
+        };
         //handling click/touch/multi-touch
         this._activeTouchEvents = [];
 

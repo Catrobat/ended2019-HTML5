@@ -804,10 +804,26 @@ PocketCode.MediaDevice = (function () {
                 return this._fd.facePositionY;
             },
         },
+        /* override */
+        initialized: {
+            get: function () {
+                var features = this._features;
+                return ((!features.GEO_LOCATION.supported || !features.GEO_LOCATION.inUse || this._geoLocationData.initialized) &&
+                    (!features.CAMERA.supported || !features.CAMERA.inUse || this._cam.initialized) &&
+                    (!features.FACE_DETECTION.supported || !features.FACE_DETECTION.inUse || this._fd.initialized));
+            },
+        },
     });
 
     //methods
     MediaDevice.prototype.merge({
+        _featureInitializedHandler: function (e) {
+            //if (this._initialized)
+            //    return;
+            //this._initialized = this._cam.initialized && this._fd.initialized;
+            if (this.initialized)
+                this._onInit.dispatchEvent();
+        },
         _orientationHandler: function (e) {
             if (this.isMobile)
                 this._cameraChangeHandler();
