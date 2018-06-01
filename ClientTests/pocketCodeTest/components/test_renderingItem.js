@@ -178,7 +178,143 @@ QUnit.test("RenderingBubble", function (assert) {
     var rb = new PocketCode.RenderingBubble({ id: "s01" });
     assert.ok(rb instanceof PocketCode.RenderingBubble && rb instanceof PocketCode.RenderingItem, "instance check");
 
-    assert.ok(false, "TODO");
+    //Bubble positions
+    rb.content ="Test";
+    assert.ok(rb._cacheCanvas.height>0, "Cache created");
+    //Test if we have an image attached to a bubble
+    var canvas = document.createElement("canvas");
+    canvas.width = 200;
+    canvas.height = 100;
+    var ctx = canvas.getContext("2d");
+
+    var screenTL ={
+        length : 30,
+        angle : 210,
+    },
+        screenTr={
+        length : 30,
+        angle : 270,
+        },
+        screenBottom = -50,
+        posLeft={
+        length : 30,
+        angle: 50
+        }, // or undefined
+        posRight={
+            length : 30,
+            angle: 50
+        }, // or undefined
+        left = -40, //or undefined
+        right = 60; //or undefined
+
+        assert.ok(rb.draw(ctx, screenTL, screenTr, screenBottom, undefined, undefined, undefined, undefined) === false, "Check that the sprite is in the screen ");
+
+
+
+    //Test if the sprite is inside and not outside the screen
+
+
+
+    //Test orientation d=e ou e>d, check c and d only => check the position, enough space to draw the bubble align with corners
+    // var posLeft = 0;
+    // rb.draw();
+
+
+    // TESTS FROM RENDERING TEXT
+    // var scopeId = "scopeId",
+    //     id = 'id0',
+    //     x = 20,
+    //     y = 16,
+    //     value = 'Hello, world!',
+    //     visible = true;
+    //
+    // var props = { scopeId: scopeId, id: id, value: value, x: x, y: y, visible: visible };
+    // var renderingText = new PocketCode.RenderingText(props);
+    //
+    // assert.ok(renderingText instanceof PocketCode.RenderingText, 'correct instance');
+    //
+    // //rendering
+    // var canvas = document.createElement("canvas");
+    // canvas.width = 200;
+    // canvas.height = 100;
+    // var ctx = canvas.getContext("2d");
+    //
+    // var fillTextCalled = 0;
+    // renderingText._cacheCtx.fillText = function () {    //overide internal fillText to assert number of calls
+    //     fillTextCalled++;
+    // };
+    //
+    // renderingText.value = "";
+    // renderingText.draw(ctx);
+    // assert.ok(!fillTextCalled, "No text drawn on canvas if text is empty");
+    // fillTextCalled = 0;
+    //
+    // var numberOfNewlines = 5;
+    // value = "Hello world";
+    //
+    // for (var i = 0, l = numberOfNewlines; i < l; i++) {
+    //     value = value + "\n test";
+    // }
+    //
+    // renderingText.value = value;
+    // assert.equal(fillTextCalled, 6, "cache rerendered on value update");
+    // renderingText.value = value;
+    // assert.equal(fillTextCalled, 6, "cache NOT rerendered if value does not change");
+    //
+    // //recreate RT (without fillText override)
+    // renderingText = new PocketCode.RenderingText(props);
+    // //rendering and font size
+    // canvas = document.createElement("canvas");
+    // canvas.width = 200;
+    // canvas.height = 100;
+    // var ctx = canvas.getContext("2d");
+    // //for test only
+    // //document.body.appendChild(canvas);
+    // //canvas.style.position = "absolute";
+    //
+    // ctx.clearRect(0, 0, 200, 100);
+    // renderingText.value = 42;
+    // renderingText.x = 0;
+    // renderingText.y = 0;
+    // renderingText.draw(ctx);
+    //
+    // var img = PocketCode.ImageHelper.adjustCenterAndTrim(canvas, true);
+    // assert.equal(img.canvas.height, 33, "rendering Text original height (numbers): based on screenshot (2016-07-06)");
+    //
+    // ctx.clearRect(0, 0, 200, 100);
+    // renderingText.value = "ÖÄÜ";
+    // renderingText.draw(ctx);
+    //
+    // img = PocketCode.ImageHelper.adjustCenterAndTrim(canvas, true);
+    // var topLeft = {
+    //     x: 100 + Math.round(Math.cos(img.tl.angle) * img.tl.length),
+    //     y: 50 - Math.round(Math.sin(img.tl.angle) * img.tl.length),
+    // };
+    //
+    // assert.ok(topLeft.x < 2, "rendered to left (center)");
+    // assert.ok(topLeft.y <= 2, "rendered to top (center)");
+    //
+    // ctx.clearRect(0, 0, 200, 100);
+    // renderingText.x = 10;
+    // renderingText.y = -10;  //+=up on out coord system
+    // renderingText.draw(ctx);
+    //
+    // img = PocketCode.ImageHelper.adjustCenterAndTrim(canvas, true);
+    // topLeft = {
+    //     x: 100 + Math.round(Math.cos(img.tl.angle) * img.tl.length),
+    //     y: 50 - Math.round(Math.sin(img.tl.angle) * img.tl.length),
+    // };
+    // assert.ok(topLeft.x > 10 && topLeft.x < 12, "rendered to left (x offset)");
+    // assert.ok(topLeft.y > 10 && topLeft.y <= 12, "rendered to top (y offset)");
+    //
+    // ctx.clearRect(0, 0, 200, 100);
+    // canvas.with = 400;
+    // canvas.height = 400;
+    // renderingText.value = "This is my ...\n\nThis is my ...";
+    // renderingText.x = 10;
+    // renderingText.y = 10;
+    // renderingText.draw(ctx);
+
 
 });
 

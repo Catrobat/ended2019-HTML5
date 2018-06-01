@@ -390,51 +390,18 @@ PocketCode.merge({
                     this._redrawCache();
                 },
             },
-            orientation: {
+           /* orientation: {
                 set: function (value) {
                     this._orientation = value;
                     this._redrawCache();
                 },
-            },
+            },*/
             content: {
                 set: function (value) {
                     this._textObject.value = value;
                     this._redrawCache();
                 },
             },
-            /*bubblePosition: {
-                set: function (x, y) {
-                    //Todo:
-                    if (isNaN(x) || isNaN(y))
-                        throw new Error('invalid argument: position');
-    
-                    this._positionX = x;
-                    this._positionY = y;
-                },
-    
-            },
-            bubbleWidth: {
-                get: function () {
-                    return this._width;
-                },
-                set: function (width) {
-                    if (isNaN(width))
-                        throw new Error('invalid argument: size');
-    
-                    this._width = width;
-                }
-            },
-            bubbleHeight: {
-                get: function () {
-                    return this._height;
-                },
-                set: function (height) {
-                    if (isNaN(height))
-                        throw new Error('invalid argument: size');
-    
-                    this._height = height;
-                }
-            },*/
         });
 
         //methods
@@ -665,121 +632,40 @@ PocketCode.merge({
                         break;
                 }
             },
-            //_recalculateBubblePosition: function (screenSize, boundary, canvas) {
-
-            //    //Screensize
-            //    var screenWidth = screenSize.width(),
-            //        screenHeight = screenSize.height();
-            //    //x/y coordinates of Boundary top
-            //    var topY = boundary.top(),
-            //        bottomY = boundary.bottom(),
-            //        rightX = boundary.right(),
-            //        leftX = boundary.left();
-
-            //    //unnötig wenn canvas übergeben wird
-            //    //this._calculateBubbleSize(textWidth, textHeight);
-
-            //    var bWidth = canvas.width,
-            //        bHeight = canvas.height;
-
-            //    /*
-            //    //Sprite size
-            //    var sWidth, sHeight;
-
-            //    if (leftX > 0 && rightX > 0)
-            //        sWidth = rightX - leftX;
-            //    else if (rightX < 0 && leftX < 0)
-            //        sWidth = Math.abs(leftX) - Math.abs(rightX);
-            //    else
-            //        sWidth = Math.abs(rightX) + Math.abs(leftX);
-
-            //    if (bottomY > 0 && topY > 0)
-            //        sHeight = topY - bottomY;
-            //    else if (topY < 0 && bottomY < 0)
-            //        sHeight = Math.abs(bottomY) - Math.abs(topY);
-            //    else
-            //        sHeight = Math.abs(topY) + Math.abs(bottomY);
-            //    */
-
-            //    //Offset for bubbles
-            //    var bOffsetSide,
-            //        bOffsetBottom,
-            //        radius = 15,
-            //        type = this._type;
-
-            //    if (type === PocketCode.Ui.BubbleType.THINK) {
-            //        bOffsetSide = 3 * radius + 2 * 2; //radius + linewidth
-            //        bOffsetBottom = 2 * radius + 2 * 2;
-            //    }
-            //    if (type === PocketCode.Ui.BubbleType.SPEECH) {
-            //        bOffsetSide = radius / 2 + 2 * 2;
-            //        bOffsetBottom = radius + 2 * 2;
-            //    }
-
-            //    var bPosition = {
-            //        x: 0,
-            //        y: 0,
-            //    };
-
-            //    //Checks textObject get the Position and Orientation
-            //    //Height & width checks standard
-            //    if ((topY > 0 && (topY + bHeight) < (screenHeight / 2)) || (topY < 0 && (topY + bHeight) < screenHeight)) {
-            //        //right
-            //        if (rightX > 0 && (rightX + bWidth) < (screenWidth / 2)) {
-            //            this.orientation = PocketCode.BubbleOrientation.LEFT;
-            //            bPosition.x = rightX + bWidth / 2;
-            //            bPosition.y = (bHeight + bOffsetBottom) / 2 + (topY - bOffsetBottom);
-            //        }
-            //            //right screenWidth überschritten
-            //        else if ((rightX + bWidth) > (screenWidth / 2)) {
-            //            this.orientation = PocketCode.BubbleOrientation.RIGHT;
-            //            bPosition.x = leftX - bWidth / 2;
-            //            bPosition.y = (bHeight + bOffsetBottom) / 2 + (topY - bOffsetBottom);
-            //        }
-            //            //left
-            //        else if (leftX < 0 && (Math.abs(leftX) + bWidth) < (screenWidth / 2)) {
-            //            this.orientation = PocketCode.BubbleOrientation.RIGHT;
-            //            bPosition.x = leftX - bWidth / 2;
-            //            bPosition.y = (bHeight + bOffsetBottom) / 2 + (topY - bOffsetBottom);
-            //        }
-            //            //left screenWidth überschritten
-            //        else if ((Math.abs(leftX) + bWidth) > (screenWidth / 2)) {
-            //            this.orientation = PocketCode.BubbleOrientation.LEFT;
-            //            bPosition.x = rightX + bWidth / 2;
-            //            bPosition.y = (bHeight + bOffsetBottom) / 2 + (topY - bOffsetBottom);
-            //        }
-            //    }
-            //        //Height & width checks, bubbleHeight > screen
-            //    else if (topY > 0 && (topY + bHeight) >= (screenHeight / 2)) {
-            //        if (((rightX + bOffsetSide + bWidth) < (screenWidth / 2)) && rightX > 0) {
-            //            this.orientation = PocketCode.BubbleOrientation.TOPLEFT;
-            //            bPosition.x = rightX + (bWidth + bOffsetSide) / 2;
-            //            bPosition.y = (5 / 8) * topY;
-            //        }
-            //        else if ((rightX + bOffsetSide + bWidth) < (screenWidth / 2)) {
-            //            this.orientation = PocketCode.BubbleOrientation.TOPRIGHT;
-            //            bPosition.x = leftX - (bWidth + bOffsetSide) / 2;
-            //            bPosition.y = (5 / 8) * topY;
-            //        }
-            //        else if (leftX < 0 && (Math.abs(leftX) + bOffsetSide + bWidth) < (screenWidth / 2)) {
-            //            this.orientation = PocketCode.BubbleOrientation.TOPRIGHT;
-            //            bPosition.x = leftX - (bWidth + bOffsetSide) / 2;
-            //            bPosition.y = (5 / 8) * topY;
-            //        }
-            //        else if ((Math.abs(leftX) + bOffsetSide + bWidth) > (screenWidth / 2)) {
-            //            this.orientation = PocketCode.BubbleOrientation.TOPLEFT;
-            //            bPosition.x = rightX + (bWidth + bOffsetSide) / 2;
-            //            bPosition.y = (5 / 8) * topY;
-            //        }
-            //    }
-
-            //    //Position of bubble with offset
-            //    //TODO this.bubblePosition.set(bPosition.x, bPosition.y);
-            //    this.x = bPosition.x;
-            //    this.y = bPosition.y;
-            //},
 
             /* override */
+            draw : function (ctx, screenTl, screenTr, screenBottom , posLeft, posRight, left, right) {
+                //offset posRight cos angle * lenght (screenTL)
+
+                if (!this.visible)
+                    return false;
+                var canvas = this._cacheCanvas;
+                if (!canvas)    //disposed
+                    return false;
+                var width = canvas.width,
+                    height = canvas.height;
+                if (width == 0 || height == 0)
+                    return false; //drawing a canvas with size = 0 will throw an error
+                if(screenBottom <=0)
+                    return false;
+
+
+                //TODO: Calculate bubble positions
+                var x,
+                    y;
+
+
+
+
+                ctx.save();
+                //TODO: Change the position of the translate
+                ctx.translate(this.x, -this.y);
+                ctx.drawImage(canvas, 0, 0, width, height);
+                ctx.restore();
+                return true;
+            }
+
+
             //_draw: function (ctx, maxWidth) {
             //    ctx.drawImage(this._cacheCanvas, -this._offsetX, -this._offsetY);
             //},
