@@ -75,6 +75,7 @@ PocketCode.merge({
                 //this._onError = new SmartJs.Event.Event(this);		    //defined in base class
                 this._onHWRatioChange = new SmartJs.Event.Event(this);      //triggered to notify weboverlay on device resolution change
                 this._onExit = new SmartJs.Event.Event(this);               //triggered to notify weboverlay to be closed & disposed
+                this._onEmulatorLoaded = new SmartJs.Event.Event(this);     //triggered to notify weboverlay to embed emulator configuration
 
                 this._onError.addEventListener(new SmartJs.Event.EventListener(this._globalErrorHandler, this));
 
@@ -107,6 +108,7 @@ PocketCode.merge({
                 this._project = new PocketCode.GameEngine();
                 this._project.onLoadingError.addEventListener(new SmartJs.Event.EventListener(this._projectLoadingErrorHandler, this));
                 this._project.onLoad.addEventListener(new SmartJs.Event.EventListener(this._projectLoadHandler, this));
+                this._project.onSceneChange.addEventListener(new SmartJs.Event.EventListener(this._sceneChangedHandler, this));
                 this._currentProjectId = undefined;
 
                 //webOverlay is undefined if running in mobile page, no viewport defined
@@ -129,15 +131,6 @@ PocketCode.merge({
                     this._escKeyListener = this._addDomListener(document, 'keyup', function (e) { if (e.keyCode == 27) this._escKeyHandler(e); });
                 }
             }
-
-            //accessors
-            Object.defineProperties(Application.prototype, {
-                hasOpenDialogs: {
-                    get: function () {
-                        return this._dialogs.length > 0 || this._currentPage.hasOpenDialogs;
-                    }
-                },
-            });
 
             //events: the application doesn't need any public properties or events: anyway.. this events are required to communicate with the web overlay
             Object.defineProperties(Application.prototype, {
@@ -164,6 +157,20 @@ PocketCode.merge({
                 onUiDirectionChange: {
                     get: function () {
                         return PocketCode.I18nProvider.onDirectionChange;
+                    }
+                },
+                onEmulatorLoaded: {
+                    get: function(){
+                        return this._onEmulatorLoaded;
+                    }
+                }
+            });
+
+            //accessors
+            Object.defineProperties(Application.prototype, {
+                hasOpenDialogs: {
+                    get: function () {
+                        return this._dialogs.length > 0 || this._currentPage.hasOpenDialogs;
                     }
                 },
             });
@@ -197,7 +204,9 @@ PocketCode.merge({
                     PocketCode.LoggingProvider.sendMessage(error, this._currentProjectId);
 
                     //stop gameEngine + loading
-                    this._project.dispose();
+                    if (this._project)
+                        this._project.dispose();
+                    this._project = undefined;
                 },
                 _i18nControllerErrorHandler: function (e) {
                     PocketCode.I18nProvider.onError.removeEventListener(new SmartJs.Event.EventListener(this._i18nControllerErrorHandler, this));
@@ -205,7 +214,7 @@ PocketCode.merge({
                 },
                 _projectLoadHandler: function (e) {
                     if (!this._loadingError && !e.loadingAlerts) {
-                        this._pages.PlayerPageController.initOnLoad();
+                        this._pages.PlayerPageController.enableView();
                         return;
                     }
 
@@ -226,8 +235,17 @@ PocketCode.merge({
                     var alerts = [],
                         warnings = [];
 
-                    if (loadingAlerts.deviceEmulation)
+                    if (loadingAlerts.deviceEmulation) {
                         alerts.push('msgDeviceEmulation');
+
+                        //init deviceEmulator
+                        if (e.device) {
+                            if (!this._deviceEmulator)
+                                this._deviceEmulator = new PocketCode.Ui.DeviceEmulator(e.device);
+                            else
+                                this._deviceEmulator.device = e.device;
+                        }
+                    }
                     if (loadingAlerts.deviceLockRequired)
                         alerts.push('msgDeviceLockScreen');
 
@@ -241,12 +259,18 @@ PocketCode.merge({
                     d.onCancel.addEventListener(new SmartJs.Event.EventListener(this._onExit.dispatchEvent, this._onExit));
                     d.onContinue.addEventListener(new SmartJs.Event.EventListener(function (e) {
                         e.target.dispose();
-                        this._pages.PlayerPageController.initOnLoad();
+                        if (this._deviceEmulator)
+                            this._onEmulatorLoaded.dispatchEvent({ emulator: this._deviceEmulator });
+                        this._pages.PlayerPageController.enableView();
                     }, this));
                     this._showDialog(d, false);
                 },
                 _projectLoadingErrorHandler: function (e) {
                     this._loadingError = e;
+                },
+                _sceneChangedHandler: function (e) {
+                    var screenSize = e.screenSize;
+                    this._onHWRatioChange.dispatchEvent({ ratio: screenSize.height / screenSize.width });
                 },
                 _requestProjectDetails: function () {
                     var req = new PocketCode.ServiceRequest(PocketCode.Services.PROJECT_DETAILS, SmartJs.RequestMethod.GET, { id: this._currentProjectId, imgDataMax: 0 });
@@ -267,6 +291,10 @@ PocketCode.merge({
                     this._requestProject();
                 },
                 _projectDetailsRequestErrorHandler: function (e) {
+                    if (PocketCode._serviceEndpoint.indexOf('http://localhost/') >= 0) {   //disable error on details-service for local debugging
+                        this._projectDetailsRequestLoadHandler({ target: { responseJson: { title: 'DEBUG MODE', baseUrl: '', thumbnailUrl: '' } } });
+                        return;
+                    }
                     if (this._disposing || this._disposed)
                         return;
 
@@ -314,6 +342,8 @@ PocketCode.merge({
                     if (json.header && json.header.device) {
                         var device = json.header.device;
                         this._onHWRatioChange.dispatchEvent({ ratio: device.screenHeight / device.screenWidth });
+                        var view = this._pages.PlayerPageController.view;
+                        view.onResize.dispatchEvent();   //make sure the control is notified about the resize
                     }
                     this._project.loadProject(json);
                 },
@@ -461,16 +491,16 @@ PocketCode.merge({
                     var compatible = pc.result;
 
                     if (!compatible) {	//framework not loaded correctly or compatibility failed
-                        if (!pc.tests.SmartJs) {
-                            alert('sorry.. your browser does not meet the HTML5 feature requirements to run this application');
-                            this._onExit.dispatchEvent();
-                        }
-                        else {
+                        try {
+                            PocketCode.LoggingProvider.sendMessage('browser not supported: ' + JSON.stringify(pc.tests), this._currentProjectId);
                             var d = new PocketCode.Ui.BrowserNotSupportedDialog();
                             d.onOK.addEventListener(new SmartJs.Event.EventListener(this._onExit.dispatchEvent, this._onExit));
-                            //d.bodyInnerHTML += '<br /><br />Application will be closed.';
                             this._onInit.dispatchEvent();   //hide splash screen
                             this._showDialog(d, false);
+                        }
+                        catch (e) {
+                            alert('sorry.. your browser does not meet the HTML5 feature requirements to run this application. Details: ' + JSON.stringify(pc.tests));
+                            this._onExit.dispatchEvent();
                         }
                         return;
                     }
@@ -507,11 +537,21 @@ PocketCode.merge({
                         this._removeDomListener(window, 'popstate', this._popstateListener);
                     if (this._escKeyListener)
                         this._removeDomListener(document, 'keyup', this._escKeyListener);
-                    if (this._project && this._project.onLoadingError)
-                        this._project.onLoadingError.removeEventListener(new SmartJs.Event.EventListener(this._projectLoadingErrorHandler, this));
+                    if (this._project) {
+                        if (this._project.onLoadingError)
+                            this._project.onLoadingError.removeEventListener(new SmartJs.Event.EventListener(this._projectLoadingErrorHandler, this));
+                        if (this._project.onLoad)
+                            this._project.onLoad.removeEventListener(new SmartJs.Event.EventListener(this._projectLoadHandler, this));
+                        if (this._project.onSceneChange)
+                            this._project.onSceneChange.removeEventListener(new SmartJs.Event.EventListener(this._sceneChangedHandler, this));
+                    }
                     //this._project.dispose();    //make sure the project gets disposed befor disposing the UI  -> ? -> this way the ui cannot unbind
-                    for (var page in this._pages)   //objects (dictionaries) are not handled by the core dispose functionality- make sure we do not miss them
+
+                    this._currentPage = undefined;
+                    for (var page in this._pages) {  //objects (dictionaries) are not handled by the core dispose functionality- make sure we do not miss them
                         this._pages[page].dispose();
+                        delete this._pages[page];
+                    }
 
                     SmartJs.Components.Application.prototype.dispose.call(this);    //call super()
                 },
@@ -519,5 +559,8 @@ PocketCode.merge({
 
             return Application;
         })(),
+
+        Ui: {},
     },
+
 });

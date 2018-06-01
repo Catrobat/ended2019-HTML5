@@ -64,8 +64,10 @@ class ProjectFileParser_v0_98 extends ProjectFileParser_v0_94
     protected function parseRepeatBrick($brickList, $idx)
     {
         $script = $brickList[$idx];
-        $ttr = $script->timesToRepeat;
-        $brick = new RepeatBrickDto($this->parseFormula($ttr->formulaTree));
+        $ttr = $script->formulaList;
+        array_push($this->cpp, $ttr);
+        $brick = new RepeatBrickDto($this->parseFormula($ttr->formula));
+        array_pop($this->cpp);
 
         $nestedCounter = 0;
         $parsed = false;
@@ -188,7 +190,8 @@ class ProjectFileParser_v0_98 extends ProjectFileParser_v0_94
             {
                 $nestedCounter++;
             }
-            else if($name === "IfThenLogicEndBrick")
+            
+            if($name === "IfThenLogicEndBrick")
             {
                 if($nestedCounter === 0)
                 {
@@ -230,8 +233,8 @@ class ProjectFileParser_v0_98 extends ProjectFileParser_v0_94
                 $script = $brickList[$idx];
                 if(isset($script["reference"]))
                 {
-                    $brick = $this->getBrickType($script);
-                    throw new InvalidProjectFileException($brick . ": referenced brick");
+                    //$brickType = $this->getBrickType($script);
+                    throw new InvalidProjectFileException("referenced brick found");//: $brickType");
                 }
 
                 switch($this->getBrickType($script))
@@ -311,7 +314,7 @@ class ProjectFileParser_v0_98 extends ProjectFileParser_v0_94
                 if($res === false)
                 {
                     $id = $this->getNewId();
-                    array_push($this->broadcasts, new VariableDto($id, $msg));
+                    array_push($this->broadcasts, new IdNameDto($id, $msg));
                 }
                 else
                 {
@@ -330,7 +333,7 @@ class ProjectFileParser_v0_98 extends ProjectFileParser_v0_94
                 break;
 
             case "WhenScript":
-                $brick = new WhenActionBrickDto($this->getNewId(), (string)$script->action);
+                $brick = new WhenActionBrickDto($this->getNewId(), "spriteTouched");//lcfirst((string)$script->action));    //action = "Tapped"
                 $brickList = $script->brickList;
                 array_push($this->cpp, $brickList);
 
@@ -341,7 +344,7 @@ class ProjectFileParser_v0_98 extends ProjectFileParser_v0_94
                 break;
 
             case "WhenTouchDownScript":
-                $brick = new WhenActionBrickDto($this->getNewId(), "TouchStart");
+                $brick = new WhenActionBrickDto($this->getNewId(), "screenTouched");
                 $brickList = $script->brickList;
                 array_push($this->cpp, $brickList);
 
@@ -408,7 +411,7 @@ class ProjectFileParser_v0_98 extends ProjectFileParser_v0_94
                 if($res === false)
                 {
                     $id = $this->getNewId();
-                    array_push($this->broadcasts, new VariableDto($id, $msg));
+                    array_push($this->broadcasts, new IdNameDto($id, $msg));
                 }
                 else
                 {
@@ -424,7 +427,7 @@ class ProjectFileParser_v0_98 extends ProjectFileParser_v0_94
                 if($res === false)
                 {
                     $id = $this->getNewId();
-                    array_push($this->broadcasts, new VariableDto($id, $msg));
+                    array_push($this->broadcasts, new IdNameDto($id, $msg));
                 }
                 else
                 {
@@ -549,7 +552,7 @@ class ProjectFileParser_v0_98 extends ProjectFileParser_v0_94
                 array_push($this->cpp, $fl);
                 $degrees = $this->parseFormula($fl->formula);
                 array_pop($this->cpp);
-                $brick = new PointInDirectionBrickDto($degrees);
+                $brick = new SetDirectionBrickDto($degrees);
                 break;
 
             case "VibrationBrick":    /*name changed?*/
@@ -583,7 +586,7 @@ class ProjectFileParser_v0_98 extends ProjectFileParser_v0_94
                 }
 
                 /** @noinspection PhpUndefinedVariableInspection */
-                $brick = new PointToBrickDto($spriteId);
+                $brick = new SetDirectionToBrickDto($spriteId);
                 break;
 
             case "GlideToBrick":
@@ -669,7 +672,7 @@ class ProjectFileParser_v0_98 extends ProjectFileParser_v0_94
                 $value = $this->parseFormula($fl->formula);
 
                 array_pop($this->cpp);
-                $brick = new TurnLeftSpeedBrickDto($value);
+                $brick = new RotationSpeedLeftBrickDto($value);
                 break;
 
             case "TurnRightSpeedBrick":
@@ -677,7 +680,7 @@ class ProjectFileParser_v0_98 extends ProjectFileParser_v0_94
                 array_push($this->cpp, $fl);
                 $value = $this->parseFormula($fl->formula);
 
-                $brick = new TurnRightSpeedBrickDto($value);
+                $brick = new RotationSpeedRightBrickDto($value);
                 break;
 
             case "SetGravityBrick": //PHYSICS_GRAVITY_X, PHYSICS_GRAVITY_Y

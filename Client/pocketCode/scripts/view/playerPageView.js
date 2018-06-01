@@ -62,7 +62,7 @@ PocketCode.Ui.PlayerPageView = (function () {
             },
             set: function (value) {
                 this._toolbar.executionState = value;
-                if (SmartJs.Device.isMobile)
+                if (SmartJs.Device.isMobile) {
                     switch (value) {
                         case PocketCode.ExecutionState.PAUSED:
                         case PocketCode.ExecutionState.STOPPED:
@@ -72,6 +72,7 @@ PocketCode.Ui.PlayerPageView = (function () {
                             this._menu.hide();
                             break;
                     }
+                }
             },
         },
         disabled: {
@@ -142,7 +143,7 @@ PocketCode.Ui.PlayerPageView = (function () {
         showStartScreen: function (title, thumbnailUrl) {
             this._startScreen.title = title;
             if (thumbnailUrl == "null")
-                this._startScreen.previewImage = PocketCode.domain + '/images/default/screenshot.png';
+                this._startScreen.previewImage = PocketCode.domain + 'images/default/screenshot.png';
             else if (thumbnailUrl)
                 this._startScreen.previewImage = thumbnailUrl;
 

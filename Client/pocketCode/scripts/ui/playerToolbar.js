@@ -88,6 +88,7 @@ PocketCode.Ui.merge({
             this._pauseButton = new PocketCode.Ui.PlayerSvgButton(PocketCode.Ui.SvgImageString.PAUSE, 'btnPause', true);
             this._pauseButton.onClick.addEventListener(new SmartJs.Event.EventListener(function (e) { this.onButtonClicked.dispatchEvent({ command: PocketCode.Ui.PlayerBtnCommand.PAUSE }); }, this));
             this._menuContainerAlign.appendChild(this._pauseButton);
+            this._pauseButton.hide();   //default- for execution state = STOPPED
             // i18n: btnScreenshot
             this._screenshotButton = new PocketCode.Ui.PlayerSvgButton(PocketCode.Ui.SvgImageString.SCREENSHOT, 'btnScreenshot');
             this._screenshotButtonDisabled = true;
@@ -119,13 +120,22 @@ PocketCode.Ui.merge({
             //console.log( asd );
             //console.log( "---" );
 
-            this.executionState = PocketCode.ExecutionState.STOPPED;
+            this._executionState = PocketCode.ExecutionState.STOPPED;
             this._onResize.addEventListener(new SmartJs.Event.EventListener(this._resizeHandler, this)); //TODO: check if handling is necesary twice
             this._onResize.addEventListener(new SmartJs.Event.EventListener(function () { window.setTimeout(this._resizeHandler.bind(this, this), 120); }.bind(this), this));
 
             //events
             this._onButtonClicked = new SmartJs.Event.Event(this);
         }
+
+        //events
+        Object.defineProperties(PlayerToolbar.prototype, {
+            onButtonClicked: {
+                get: function () {
+                    return this._onButtonClicked;
+                },
+            }
+        });
 
         //properties
         Object.defineProperties(PlayerToolbar.prototype, {
@@ -153,6 +163,10 @@ PocketCode.Ui.merge({
                             this._showOverlay();
                             break;
                     }
+                    this._executionState = value;
+                },
+                get: function () {
+                    return this._executionState;
                 },
             },
             /* override */
@@ -221,24 +235,15 @@ PocketCode.Ui.merge({
             },
         });
 
-        //events
-        Object.defineProperties(PlayerToolbar.prototype, {
-            onButtonClicked: {
-                get: function () {
-                    return this._onButtonClicked;
-                },
-            }
-        });
-
         //methods
         PlayerToolbar.prototype.merge({
             _openMenuTabbedHandler: function (e) {
-                if (PocketCode.ExecutionState.RUNNING)
+                if (this._executionState == PocketCode.ExecutionState.RUNNING)
                     this.onButtonClicked.dispatchEvent({ command: PocketCode.Ui.PlayerBtnCommand.BACK });
                 e.preventDefault();
             },
             _openMenuClickedHandler: function(e) {
-                if (PocketCode.ExecutionState.RUNNING) {
+                if (this._executionState == PocketCode.ExecutionState.RUNNING) {
                     if (e.button == 0) { // left click
                         this.onButtonClicked.dispatchEvent({ command: PocketCode.Ui.PlayerBtnCommand.BACK });
                         e.preventDefault();

@@ -7,6 +7,16 @@ Catrobat programs can be written by using the Catroid programming system on Andr
 
 For more information [oriented towards developers], check out our [developers page](http://developer.catrobat.org/).
 
+**The HTML5 Player** (this project) is a single-page html + javascript client using a restful PHP backend. It allows users to run catrobat projects inside of their desktop or mobile browsers without installing our app.
+
+# Getting Started #
+
+To get ready for development quickly you should start by following some simple instructions:
+
+1. git clone \<repository\>
+2. get to know the code by exploring all the files of the project carefully
+3. debug the code by setting some breakpoints at some interesting positions (e.g. Client/pocketCode/scripts/compontents/gameEngine.js)
+4. use remote debugging to debug the player on your mobile device (e.g. Google Chrome)
 
 # Issues #
 

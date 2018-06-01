@@ -1,4 +1,4 @@
-/// <reference path="../../qunit/qunit-1.23.0.js" />
+﻿/// <reference path="../../qunit/qunit-2.4.0.js" />
 /// <reference path="../../../Client/smartJs/sj-event.js" />
 /// <reference path="../../../Client/pocketCode/scripts/components/physicsWorld.js" />
 'use strict';
@@ -6,8 +6,14 @@
 QUnit.module("components/physicsWorld.js");
 
 QUnit.test("PhysicsWorld", function (assert) {
+
+    assert.ok(false, "TODO: test refactoring");
+    return;
+
     var gameEngine = new PocketCode.GameEngine();
-    var physicsWorld = new PocketCode.PhysicsWorld(gameEngine);
+    var scene = new PocketCode.Model.Scene(gameEngine, undefined, []);
+    scene.load({ sprites: [] });    //load empty scene to init collision manager
+    var physicsWorld = new PocketCode.PhysicsWorld(scene);
 
     var spriteIds = ["s1", "s2", "s3", "s4"];
     var id = spriteIds[0];

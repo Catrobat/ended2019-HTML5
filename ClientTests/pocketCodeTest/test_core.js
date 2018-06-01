@@ -1,4 +1,4 @@
-'use strict';
+﻿'use strict';
 
 QUnit.module("/core.js");
 
@@ -26,7 +26,6 @@ QUnit.test("PocketCode.Core.I18nString", function (assert) {
         test2: "test2: ",
         test3: "test1: {0}, test2: {1}, test3: {2}",
         test4: "test1: {0}, test1: {0}, test3: {2}",
-
     });
 
     s = new PocketCode.Core.I18nString("notFound", "x");
@@ -54,6 +53,14 @@ QUnit.test("PocketCode.Core.I18nString", function (assert) {
     //advanced tests
     s = new PocketCode.Core.I18nString("test3", "x", 1, new PocketCode.Core.I18nString("test", "y"));
     assert.equal(s.toString(), "test1: x, test2: 1, test3: test1: y", "replace with another i18nString: recursive parse");
+
+    s = new PocketCode.Core.I18nString("test2");
+    assert.equal(s.toString(), "test2: ", "caching test: init");
+    i18nProvider._dictionary.merge({
+        test2: "new test2: "
+    });
+    i18nProvider.onLanguageChange.dispatchEvent();
+    assert.equal(s.toString(), "new test2: ", "caching test: update when language changes");
 
 });
 

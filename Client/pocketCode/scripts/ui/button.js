@@ -18,8 +18,8 @@ PocketCode.Ui.Button = (function () {
 
         //events
         this._onClick = new SmartJs.Event.Event(this);
-        this._addDomListener(this._dom, 'click', this._clickHandler);
-        this._btnListener = this._addDomListener(this._dom, 'touchstart', function (e) { }, { cancelBubble: true, stopPropagation: false, systemAllowed: true });   //allow system events to show css (pressed) on buttons
+        this._clickListener = this._addDomListener(this._dom, 'click', this._clickHandler);
+        this._touchStartListener = this._addDomListener(this._dom, 'touchstart', function (e) { }, { cancelBubble: true, stopPropagation: false, systemAllowed: true });   //allow system events to show css (pressed) on buttons
         //this._addDomListener(this._dom, 'touchend', this._clickHandler, { cancelBubble: true });//function (e) { this._dom.click(); });
     }
 
@@ -63,6 +63,12 @@ PocketCode.Ui.Button = (function () {
             this._dom.blur();
             this._onClick.dispatchEvent();
         },
+        /*override*/
+        dispose: function () {
+            this._removeDomListener(this._dom, 'click', this._clickListener);
+            this._removeDomListener(this._dom, 'touchstart', this._touchStartListener);
+            SmartJs.Ui.Control.prototype.dispose.call(this);    //call super()
+        },
     });
 
     return Button;
@@ -76,16 +82,14 @@ PocketCode.Ui.PlayerSvgButton = (function () {
     function PlayerSvgButton(icon, i18nKey, big, menuButton) {
         PocketCode.Ui.Button.call(this, i18nKey, { className: 'pc-playerButton' });
 
-        //this.className = 'pc-playerButton';
+        if (!icon)
+            throw new Error('invalid argument: icon');
         if (big)
             this.addClassName('pc-menuBigButton');
         if(menuButton) {
             this.removeClassName('pc-playerButton');
             this.addClassName('pc-webButton');
         }
-
-        if (!icon)
-            throw new Error('invalid argument: icon');
 
         var span = document.createElement('span');
         span.appendChild(this._textNode._dom);

@@ -123,6 +123,18 @@ Array.prototype.dispose = function () {
 };
 Object.defineProperty(Array.prototype, 'dispose', { enumerable: false });
 
+/**
+ * String.format allowes to format strings like known from printf
+ */
+if (!String.prototype.format) {
+    String.prototype.format = function () {
+        var args = arguments;
+        return this.replace(/{(\d+)}/g, function (match, idx) {
+            return typeof args[idx] != 'undefined' ? args[idx].toString() : match;
+        });
+    };
+    Object.defineProperty(String.prototype, 'format', { enumerable: false });
+}
 
 /* smart js infrastructure */
 
@@ -162,6 +174,7 @@ var SmartJs = {
                     _result = false;
                     return false;
                 }
+                return true;
             }(),
             Object_defineProperty: function () {
                 if (!Object.defineProperty) {
@@ -192,7 +205,8 @@ var SmartJs = {
                 return false;
             }(),
             document_addEventListener: function () {
-                if (document.addEventListener) return true;
+                if (document.addEventListener)
+                    return true;
 
                 _result = false;
                 return false;
@@ -224,8 +238,9 @@ var SmartJs = {
                     _result = false;
                     return false;
                 }
+                return true;
             }(),
-            css_box_sizing__border_box: function () {
+            cssBoxSizing_borderBox: function () {
                 var box = document.createElement('div');
                 //box.style = {
                 //    position: 'absolute',
@@ -238,19 +253,20 @@ var SmartJs = {
                 //};
                 var style = box.style;
                 style.position = 'absolute';
-                style.top = '-20px';
-                style.left = '-20px';
+                style.top = '-200px';
+                style.left = '-200px';
                 style.boxSizing = 'border-box';
-                style.border = 'solid 3px black';
-                style.height = '10px';
-                style.width = '10px';
+                style.border = 'solid 30px black';
+                style.height = '100px';
+                style.width = '100px';
 
                 document.body.appendChild(box);
-                var supported = box.offsetHeight == 10 && box.offsetWidth == 10;
+                var supported = box.offsetHeight == 100 && box.offsetWidth == 100;
                 document.body.removeChild(box);
                 box = undefined;
 
-                if (supported) return true;
+                if (supported)
+                    return true;
 
                 _result = false;
                 return false;

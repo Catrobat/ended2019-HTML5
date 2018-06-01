@@ -55,13 +55,13 @@ PocketCode.Model.merge({
                     switch (this._type) {
                         case PocketCode.UserVariableType.SIMPLE:
                             tmp = new PocketCode.Model.UserVariableSimple(variable.id, variable.name, variable.value ? variable.value : undefined);
-                            tmp.onChange.addEventListener(new SmartJs.Event.EventListener(function (e) { this._onVariableChange.dispatchEvent({id: e.id}, e.target); }, this)); //target override
+                            tmp.onChange.addEventListener(new SmartJs.Event.EventListener(function (e) { this._onVariableChange.dispatchEvent({ id: e.id, value: e.value }, e.target); }, this)); //target override
                             this._variables[variable.id] = tmp;
                             break;
 
                         case PocketCode.UserVariableType.LIST:
                             tmp = new PocketCode.Model.UserVariableList(variable.id, variable.name, variable.value ? variable.value : undefined);
-                            tmp.onChange.addEventListener(new SmartJs.Event.EventListener(function (e) { this._onVariableChange.dispatchEvent({ id: e.id }, e.target); }, this));
+                            //tmp.onChange.addEventListener(new SmartJs.Event.EventListener(function (e) { this._onVariableChange.dispatchEvent({ id: e.id, value: e.value }, e.target); }, this));
                             this._variables[variable.id] = tmp;
                             break;
                     }
@@ -74,7 +74,8 @@ PocketCode.Model.merge({
                     else
                         return new PocketCode.Model.UserVariableList(null, "New...");
                 }
-                return this._variables[id];
+                if (this._variables.hasOwnProperty(id))
+                    return this._variables[id];
             },
             getVariables: function () {
                 return this._variables;
@@ -88,79 +89,85 @@ PocketCode.Model.merge({
         return UserVariableCollection;
     })(),
 
+    UserVariable: (function () {
 
-    UserVariableSimple: (function () {
-
-        function UserVariableSimple(id, name, value) {
+        function UserVariable(id, name, value) {
             this._id = id;
-            this.name = name;
-            //this._defaultValue = 0.000001;
-            //else
-            //    this._value = 0.000001;   //prevent division by zero
+            this._name = name;
+            this._value = value;
+
+            //events
             this._onChange = new SmartJs.Event.Event(this);
-            //init
-            if (value != undefined)
-                this._value = this._toTypedValue(value);
         }
 
-        //properties
-        Object.defineProperties(UserVariableSimple.prototype, {
-            value: {
-                get: function () {
-                    return this._value;
-                },
-                set: function (value) {
-                    value = this._toTypedValue(value);  //assigning lists to valiables not allowed (ignored) in scratch- we support it using toString()
-                    if (this._value == value)
-                        return;
-                    this._value = value;
-                    this._onChange.dispatchEvent({ id: this._id });
-                },
-            },
-            valueAsNumber: {
-                get: function () {
-                    if (typeof this._value === 'number')
-                        return this._value;
-                    return 0;
-                },
-            },
-        });
-
         //events
-        Object.defineProperties(UserVariableSimple.prototype, {
+        Object.defineProperties(UserVariable.prototype, {
             onChange: {
                 get: function () { return this._onChange; },
             },
         });
 
+        //properties
+        Object.defineProperties(UserVariable.prototype, {
+            name: {
+                get: function () {
+                    return this._name;
+                },
+            },
+            value: {
+                get: function () {
+                    return this._getValue();
+                },
+                set: function (value) {
+                    this._setValue(value);
+                },
+            },
+        });
+
+        //methods
+        UserVariable.prototype.merge({
+            _getValue: function () {
+                //this method should be overridden in the inherited classes
+                return this._value;
+            },
+            _setValue: function (value) {
+                //this method should be overridden in the inherited classes
+                throw new Error('setter not supported for this variable type');
+            },
+
+            /*
+             * this class is going to be extended as soon we continue our work on code view
+             */
+        });
+
+        return UserVariable;
+    })(),
+
+});
+
+PocketCode.Model.merge({
+
+    UserVariableSimple: (function () {
+        UserVariableSimple.extends(PocketCode.Model.UserVariable, false);
+
+        function UserVariableSimple(id, name, value) {
+            PocketCode.Model.UserVariable.call(this, id, name, 0);
+
+            if (value != undefined)
+                this._value = PocketCode.Math.Cast.toValue(value);
+        }
+
         //methods
         UserVariableSimple.prototype.merge({
-            _toTypedValue: function (value) {
-                if (value instanceof PocketCode.Model.UserVariableSimple)
-                    return value.value;
-                else if (value instanceof PocketCode.Model.UserVariableList)    //assigning lists to valiables not allowed (ignored) in scratch- we support it using toString()
-                    return this._toTypedValue(value.toString());
-                else if (typeof value === 'string') {
-                    var num = parseFloat(value);
-                    return (num.toString() === value ? num : value);
-                }
-                else
-                    return value;
-            },
-            toString: function () {
-                var val = this._value;
-                if (val == undefined)
-                    return '';
-                if (typeof val != 'number')
-                    return val.toString();
-                if (parseInt(val) === val)
-                    return val.toFixed(1);
-                return Math.round(val * Math.pow(10, 8)) / Math.pow(10, 8);
+            _setValue: function (value) {
+                value = PocketCode.Math.Cast.toValue(value);
+                if (this._value === value)
+                    return;
+                this._value = value;
+                this._onChange.dispatchEvent({ id: this._id, value: this._value });
             },
             reset: function () {
-                if (this.value === undefined)
-                    return;
-                this.value = undefined;
+                this._value = 0;
             },
         });
 
@@ -170,14 +177,11 @@ PocketCode.Model.merge({
 
     /* please notice: this class does not represent a list of variables, but a user variable of type list */
     UserVariableList: (function () {
+        UserVariableList.extends(PocketCode.Model.UserVariable, false);
 
         function UserVariableList(id, name, value) {
-            this._id = id;
-            this.name = name;
+            PocketCode.Model.UserVariable.call(this, id, name, []);
 
-            this._value = [];
-            this._onChange = new SmartJs.Event.Event(this);
-            //init
             if (value != undefined) {
                 if (!(value instanceof Array))
                     throw new Error('invalid argument: expected: value typeof array');
@@ -191,89 +195,74 @@ PocketCode.Model.merge({
             length: {
                 get: function () {
                     return this._value.length;
-                }
-            },
-        });
-
-        //events
-        Object.defineProperties(UserVariableList.prototype, {
-            onChange: {
-                get: function () { return this._onChange; },
+                },
             },
         });
 
         //methods
         UserVariableList.prototype.merge({
-            _toTypedValue: function (value) {
-                if (value instanceof PocketCode.Model.UserVariableSimple)
-                    return this._toTypedValue(value.value);
-                else if (value instanceof PocketCode.Model.UserVariableList)
-                    return this._toTypedValue(value.toString());
-                else if (typeof value === 'string') {
-                    var num = parseFloat(value);
-                    return (num.toString() === value ? num : value);
+            _getValue: function () {
+                //as lists can be assigned to variables and used in formulas (at least in Scratch) we need
+                //to represent the list as single value as well
+                var string = this._value.join('');
+                //Scratch returns a list joined without separator when every entry has a length = 1
+                if (this.length == string.length) { //quick check
+                    for (var i = 0, l = this.length; i < l; i++)
+                        if (this._value[i].toString().length != 1)
+                            return this._value.join(' ');   //return a string using whitespace as separator
+                    return string;
                 }
-                return value;
-            },
-            toString: function () {
-                return this._value.join(' ');
+
+                return this._value.join(' ');   //return a string using whitespace as separator
             },
             append: function (value) {
-                this._value.push(this._toTypedValue(value));
-                this._onChange.dispatchEvent({ id: this._id });
+                this._value.push(PocketCode.Math.Cast.toValue(value));
             },
-            _validIndex: function (idx) {
-                if (parseInt(idx) !== idx || idx < 1 || idx > this._value.length)
+            _validateIndex: function (idx, length) {
+                idx = PocketCode.Math.Cast.toNumber(idx);  //NaN -> 0
+                idx = Math.floor(idx);  //to int like in Scratch
+                if (idx < 1 || idx > length)
                     return false;
-                return true;
+                return idx;
             },
             valueAt: function (idx) {
-                if (this._validIndex(idx))
+                idx = this._validateIndex(idx, this._value.length);
+                if (idx)
                     return this._value[idx - 1];
                 return undefined;
             },
-            valueAsNumberAt: function (idx) {
-                var val = this.valueAt(idx);
-                if (typeof val === 'number')
-                    return val;
-                return 0;
-            },
             insertAt: function (idx, value) {
-                if (this._validIndex(idx)) {
-                    this._value.insert(idx - 1, this._toTypedValue(value));
-                    this._onChange.dispatchEvent({ id: this._id });
-                }
-                else if (idx == this._value.length + 1)
-                    this.append(this._toTypedValue(value));
+                idx = this._validateIndex(idx, this._value.length + 1);
+                if (!idx)
+                    return;
+
+                if (idx <= this._value.length)
+                    this._value.insert(idx - 1, PocketCode.Math.Cast.toValue(value));
+                else
+                    this.append(PocketCode.Math.Cast.toValue(value));
             },
             replaceAt: function (idx, value) {
-                if (this._validIndex(idx)) {
-                    this._value[idx - 1] = this._toTypedValue(value);
-                    this._onChange.dispatchEvent({ id: this._id });
-                }
+                idx = this._validateIndex(idx, this._value.length);
+                if (idx)
+                    this._value[idx - 1] = PocketCode.Math.Cast.toValue(value);
             },
             deleteAt: function (idx) {
-                if (this._validIndex(idx)) {
+                idx = this._validateIndex(idx, this._value.length);
+                if (idx)
                     this._value.splice(idx - 1, 1);
-                    this._onChange.dispatchEvent({ id: this._id });
-                }
             },
             contains: function (value) {
-                if (this._value.indexOf(this._toTypedValue(value)) !== -1)
-                    return true;
+                var array = this._value;
+                for (var i = 0, l = array.length; i < l; i++)
+                    if (PocketCode.Math.isEqual(array[i], PocketCode.Math.Cast.toValue(value)))
+                        return true;
                 return false;
             },
             reset: function () {
-                if (this._value.length === 0)
-                    return;
                 this._value = [];
-                this._onChange.dispatchEvent({ id: this._id });
             },
         });
 
         return UserVariableList;
     })(),
-
 });
-
-

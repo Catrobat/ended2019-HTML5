@@ -6,7 +6,7 @@
 
 SmartJs.Ui = {};    //user interface namespace
 
-SmartJs.Ui.Window = (function () {  //static class
+SmartJs.Ui._Window = (function () {  //static class
     Window.extends(SmartJs.Core.EventTarget);
 
     //ctr
@@ -50,7 +50,7 @@ SmartJs.Ui.Window = (function () {  //static class
             visibilityChangeEventName = 'webkitvisibilitychange';
         }
 
-        if (visibilityChangeEventName !== '') 
+        if (visibilityChangeEventName !== '')
             this._addDomListener(document, visibilityChangeEventName, this._visibilityChangeHandler);
 
         if (visibilityChangeEventName == '' || SmartJs.Device.isIOs) {    //attach for iOs as well
@@ -149,13 +149,13 @@ SmartJs.Ui.Window = (function () {  //static class
             //    this._visible = e.target.visibilityState == 'visible' ? true : false;
             //}
             //else {
-                //onfocusin and onfocusout are required for IE 9 and lower, while all others make use of onfocus and onblur, except for iOS, which uses onpageshow and onpagehide
-                //var visible = {focus: true, focusin: true, pageshow: true};
-                var hidden = { blur: false, focusout: false, pagehide: false };
-                if (e.type in hidden)
-                    this._visible = false;
-                else
-                    this._visible = document[this._hiddenProperty] === true ? false : true;//true;	//default
+            //onfocusin and onfocusout are required for IE 9 and lower, while all others make use of onfocus and onblur, except for iOS, which uses onpageshow and onpagehide
+            //var visible = {focus: true, focusin: true, pageshow: true};
+            var hidden = { blur: false, focusout: false, pagehide: false };
+            if (e.type in hidden)
+                this._visible = false;
+            else
+                this._visible = document[this._hiddenProperty] === true ? false : true;//true;	//default
             //}
             this._onVisibilityChange.dispatchEvent({ visible: this._visible }.merge(e));
         },
@@ -169,7 +169,7 @@ SmartJs.Ui.Window = (function () {  //static class
 })();
 
 //static class: constructor override (keeping code coverage enabled)
-SmartJs.Ui.Window = new SmartJs.Ui.Window();
+SmartJs.Ui.Window = new SmartJs.Ui._Window();
 
 
 SmartJs.Ui.merge({
@@ -238,9 +238,14 @@ SmartJs.Ui.merge({
 
             if (element instanceof HTMLElement)
                 this._dom = element;
-            else if (typeof element === 'string')
-                this._dom = document.createElement(element);
-
+            else if (typeof element === 'string') {
+                if (propObject.namespace) {
+                    this._dom = document.createElementNS(propObject.namespace, element);
+                    delete propObject.namespace;    //prevent auto-merege
+                }
+                else
+                    this._dom = document.createElement(element);
+            }
             if (!this._dom)  // || this._dom instanceof HTMLUnknownElement)
                 throw new Error('invalid argument: expected parameter "element" as valid HTMLElement or string');
 
@@ -257,7 +262,6 @@ SmartJs.Ui.merge({
             this._onResize.addEventListener(new SmartJs.Event.EventListener(function (e) {
 
                 var size = this._cachedSize;// = { height: this.height, width: this.width };
-
                 size.height = this.height;
                 size.width = this.width;
 
@@ -272,11 +276,21 @@ SmartJs.Ui.merge({
 
                 var parent = this._parent;
                 if (parent && parent !== e.caller)
-                    this._parent.onLayoutChange.dispatchEvent({ caller: this });
+                    parent.onLayoutChange.dispatchEvent({ caller: this });
             }, this));
 
             this._onLayoutChange = new SmartJs.Event.Event(this);
             this._onLayoutChange.addEventListener(new SmartJs.Event.EventListener(function (e) {
+                var size = this._cachedSize;// = { height: this.height, width: this.width };
+                if (this.height != size.height || this.width != size.width) {   //changed on resize of childs
+                    size.height = this.height;
+                    size.width = this.width;
+                    if (this._parent)
+                        this._parent.onLayoutChange.dispatchEvent({ caller: this });
+                    //this._onResize.dispatchEvent({ caller: this });
+                    //return;
+                }
+                //else: update childs
                 var childs = this._childs;
                 for (var i = 0, l = childs.length; i < l; i++) {
                     var child = childs[i];
@@ -460,7 +474,6 @@ SmartJs.Ui.merge({
                 if (size.height !== this.height || size.width !== this.width)
                     this.onResize.dispatchEvent({ caller: caller });
             },
-
             addClassName: function (className) {
                 if (typeof className === undefined) return;
                 if (typeof className !== 'string')
@@ -672,9 +685,9 @@ SmartJs.Ui.merge({
                 //    }
                 //}
 
-                
+
                 if (this._childs)
-                //    this._childs.length = 0;   //do not dispose the ui DOM chain, as controls may be bound and reused
+                    //    this._childs.length = 0;   //do not dispose the ui DOM chain, as controls may be bound and reused
                     this._childs.dispose();
 
                 //this._dom = undefined;
@@ -865,7 +878,7 @@ SmartJs.Ui.merge({
                     return cont.appendChild(uiControl);
                 return this._appendChild(uiControl);
             },
-            insertAt: function(idx, uiControl) {
+            insertAt: function (idx, uiControl) {
                 var cont = this.__container;
                 if (cont !== this)
                     return cont.insertAt(idx, uiControl);
@@ -906,6 +919,7 @@ SmartJs.Ui.merge({
         function Viewport(propObject) {
             SmartJs.Ui.Control.call(this, 'div', propObject || { style: { height: '100%', width: '100%' } });
 
+            this._parentHtmlElement = undefined;
             this._window = SmartJs.Ui.Window;
             this._resizeListener = new SmartJs.Event.EventListener(this.verifyResize, this);
             this._window.onResize.addEventListener(this._resizeListener);

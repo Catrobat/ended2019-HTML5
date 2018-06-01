@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>toDataURL example</title>
+    <style>
+        canvas {
+            border: solid black 1px;
+        }
+
+        img {
+            width: 400px;
+            height: 400px;
+            border: solid black 1px;
+        }
+    </style>
+    <script src="../../Client/smartJs/sj.js"></script>
+    <script src="../../Client/smartJs/sj-core.js"></script>
+    <script src="../../Client/smartJs/sj-event.js"></script>
+    <script src="../../Client/smartJs/sj-communication.js"></script>
+    <script src="../../Client/pocketCode/scripts/core.js"></script>
+    <script src="../../Client/pocketCode/scripts/components/proxy.js"></script>
+    <script src="./FileSaver.min.js"></script>
+</head>
+<body>
+    <!--h1>Copy graphic using toDataURL</h1-->
+
+    <div>
+        <!--button id="copy">Copy canvas image to image element</button> <br /-->
+        <canvas id="MyCanvas" width="400" height="400">This browser or document mode doesn't support canvas</canvas>
+        <!--img id="MyPix" src="" width="400" height="400" /-->
+        <br />
+        <button onclick="requestScreenShotGET()">download screenshot GET(JSON)</button>
+        <button onclick="requestScreenShotPOST()">download screenshot POST(JSON)</button>
+        <form method="POST" action="https://web-test.catrob.at/html5/rest/v0.1/file/screenshot/">
+            <!--<form method="POST" action="http://localhost/html5/rest/v0.1/file/screenshot/">-->
+            <input type="submit" value="download screenshot (Form POST)" />
+            <input type="hidden" name="base64string" id="base64string" />
+        </form>
+    </div>
+
+    <script>
+
+        // Create some graphics on the canvas.
+        var canvas = document.getElementById("MyCanvas");
+        if (canvas.getContext) {
+            var ctx = canvas.getContext("2d");
+            ctx.fillStyle = "white";
+            ctx.beginPath();
+            ctx.rect(5, 5, 30, 25);
+            ctx.fill();
+            ctx.stroke();
+            ctx.arc(150, 150, 100, 0, Math.PI, false);
+            ctx.stroke();
+        }
+
+        //add to form
+        //if (canvas.getContext) {
+        var ctx = canvas.getContext("2d");                // Get the context for the canvas.
+        var myImage = canvas.toDataURL("image/png");      // Get the data as an image.
+        var hi = document.getElementById("base64string");
+        hi.value = myImage; //write to hidden input (post form)
+        //}
+
+        // catch the click from the button and copy the graphic
+        //document.getElementById("copy").addEventListener("click", function () {
+        //  var canvas1 = document.getElementById("MyCanvas");
+        //  if (canvas1.getContext) {
+        //    var ctx = canvas1.getContext("2d");                // Get the context for the canvas.
+        //    var myImage = canvas1.toDataURL("image/png");      // Get the data as an image.
+        //  }
+        //  var imageElement = document.getElementById("MyPix");  // Get the img object.
+        //  imageElement.src = myImage;                           // Set the src to data from the canvas.
+        //}, false);
+
+        var onError = function (e) {
+            if (e.statusCode != undefined)
+                alert("onError: " + e.statusCode);//JSON.parse(e));// + e.fileName + ", " + lineNumber + ", " + e.stack);
+        };
+
+        function requestScreenShotGET() {
+
+            // console.log("hey!");
+            //TODO: exmple
+            var sr = new PocketCode.ServiceRequest(PocketCode.Services.SCREENSHOT, SmartJs.RequestMethod.GET, { base64string: myImage });
+            sr.onError.addEventListener(new SmartJs.Event.EventListener(onError, this));
+            //PocketCode.Proxy.onreadystatechange = handler;
+            // sr.onloadend = handler( sr );
+            // console.log(sr);
+            PocketCode.Proxy._onLoadHandler = handler;
+            PocketCode.Proxy.send(sr);
+        }
+
+
+        function base64toBlob(base64Data, contentType) {
+            contentType = contentType || '';
+            var sliceSize = 1024;
+            var byteCharacters = atob(base64Data);
+            var bytesLength = byteCharacters.length;
+            var slicesCount = Math.ceil(bytesLength / sliceSize);
+            var byteArrays = new Array(slicesCount);
+            for (var sliceIndex = 0; sliceIndex < slicesCount; ++sliceIndex) {
+                var begin = sliceIndex * sliceSize;
+                var end = Math.min(begin + sliceSize, bytesLength);
+                var bytes = new Array(end - begin);
+                var i = 0;
+                for (var offset = begin;
+                offset < end;
+                ++i, ++offset
+            ) {
+                    bytes[i] = byteCharacters[offset].charCodeAt(0);
+                }
+                byteArrays[sliceIndex] = new Uint8Array(bytes);
+            }
+            return new Blob(byteArrays, { type: contentType });
+        }
+
+        function handler(e) {
+            // Obtain a blob: URL for the image data.
+            //var arrayBufferView = new Uint8Array( this.response );
+            var base64 = e.target.responseText.substr(24);
+            //console.log("------>" + base64);
+            var buffer = base64toBlob(base64, "image/png");
+            //console.log("------>" + e.target.responseText);
+            //var blob = new Blob( [ arrayBufferView ], { type: "image/jpeg" } );
+
+            var filename = "yolo";
+            var blob = new Blob([buffer], { type: "image/png;base64," });
+            saveAs(blob, filename + ".png");
+
+            //check for serverside error -> dispach onerror or onload
+            try {
+                var result = JSON.parse(e.target.responseText);
+            }
+            catch (e) {
+                result = { type: 'InvalidJsonFormatException' };
+            }
+
+            if (result.type && result.type.indexOf('Exception') !== -1) {  //TODO: check status code?
+                var err = new Error();
+                err.merge(e);
+                err.json = result || {};
+                e.target._onError.dispatchEvent(err);
+            }
+            e.target.onLoadTarget.onLoad.dispatchEvent({ responseText: e.target.responseText, json: result }); //get original target and trigger on this target
+
+        }
+
+
+        function requestScreenShotPOST() {
+            //TODO: exmple
+            var sr = new PocketCode.ServiceRequest(PocketCode.Services.SCREENSHOT, SmartJs.RequestMethod.POST);
+            sr.data = { base64string: myImage };
+            sr.onError.addEventListener(new SmartJs.Event.EventListener(onError, this));
+            PocketCode.Proxy.send(sr);
+        }
+
+    </script>
+</body>
+</html>

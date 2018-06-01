@@ -1,6 +1,6 @@
 ﻿/// <reference path="../../client/smartJs/sj.js" />
 /// <reference path="../../client/smartJs/sj-error.js" />
-/// <reference path="../qunit/qunit-1.23.0.js" />
+/// <reference path="../qunit/qunit-2.4.0.js" />
 'use strict';
 
 QUnit.module("sj-error.js");
