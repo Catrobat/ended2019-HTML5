@@ -234,6 +234,7 @@ PocketCode.merge({
             this._constraints = {video:true, audio: false};
             this._width = null;
             this._height = null;
+            this._firstTry = true;
             //    initFaceDetection: false,   //set to true if faceDetection is called before cameraOn (wait for initalization until we know a camera is used)
             //this._initialized = false;  //if true: do not dispatch onInit
             if (navigator.mediaDevices.getSupportedConstraints) {
@@ -407,10 +408,15 @@ PocketCode.merge({
                 this._initStream(mediaStream);
             },
             _getUserMediaErrorHandler: function(error) {
-                this._supported = false;
-                this._on = false;
-                this._initialized = true;
-                this.onChange.dispatchEvent({on : false, error: error, src: this._video});
+                if(SmartJs.Device.isMobile && this._firstTry) {
+                    this._firstTry = false;
+                    this.setType(this._selected, true);
+                } else {
+                    this._supported = false;
+                    this._on = false;
+                    this._initialized = true;
+                    this.onChange.dispatchEvent({on : false, error: error, src: this._video});
+                }
             },
             /**
              * sets ideal resolution of the camera . the browser will try find closest
@@ -461,7 +467,6 @@ PocketCode.merge({
                 this._init(reinit);
             },
             _videoInitializedHandler: function () {
-                this._onChange.dispatchEvent({on: this._on, src: this._video});
                 if (!this._video.paused) {
                     return;
                 } else {
@@ -472,6 +477,7 @@ PocketCode.merge({
                     return;
                 }
                 this._initialized = true;
+                this._onChange.dispatchEvent({on: this._on, src: this._video});
                 this._onInit.dispatchEvent({on: this._on, src: this._video});
             },
             setInUse: function (cameraType) {
@@ -499,6 +505,8 @@ PocketCode.merge({
                 }
                 if (this._on && this._selected === cameraType && !reinit) {
                     return true;
+                } else if (this._selected !== cameraType) {
+                    this._firstTry = true;
                 }
                 this._selected = cameraType;
                 var cameraTypeObject;
@@ -515,7 +523,7 @@ PocketCode.merge({
                     this._constraints.video = {};
                 }
                 if(cameraTypeObject.deviceId) {
-                    if(SmartJs.Device.isMobile) {
+                    if(SmartJs.Device.isMobile && this._firstTry) {
                         this._constraints.video = {facingMode: cameraTypeObject.facingMode};
                     } else {
                         this._constraints.video.deviceId = { exact: cameraTypeObject.deviceId };
@@ -554,10 +562,10 @@ PocketCode.merge({
                 if (!this._cameraStream) {
                     return true;
                 }
-                this._on = false;
+                this._inUse = false;
                 this._video.pause();
                 this._resetStream();
-                this._onChange.dispatchEvent({ on: false, src: this._video });
+                this._onChange.dispatchEvent({ on: false, src: "" });
             },
             pause: function () {
                 if (this._on) {
@@ -577,9 +585,10 @@ PocketCode.merge({
                 if (!this._inUse) {
                     return;
                 }
+                this._inUse = false;
                 this._video.pause();
                 this._resetStream();
-                this._onChange.dispatchEvent({on: false, src: ""});
+                this._onChange.dispatchEvent({ on: false, src: "" });
             },
             _getViewState: function () {
                 return {
