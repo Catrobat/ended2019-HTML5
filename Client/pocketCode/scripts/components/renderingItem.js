@@ -98,7 +98,9 @@ PocketCode.merge({
         //events
         Object.defineProperties(RenderingText.prototype, {
             onCacheUpdate: {
-                get: function () { return this._onCacheUpdate },
+                get: function () {
+                    return this._onCacheUpdate
+                },
             },
         });
 
@@ -175,7 +177,7 @@ PocketCode.merge({
                     for (var i = 0, l = textLines.length; i < l; i++) {
                         line = textLines[i].trim();
                         metrics = ctx.measureText(line);
-                        block.lines.push({ text: line, width: metrics.width });
+                        block.lines.push({text: line, width: metrics.width});
                         block.width = Math.max(block.width, metrics.width);
                     }
                 }
@@ -187,7 +189,7 @@ PocketCode.merge({
                     for (var i = 0, l = textLines.length; i < l; i++) {
                         line = textLines[i].trim();
                         metrics = ctx.measureText(line),
-                        width = metrics.width;
+                            width = metrics.width;
 
                         if (width > maxLineWidth) {//else {  //line.width > maxLineWidth -> split
                             words = line.split(/\s+/);
@@ -205,14 +207,14 @@ PocketCode.merge({
                                     var chars = Math.max(1, Math.floor(maxLineWidth / metrics.width * words[n].length * 0.97)), //-3% textObject make sure the resulting word fits
                                         splitWord = words[n].substr(0, chars);
                                     metrics = ctx.measureText(splitWord);
-                                    block.lines.push({ text: splitWord, width: metrics.width });
+                                    block.lines.push({text: splitWord, width: metrics.width});
                                     block.width = Math.max(block.width, metrics.width);
                                     words[n] = words[n].substring(chars, testLine.length);  //store remaining chars
                                     n--;
                                     testLine = '';
                                 }
                                 else {
-                                    block.lines.push({ text: line, width: width });
+                                    block.lines.push({text: line, width: width});
                                     block.width = Math.max(block.width, width);
                                     n--;
                                     testLine = line = '';
@@ -220,7 +222,7 @@ PocketCode.merge({
                             }
                         }
                         //add line
-                        block.lines.push({ text: line, width: width });
+                        block.lines.push({text: line, width: width});
                         block.width = Math.max(block.width, width);
                         testLine = line = '';
                     }
@@ -280,7 +282,7 @@ PocketCode.merge({
                     ctx.fillText(text, offset, this.lineHeight * (i + .5));
                 }
                 ctx.restore();
-                this._onCacheUpdate.dispatchEvent({ size: { width: textBlock.width, height: textBlock.height } });
+                this._onCacheUpdate.dispatchEvent({size: {width: textBlock.width, height: textBlock.height}});
             },
             _onLanguageChangeHandler: function () {
                 //wait for the i18nStrings textObject updated and then redraw the cache: timeout needed because this handler may be called first
@@ -311,8 +313,15 @@ PocketCode.merge({
 
             this._type = PocketCode.Ui.BubbleType.SPEECH;
             this._orientation = PocketCode.BubbleOrientation.TOPRIGHT;
+            this.visible = false;
 
-            this._textObject = new PocketCode.RenderingText({ fontWeight: 'normal', fontSize: 51, lineHeight: 57, textAlign: 'center', maxLineWidth: 360 });
+            this._textObject = new PocketCode.RenderingText({
+                fontWeight: 'normal',
+                fontSize: 51,
+                lineHeight: 57,
+                textAlign: 'center',
+                maxLineWidth: 360
+            });
             this._textObject.onCacheUpdate.addEventListener(new SmartJs.Event.EventListener(this._redrawCache, this));
         }
 
@@ -370,18 +379,18 @@ PocketCode.merge({
                             radius: 12,
                         },
                     },
-                    {
-                        top: {
-                            x: 48,
-                            y: 48,
-                            radius: 21,
-                        },
-                        side: {
-                            x: 30,
-                            y: 63,
-                            radius: 21,
-                        },
-                    }],
+                        {
+                            top: {
+                                x: 48,
+                                y: 48,
+                                radius: 21,
+                            },
+                            side: {
+                                x: 30,
+                                y: 63,
+                                radius: 21,
+                            },
+                        }],
                 },
             },
             type: {
@@ -390,12 +399,12 @@ PocketCode.merge({
                     this._redrawCache();
                 },
             },
-           /* orientation: {
+            orientation: {
                 set: function (value) {
                     this._orientation = value;
                     this._redrawCache();
                 },
-            },*/
+            },
             content: {
                 set: function (value) {
                     this._textObject.value = value;
@@ -472,7 +481,7 @@ PocketCode.merge({
 
                 //draw small bubbles
                 var type = (orientation == PocketCode.BubbleOrientation.TOPLEFT ||
-                            orientation == PocketCode.BubbleOrientation.TOPRIGHT) ? 'top' : 'side';
+                    orientation == PocketCode.BubbleOrientation.TOPRIGHT) ? 'top' : 'side';
 
                 var bubble;
                 ctx.save();
@@ -634,7 +643,7 @@ PocketCode.merge({
             },
 
             /* override */
-            draw : function (ctx, screenTl, screenTr, screenBottom , posLeft, posRight, left, right) {
+            draw: function (ctx, screenTl, screenTr, screenBottom, posLeft, posRight, left, right) {
                 //offset posRight cos angle * lenght (screenTL)
 
                 if (!this.visible)
@@ -646,20 +655,28 @@ PocketCode.merge({
                     height = canvas.height;
                 if (width == 0 || height == 0)
                     return false; //drawing a canvas with size = 0 will throw an error
-                if(screenBottom <=0)
-                    return false;
+
+                //Set the axis with only the first 3 arguments
+                var x = screenTl.length * Math.sin(screenTl.angle),
+                    y = screenTl.length * Math.cos(screenTl.angle),
+                    screenWidth = x + screenTr.length * Math.sin(screenTr.angle);
 
 
-                //TODO: Calculate bubble positions
-                var x,
-                    y;
+                //If we have a sprite == if we have a convex hull
+                if (!(posLeft === undefined)) {
+                    //We change the axis on either posLeft/Right depending on the space available
+                    //TODO: Calculate space available left and right
 
+                    //TODO: Calculate new position for x and y
 
+                }else{
+                    //TODO: check if enough place to position the bubble
 
+                }
+                this._orientation = PocketCode.BubbleOrientation.LEFT;
 
                 ctx.save();
-                //TODO: Change the position of the translate
-                ctx.translate(this.x, -this.y);
+                ctx.translate(x, -y);
                 ctx.drawImage(canvas, 0, 0, width, height);
                 ctx.restore();
                 return true;
@@ -816,7 +833,7 @@ PocketCode.merge({
                 if (this.rotation) {
                     //rotate point back (instead of rotating image which will result in a bigger boundary
                     var rad = -this.rotation * (Math.PI / 180.0);
-                    var centerToPoint = { x: point.x - this.x, y: point.y - this.y };
+                    var centerToPoint = {x: point.x - this.x, y: point.y - this.y};
                     point = {
                         x: centerToPoint.x * Math.cos(rad) - centerToPoint.y * Math.sin(rad) + this.x,
                         y: centerToPoint.x * Math.sin(rad) + centerToPoint.y * Math.cos(rad) + this.y,
@@ -826,7 +843,7 @@ PocketCode.merge({
                 return (point.x >= left && point.x <= right && point.y <= top && point.y >= bottom);
                 //please notice: toFixed() is a string formatting function and returns a string- try not textObject convert numbers textObject strings textObject number during calculations
             },
-            drawBubble:function(ctx){
+            drawBubble: function (ctx) {
                 ctx.save();
                 var x = this.x + this.boundary.right,
                     y = -this.y - this.boundary.top;  //TODO: demo only
@@ -857,7 +874,8 @@ PocketCode.merge({
                     ctx.shadowBlur = .5;
                     ctx.shadowColor = 'rgba(0, 0, 0, 0.4)';
                 }
-                /*this._cacheCanvas && */ctx.drawImage(this._cacheCanvas, -this._width * .5, -this._height * .5, this._width, this._height);  //TODO: TopLeft2PhysicsCenter
+                /*this._cacheCanvas && */
+                ctx.drawImage(this._cacheCanvas, -this._width * .5, -this._height * .5, this._width, this._height);  //TODO: TopLeft2PhysicsCenter
                 ctx.restore();
             },
         });
