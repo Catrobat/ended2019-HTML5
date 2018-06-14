@@ -641,6 +641,23 @@ PocketCode.merge({
                         break;
                 }
             },
+            _helperGetOrientation: function (x, y, canvasWidth, canvasHeight, screenWidth, screenHeight) {
+                var finalOrientation = this._orientation;
+                if ((x + canvasWidth) > screenWidth || (y - canvasHeight) > screenHeight) {
+                    if ((x + canvasWidth) > screenWidth && (y - canvasHeight) > screenHeight) {
+
+                    }
+                    else if ((x + canvasWidth) > screenWidth) {
+                        if ((x - canvasWidth) < screenWidth) {
+                            return PocketCode.BubbleOrientation.TOPLEFT;
+                        }
+                        console.log('coucou')
+                    }
+                    else if ((y - canvasWidth) > screenHeight) {
+
+                    }
+                }
+            },
             /* override */
             draw: function (ctx, screenTl, screenTr, screenBottom, posLeft, posRight, left, right) {
                 //offset posRight cos angle * lenght (screenTL)
@@ -656,17 +673,17 @@ PocketCode.merge({
                     return false; //drawing a canvas with size = 0 will throw an error
 
                 //Set the axis with only the first 3 arguments
-                var x = Math.round((screenTl.length * Math.cos(screenTl.angle * (Math.PI / 180))) * 1000)/1000,
-                    y = Math.round(screenTl.length * Math.sin(screenTl.angle* (Math.PI / 180))),
-                    screenWidth = Math.round(x + screenTr.length * Math.sin(screenTr.angle* (Math.PI / 180))),
-                    screenHeight = Math.round(y + (screenBottom <=0 ? 0:screenBottom)),
-                    bubbleHeight =canvas.height,
+                var x = Math.round((screenTl.length * Math.cos(screenTl.angle * (Math.PI / 180))) * 1000) / 1000,
+                    y = Math.round(screenTl.length * Math.sin(screenTl.angle * (Math.PI / 180))),
+                    screenWidth = Math.round(x + screenTr.length * Math.sin(screenTr.angle * (Math.PI / 180))),
+                    screenHeight = Math.round(y + (screenBottom <= 0 ? 0 : screenBottom)),
+                    bubbleHeight = canvas.height,
                     bubbleWidth = canvas.width;
                 console.log("X = " + x + " & Y = " + y);
                 console.log("screenTl lenght = " + screenTl.length + " & screenTl angle = " + screenTl.angle);
-                console.log("Screen width: "+screenWidth + " & Screen height: "+screenHeight);
-                console.log("Bubble width = " + canvas.width + " & Bubble height = " + canvas.height);
-                console.log("==============================");
+                console.log("Screen width: " + screenWidth + " & Screen height: " + screenHeight);
+                // console.log("Bubble width = " + canvas.width + " & Bubble height = " + canvas.height);
+
 
                 /**
                  * If we have a sprite, we have to move our coordinates either to
@@ -682,14 +699,27 @@ PocketCode.merge({
 
                 }
                 /**
-                 *
+                 * If we don't have posLeft, we don't have any other hull,
+                 * so we try to place the bubble according the space at its coordinates
                  */
-                else{
+                else {
+                    if (!(canvas.height > screenHeight && canvas.width > screenWidth)) {
+                        console.log("Position x w/ bubble = " + (x + canvas.width));
+                        console.log("Position y w/ bubble = " + (y - canvas.height));
+                        this._orientation = this._helperGetOrientation(x, y, canvas.width, canvas.height, screenWidth, screenHeight);
+                        console.log("On a donc : " + this._orientation);
+
+
+                    } else {
+                        x = screenWidth * 0.5;
+                        y = screenHeight * 0.5;
+                        this._orientation = PocketCode.BubbleOrientation.TOPRIGHT
+                    }
                     //TODO: check if enough place to position the bubble
 
                 }
-                this._orientation = PocketCode.BubbleOrientation.LEFT;
-
+                // this._orientation = PocketCode.BubbleOrientation.LEFT;
+                console.log("==============================");
                 ctx.save();
                 ctx.translate(x, -y);
                 ctx.drawImage(canvas, 0, 0, width, height);
