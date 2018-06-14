@@ -641,7 +641,6 @@ PocketCode.merge({
                         break;
                 }
             },
-
             /* override */
             draw: function (ctx, screenTl, screenTr, screenBottom, posLeft, posRight, left, right) {
                 //offset posRight cos angle * lenght (screenTL)
@@ -657,19 +656,35 @@ PocketCode.merge({
                     return false; //drawing a canvas with size = 0 will throw an error
 
                 //Set the axis with only the first 3 arguments
-                var x = screenTl.length * Math.sin(screenTl.angle),
-                    y = screenTl.length * Math.cos(screenTl.angle),
-                    screenWidth = x + screenTr.length * Math.sin(screenTr.angle);
+                var x = Math.round((screenTl.length * Math.cos(screenTl.angle * (Math.PI / 180))) * 1000)/1000,
+                    y = Math.round(screenTl.length * Math.sin(screenTl.angle* (Math.PI / 180))),
+                    screenWidth = Math.round(x + screenTr.length * Math.sin(screenTr.angle* (Math.PI / 180))),
+                    screenHeight = Math.round(y + (screenBottom <=0 ? 0:screenBottom)),
+                    bubbleHeight =canvas.height,
+                    bubbleWidth = canvas.width;
+                console.log("X = " + x + " & Y = " + y);
+                console.log("screenTl lenght = " + screenTl.length + " & screenTl angle = " + screenTl.angle);
+                console.log("Screen width: "+screenWidth + " & Screen height: "+screenHeight);
+                console.log("Bubble width = " + canvas.width + " & Bubble height = " + canvas.height);
+                console.log("==============================");
 
-
-                //If we have a sprite == if we have a convex hull
+                /**
+                 * If we have a sprite, we have to move our coordinates either to
+                 *  the end of posRight (default) or posLeft and then calculate
+                 *  if we have enough place for the current orientation with/out 'Top'
+                 *  Or switching to the other end of vector
+                 */
                 if (!(posLeft === undefined)) {
                     //We change the axis on either posLeft/Right depending on the space available
                     //TODO: Calculate space available left and right
 
                     //TODO: Calculate new position for x and y
 
-                }else{
+                }
+                /**
+                 *
+                 */
+                else{
                     //TODO: check if enough place to position the bubble
 
                 }
