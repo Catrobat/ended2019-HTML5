@@ -186,8 +186,8 @@ QUnit.test("RenderingBubble", function (assert) {
     rb.visible = true;
     //Test if we have an image attached to a bubble
     var canvas = document.createElement("canvas");
-    canvas.width = 200;
-    canvas.height = 400;
+    canvas.width = 600;
+    canvas.height = 1200;
     var ctx = canvas.getContext("2d");
 
     var screenTl ={
@@ -229,7 +229,7 @@ QUnit.test("RenderingBubble", function (assert) {
     screenTr.length = canvas.width;
     //Position in Top -Left
     rb.draw(ctx, screenTl, screenTr, canvas.height);
-    assert.equal(rb._orientation, PocketCode.BubbleOrientation.RIGHT, "Center of the sprite is at the Top Left corner and orientation Right");
+    assert.equal(rb._orientation, PocketCode.BubbleOrientation.TOPRIGHT, "Center of the sprite is at the Top Left corner and orientation TOPRIGHT");
 
     //Check if it's on screen
 
@@ -239,7 +239,7 @@ QUnit.test("RenderingBubble", function (assert) {
     screenTr.angle = 90,
     screenTr.length = canvas.width*0.5;
     rb.draw(ctx, screenTl, screenTr, canvas.height);
-    assert.equal(rb._orientation, PocketCode.BubbleOrientation.RIGHT, "Center of the sprite is at the Middle Top corner and orientation Right");
+    assert.equal(rb._orientation, PocketCode.BubbleOrientation.TOPRIGHT, "Center of the sprite is at the Middle Top corner and orientation TOPRIGHT");
 //Check if it's on screen
 
     //Position Top - Right
@@ -248,7 +248,7 @@ QUnit.test("RenderingBubble", function (assert) {
         screenTr.angle = 90,
         screenTr.length = 0;
     rb.draw(ctx, screenTl, screenTr, canvas.height);
-    assert.equal(rb._orientation, PocketCode.BubbleOrientation.LEFT, "Center of the sprite is at the Right Top corner and orientation change to LEFT");
+    assert.equal(rb._orientation, PocketCode.BubbleOrientation.TOPLEFT, "Center of the sprite is at the Right Top corner and orientation change to TOPLEFT");
 //Check if it's on screen
 
     //Position Middle - Right
@@ -261,17 +261,17 @@ QUnit.test("RenderingBubble", function (assert) {
 //Check if it's on screen
 
     //Position Middle - Middle
-    screenTl.angle = 32.7042204868,//57.2957795132,
-        screenTl.length = Math.sqrt(Math.pow(canvas.width, 2) + Math.pow(canvas.height*0.5, 2)),
-        screenTr.angle = 57.2957795132,
-        screenTr.length = Math.sqrt(Math.pow(canvas.width, 2) + Math.pow(canvas.height*0.5, 2));
+    screenTl.angle = 63.4321574,
+        screenTl.length = Math.sqrt(Math.pow(canvas.width*0.5, 2) + Math.pow(canvas.height*0.5, 2)),
+        screenTr.angle = 26.564615213,
+        screenTr.length = Math.sqrt(Math.pow(canvas.width*0.5, 2) + Math.pow(canvas.height*0.5, 2));
     rb.draw(ctx, screenTl, screenTr, canvas.height*0.5);
-    assert.equal(rb._orientation, PocketCode.BubbleOrientation.TOPRIGHT, "Center of the sprite is at the Middle- Middle part and orientation change to TOPRIGHT");
+    assert.equal(rb._orientation, PocketCode.BubbleOrientation.TOPLEFT, "Center of the sprite is at the Middle- Middle part and orientation stay to TOPLEFT");
 //Check if it's on screen
 
     //Position Middle - Left
     screenTl.angle = 90,
-        screenTl.length = 200,
+        screenTl.length = canvas.height*0.5,
         screenTr.angle = 45,
         screenTr.length = Math.sqrt(Math.pow(canvas.width, 2) + Math.pow(canvas.height*0.5, 2));
     rb.draw(ctx, screenTl, screenTr, canvas.height*0.5);
@@ -282,19 +282,19 @@ QUnit.test("RenderingBubble", function (assert) {
     //Position Left Bottom Screen
     screenTl.angle = 90,
         screenTl.length = canvas.height,
-        screenTr.angle = 45,
+        screenTr.angle = 26.55,
         screenTr.length = Math.sqrt(Math.pow(canvas.width, 2) + Math.pow(canvas.height, 2));
     rb.draw(ctx, screenTl, screenTr, 0);
     assert.equal(rb._orientation, PocketCode.BubbleOrientation.TOPRIGHT, "Center of the sprite is at the bottom left corner and orientation change to TOPRIGHT");
 //Check if it's on screen
 
     //Position Middle Bottom Screen
-    screenTl.angle = 77.079033567,
-        screenTl.length = Math.sqrt(Math.pow(canvas.width, 2) + Math.pow(canvas.height, 2)),
-        screenTr.angle = 77.079033567,
-        screenTr.length = Math.sqrt(Math.pow(canvas.width, 2) + Math.pow(canvas.height, 2));
+    screenTl.angle = 75.962744478,
+        screenTl.length = Math.sqrt(Math.pow(canvas.width*0.5, 2) + Math.pow(canvas.height, 2)),
+        screenTr.angle = 14.036205474,
+        screenTr.length = Math.sqrt(Math.pow(canvas.width*0.5, 2) + Math.pow(canvas.height, 2));
     rb.draw(ctx, screenTl, screenTr, 0);
-    assert.equal(rb._orientation, PocketCode.BubbleOrientation.TOPRIGHT, "Center of the sprite is at the bottom middle corner and orientation change to TOPRIGHT");
+    assert.equal(rb._orientation, PocketCode.BubbleOrientation.TOPRIGHT, "Center of the sprite is at the bottom middle  and orientation stay to TOPRIGHT");
 //Check if it's on screen
 
     //Position Right Bottom Screen
