@@ -642,21 +642,109 @@ PocketCode.merge({
                 }
             },
             _helperGetOrientation: function (x, y, canvasWidth, canvasHeight, screenWidth, screenHeight) {
-                var finalOrientation = this._orientation;
-                if ((x + canvasWidth) > screenWidth || (y - canvasHeight) > screenHeight) {
-                    if ((x + canvasWidth) > screenWidth && (y - canvasHeight) > screenHeight) {
 
-                    }
-                    else if ((x + canvasWidth) > screenWidth) {
-                        if ((x - canvasWidth) < screenWidth) {
-                            return PocketCode.BubbleOrientation.TOPLEFT;
-                        }
-                        console.log('coucou')
-                    }
-                    else if ((y - canvasWidth) > screenHeight) {
+                var positionWidth,
+                    positionHeight = y - canvasHeight;
 
+                if (this._orientation === PocketCode.BubbleOrientation.LEFT || this._orientation === PocketCode.BubbleOrientation.TOPLEFT) {
+                    positionWidth = x - canvasWidth;
+                    if (this._orientation === PocketCode.BubbleOrientation.LEFT) {
+                        positionHeight = y + canvasHeight;
+                    }
+                } else {
+                    positionWidth = x + canvasWidth;
+                    if (this._orientation === PocketCode.BubbleOrientation.RIGHT) {
+                        positionHeight = y + canvasHeight;
                     }
                 }
+
+                console.log("Position x w/ bubble = " + positionWidth);
+                console.log("Position y w/ bubble = " + positionHeight);
+                console.log("Orientation is : " + this._orientation);
+
+                //TODO: Decide what to do when it's outside the screen
+
+                //Check if the bubble will be inside the screen
+                if (positionWidth > 0 && positionHeight > 0) {
+                    if (positionHeight > screenHeight && positionWidth > screenWidth) {
+                        if (this._orientation === PocketCode.BubbleOrientation.LEFT) {
+                            this._orientation = PocketCode.BubbleOrientation.TOPRIGHT;
+                            return this._helperGetOrientation(x, y, canvasWidth, canvasHeight, screenWidth, screenHeight);
+                        }
+                        else if(this._orientation === PocketCode.BubbleOrientation.RIGHT){
+                            this._orientation = PocketCode.BubbleOrientation.TOPLEFT;
+                            return this._helperGetOrientation(x, y, canvasWidth, canvasHeight, screenWidth, screenHeight);
+                        }
+
+                    }
+                    /**
+                     * too large for the screen, so we try either right or left
+                     */
+                    else if (positionWidth > screenWidth && positionHeight < screenHeight) {
+                        if (this._orientation === PocketCode.BubbleOrientation.TOPRIGHT) {
+                            this._orientation = PocketCode.BubbleOrientation.RIGHT;
+                            return this._helperGetOrientation(x, y, canvasWidth, canvasHeight, screenWidth, screenHeight);
+                        }
+                        else if(this._orientation === PocketCode.BubbleOrientation.TOPLEFT){
+                            this._orientation = PocketCode.BubbleOrientation.LEFT;
+                            return this._helperGetOrientation(x, y, canvasWidth, canvasHeight, screenWidth, screenHeight);
+                        }
+                        else{
+                            //TODO : If it's still not good enough
+                            return this._orientation;
+                        }
+
+                    }
+                    else if (positionHeight > screenHeight && positionWidth < screenWidth) {
+                        if (this._orientation === PocketCode.BubbleOrientation.RIGHT) {
+                            this._orientation = PocketCode.BubbleOrientation.TOPRIGHT;
+                            return this._helperGetOrientation(x, y, canvasWidth, canvasHeight, screenWidth, screenHeight);
+                        }
+                        else if(this._orientation === PocketCode.BubbleOrientation.LEFT){
+                            this._orientation = PocketCode.BubbleOrientation.TOPLEFT;
+                            return this._helperGetOrientation(x, y, canvasWidth, canvasHeight, screenWidth, screenHeight);
+                        }
+                        else{
+                            //TODO : If it's still not good enough
+                            return this._orientation;
+                        }
+                    }
+                    else {
+                        return this._orientation;
+                    }
+
+
+                    // //If we have one of this condition, it means it will collude to the screen
+                    // if (positionWidth > screenWidth || positionHeight > screenHeight) {
+                    //     if (positionWidth > screenWidth && positionHeight > screenHeight) {
+                    //         //If the bubble is rendered outside the screen, hide it or force it to the edge?
+                    //     }
+                    //     else if (positionWidth > screenWidth) {
+                    //         //If we have enough space on the opposite
+                    //         // if (positionWidth < screenWidth) {
+                    //         //     return PocketCode.BubbleOrientation.TOPLEFT;
+                    //         // }
+                    //     }
+                    //     else if (positionHeight > screenHeight) {
+                    //
+                    //     }
+                    // } else {
+                    //     //As there is no issue, we send back the original orientation
+                    //     return this._orientation;
+                    //
+                    // }
+                }
+                else {
+
+                    if (x < screenWidth) {
+                        return PocketCode.BubbleOrientation.TOPRIGHT;
+                    } else {
+                        return PocketCode.BubbleOrientation.TOPLEFT;
+                    }
+
+                }
+
+
             },
             /* override */
             draw: function (ctx, screenTl, screenTr, screenBottom, posLeft, posRight, left, right) {
@@ -670,15 +758,13 @@ PocketCode.merge({
                 var width = canvas.width,
                     height = canvas.height;
                 if (width == 0 || height == 0)
-                    return false; //drawing a canvas with size = 0 will throw an error
+                    return false;
 
-                //Set the axis with only the first 3 arguments
-                var x = Math.round((screenTl.length * Math.cos(screenTl.angle * (Math.PI / 180))) * 1000) / 1000,
+
+                var x = Math.round(screenTl.length * Math.cos(screenTl.angle * (Math.PI / 180))),
                     y = Math.round(screenTl.length * Math.sin(screenTl.angle * (Math.PI / 180))),
                     screenWidth = Math.round(x + screenTr.length * Math.sin(screenTr.angle * (Math.PI / 180))),
-                    screenHeight = Math.round(y + (screenBottom <= 0 ? 0 : screenBottom)),
-                    bubbleHeight = canvas.height,
-                    bubbleWidth = canvas.width;
+                    screenHeight = Math.round(y + (screenBottom <= 0 ? 0 : screenBottom));
                 console.log("X = " + x + " & Y = " + y);
                 console.log("screenTl lenght = " + screenTl.length + " & screenTl angle = " + screenTl.angle);
                 console.log("Screen width: " + screenWidth + " & Screen height: " + screenHeight);
@@ -704,8 +790,6 @@ PocketCode.merge({
                  */
                 else {
                     if (!(canvas.height > screenHeight && canvas.width > screenWidth)) {
-                        console.log("Position x w/ bubble = " + (x + canvas.width));
-                        console.log("Position y w/ bubble = " + (y - canvas.height));
                         this._orientation = this._helperGetOrientation(x, y, canvas.width, canvas.height, screenWidth, screenHeight);
                         console.log("On a donc : " + this._orientation);
 
@@ -715,8 +799,6 @@ PocketCode.merge({
                         y = screenHeight * 0.5;
                         this._orientation = PocketCode.BubbleOrientation.TOPRIGHT
                     }
-                    //TODO: check if enough place to position the bubble
-
                 }
                 // this._orientation = PocketCode.BubbleOrientation.LEFT;
                 console.log("==============================");
