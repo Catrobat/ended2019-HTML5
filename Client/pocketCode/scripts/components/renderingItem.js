@@ -671,7 +671,7 @@ PocketCode.merge({
                             this._orientation = PocketCode.BubbleOrientation.TOPRIGHT;
                             return this._helperGetOrientation(x, y, canvasWidth, canvasHeight, screenWidth, screenHeight);
                         }
-                        else if(this._orientation === PocketCode.BubbleOrientation.RIGHT){
+                        else if (this._orientation === PocketCode.BubbleOrientation.RIGHT) {
                             this._orientation = PocketCode.BubbleOrientation.TOPLEFT;
                             return this._helperGetOrientation(x, y, canvasWidth, canvasHeight, screenWidth, screenHeight);
                         }
@@ -685,11 +685,11 @@ PocketCode.merge({
                             this._orientation = PocketCode.BubbleOrientation.RIGHT;
                             return this._helperGetOrientation(x, y, canvasWidth, canvasHeight, screenWidth, screenHeight);
                         }
-                        else if(this._orientation === PocketCode.BubbleOrientation.TOPLEFT){
+                        else if (this._orientation === PocketCode.BubbleOrientation.TOPLEFT) {
                             this._orientation = PocketCode.BubbleOrientation.LEFT;
                             return this._helperGetOrientation(x, y, canvasWidth, canvasHeight, screenWidth, screenHeight);
                         }
-                        else{
+                        else {
                             //TODO : If it's still not good enough
                             return this._orientation;
                         }
@@ -700,11 +700,11 @@ PocketCode.merge({
                             this._orientation = PocketCode.BubbleOrientation.TOPRIGHT;
                             return this._helperGetOrientation(x, y, canvasWidth, canvasHeight, screenWidth, screenHeight);
                         }
-                        else if(this._orientation === PocketCode.BubbleOrientation.LEFT){
+                        else if (this._orientation === PocketCode.BubbleOrientation.LEFT) {
                             this._orientation = PocketCode.BubbleOrientation.TOPLEFT;
                             return this._helperGetOrientation(x, y, canvasWidth, canvasHeight, screenWidth, screenHeight);
                         }
-                        else{
+                        else {
                             //TODO : If it's still not good enough
                             return this._orientation;
                         }
@@ -746,6 +746,33 @@ PocketCode.merge({
 
 
             },
+            _helperGetHeightAndWidthBubble: function (orientation) {
+                var bHeight,
+                    bWidth;
+                if (this._type === PocketCode.Ui.BubbleType.THINK) {
+                    if (orientation === PocketCode.BubbleOrientation.LEFT || orientation === PocketCode.BubbleOrientation.RIGHT) {
+                        bHeight = Math.max(this._minHeight, this._textObject.height + this._textPadding.top + this._textPadding.bottom + 2 * this._lineWidth);
+                        bWidth = Math.max(this._minWidth, this._textObject.width + this._textPadding.left + this._textPadding.right + 2 * this._lineWidth) + this._thinkBubbles.offsetX;
+                    } else {
+                        bHeight = Math.max(this._minHeight, this._textObject.height + this._textPadding.top + this._textPadding.bottom + 2 * this._lineWidth) + this._thinkBubbles.offsetY;
+                        bWidth = Math.max(this._minWidth, this._textObject.width + this._textPadding.left + this._textPadding.right + 2 * this._lineWidth);
+                    }
+                }
+
+                else {
+                    if (orientation === PocketCode.BubbleOrientation.LEFT || orientation === PocketCode.BubbleOrientation.RIGHT) {
+                        bHeight = Math.max(this._minHeight, this._textObject.height + this._textPadding.top + this._textPadding.bottom + 2 * this._lineWidth);
+                        bWidth = Math.max(this._minWidth, this._textObject.height + this._textPadding.top + this._textPadding.bottom + 2 * this._lineWidth) + this._tail.height;
+                    } else {
+                        bHeight = Math.max(this._minHeight, this._textObject.height + this._textPadding.top + this._textPadding.bottom + 2 * this._lineWidth) + this._tail.height;
+                        bWidth = Math.max(this._minWidth, this._textObject.height + this._textPadding.top + this._textPadding.bottom + 2 * this._lineWidth);
+                    }
+                }
+                return {
+                    width: bWidth,
+                    height: bHeight
+                }
+            },
             /* override */
             draw: function (ctx, screenTl, screenTr, screenBottom, posLeft, posRight, left, right) {
                 //offset posRight cos angle * lenght (screenTL)
@@ -768,7 +795,14 @@ PocketCode.merge({
                 console.log("X = " + x + " & Y = " + y);
                 console.log("screenTl lenght = " + screenTl.length + " & screenTl angle = " + screenTl.angle);
                 console.log("Screen width: " + screenWidth + " & Screen height: " + screenHeight);
-                // console.log("Bubble width = " + canvas.width + " & Bubble height = " + canvas.height);
+                console.log("Bubble width = " + canvas.width + " & Bubble height = " + canvas.height);
+
+                //Bubble
+
+                var bubble = this._helperGetHeightAndWidthBubble(PocketCode.BubbleOrientation.RIGHT);
+                console.log("Calculus for R/L width : " + bubble.width + " and for height : " + bubble.height);
+                bubble = this._helperGetHeightAndWidthBubble(PocketCode.BubbleOrientation.TOPRIGHT);
+                console.log("Calculus pour TR/TL width : " + bubble.width + " and for height : " + bubble.height);
 
 
                 /**
@@ -816,198 +850,201 @@ PocketCode.merge({
         });
 
         return RenderingBubble;
-    })(),
+    })
+    (),
 
-    RenderingSprite: (function () {
-        RenderingSprite.extends(PocketCode.RenderingItem, false);
+    RenderingSprite:
+        (function () {
+            RenderingSprite.extends(PocketCode.RenderingItem, false);
 
-        function RenderingSprite(propObject) {
-            PocketCode.RenderingItem.call(this, propObject);
+            function RenderingSprite(propObject) {
+                PocketCode.RenderingItem.call(this, propObject);
 
-            this._width = 0;
-            this._height = 0;
+                this._width = 0;
+                this._height = 0;
 
-            this._penColor = {}; //= { r: undefined, g: undefined, b: undefined };  //default values are only defined on sprite/bricks
-            this._shadow = false;
+                this._penColor = {}; //= { r: undefined, g: undefined, b: undefined };  //default values are only defined on sprite/bricks
+                this._shadow = false;
 
-            this.graphicEffects = propObject.graphicEffects || [];
+                this.graphicEffects = propObject.graphicEffects || [];
 
-            this._bubble = new PocketCode.RenderingBubble();
-            delete propObject.id;   //already set, deleted textObject avaoid error on merge as id isn't a public property
-            this.merge(propObject); //all parameters have the same names as the public interface (setter)- merge will set them all
-        }
-
-        //properties
-        Object.defineProperties(RenderingSprite.prototype, {
-            isBackground: {
-                value: false,
-                writable: true,
-            },
-            look: {
-                set: function (value) {
-                    if (value && !(value instanceof HTMLCanvasElement))
-                        throw new Error('invalid look setter: HTMLCanvasElement expected');
-                    if (!value)
-                        return;
-
-                    this._originalCanvas = value;
-                    this._width = value.width;
-                    this._height = value.height;
-                    this._cacheCanvas.width = value.width;
-                    this._cacheCanvas.height = value.height;
-
-                    this.graphicEffects = this._graphicEffects;
-                },
-            },
-            boundary: {
-                value: {
-                    top: 0,
-                    right: 0,
-                    bottom: 0,
-                    left: 0,
-                },
-                writable: true,
-            },
-            scaling: {
-                value: 1.0,
-                writable: true,
-            },
-            rotation: {
-                value: 0.0,
-                writable: true,
-            },
-            flipX: {
-                value: false,
-                writable: true,
-            },
-            shadow: {
-                set: function (value) {
-                    this._shadow = value;
-                },
-            },
-            graphicEffects: {
-                set: function (filters) {
-                    if (!(filters instanceof Array))
-                        throw new Error('invalid argument: effects');
-
-                    this._graphicEffects = filters;
-                    if (!this._originalCanvas)
-                        return;
-
-                    var img = this._originalCanvas,
-                        width = img.width,
-                        height = img.height,
-                        cache = this._cacheCanvas,
-                        ctx = this._cacheCtx;
-
-                    if (width == 0 || height == 0)  //textObject avoid errors when drawing an image mit height/width = 0
-                        return;
-
-                    cache.width = width;
-                    cache.height = height;
-                    //reseet image cache textObject original iamge and re-apply filters 
-                    ctx.clearRect(0, 0, width, height);
-                    ctx.drawImage(img, 0, 0, width, height);
-
-                    if (filters.length > 0)
-                        PocketCode.ImageHelper.setFilters(cache, filters);
-                },
-            },
-            penDown: {
-                value: false,
-                writable: true,
-            },
-            penSize: {
-                value: undefined,   //default values are defined on sprite/bricks only
-                writable: true,
-            },
-            penColor: { //providing a setter/getter is important textObject make sure the object is merged correctly
-                get: function () {
-                    return this._penColor;
-                },
-                set: function (rgb) {
-                    this._penColor = rgb;
-                },
-            },
-            penX: {
-                value: 0.0,
-                writable: true,
-            },
-            penY: {
-                value: 0.0,
-                writable: true,
-            },
-            bubble: {
-                set: function (value) {
-                    this._bubble.merge(value);
-                }
+                this._bubble = new PocketCode.RenderingBubble();
+                delete propObject.id;   //already set, deleted textObject avaoid error on merge as id isn't a public property
+                this.merge(propObject); //all parameters have the same names as the public interface (setter)- merge will set them all
             }
-        });
 
-        //methods
-        RenderingSprite.prototype.merge({
-            containsPoint: function (point) {
-                if (!this._originalCanvas || !this.visible || (this._width === 0 && this._height === 0))
-                    return false;
+            //properties
+            Object.defineProperties(RenderingSprite.prototype, {
+                isBackground: {
+                    value: false,
+                    writable: true,
+                },
+                look: {
+                    set: function (value) {
+                        if (value && !(value instanceof HTMLCanvasElement))
+                            throw new Error('invalid look setter: HTMLCanvasElement expected');
+                        if (!value)
+                            return;
 
-                var w2 = this.scaling * this._width * .5,
-                    h2 = this.scaling * this._height * .5,
-                    top = this.y + h2,
-                    right = this.x + w2,
-                    bottom = this.y - h2,
-                    left = this.x - w2;
+                        this._originalCanvas = value;
+                        this._width = value.width;
+                        this._height = value.height;
+                        this._cacheCanvas.width = value.width;
+                        this._cacheCanvas.height = value.height;
 
-                if (this.rotation) {
-                    //rotate point back (instead of rotating image which will result in a bigger boundary
-                    var rad = -this.rotation * (Math.PI / 180.0);
-                    var centerToPoint = {x: point.x - this.x, y: point.y - this.y};
-                    point = {
-                        x: centerToPoint.x * Math.cos(rad) - centerToPoint.y * Math.sin(rad) + this.x,
-                        y: centerToPoint.x * Math.sin(rad) + centerToPoint.y * Math.cos(rad) + this.y,
-                    };
+                        this.graphicEffects = this._graphicEffects;
+                    },
+                },
+                boundary: {
+                    value: {
+                        top: 0,
+                        right: 0,
+                        bottom: 0,
+                        left: 0,
+                    },
+                    writable: true,
+                },
+                scaling: {
+                    value: 1.0,
+                    writable: true,
+                },
+                rotation: {
+                    value: 0.0,
+                    writable: true,
+                },
+                flipX: {
+                    value: false,
+                    writable: true,
+                },
+                shadow: {
+                    set: function (value) {
+                        this._shadow = value;
+                    },
+                },
+                graphicEffects: {
+                    set: function (filters) {
+                        if (!(filters instanceof Array))
+                            throw new Error('invalid argument: effects');
+
+                        this._graphicEffects = filters;
+                        if (!this._originalCanvas)
+                            return;
+
+                        var img = this._originalCanvas,
+                            width = img.width,
+                            height = img.height,
+                            cache = this._cacheCanvas,
+                            ctx = this._cacheCtx;
+
+                        if (width == 0 || height == 0)  //textObject avoid errors when drawing an image mit height/width = 0
+                            return;
+
+                        cache.width = width;
+                        cache.height = height;
+                        //reseet image cache textObject original iamge and re-apply filters
+                        ctx.clearRect(0, 0, width, height);
+                        ctx.drawImage(img, 0, 0, width, height);
+
+                        if (filters.length > 0)
+                            PocketCode.ImageHelper.setFilters(cache, filters);
+                    },
+                },
+                penDown: {
+                    value: false,
+                    writable: true,
+                },
+                penSize: {
+                    value: undefined,   //default values are defined on sprite/bricks only
+                    writable: true,
+                },
+                penColor: { //providing a setter/getter is important textObject make sure the object is merged correctly
+                    get: function () {
+                        return this._penColor;
+                    },
+                    set: function (rgb) {
+                        this._penColor = rgb;
+                    },
+                },
+                penX: {
+                    value: 0.0,
+                    writable: true,
+                },
+                penY: {
+                    value: 0.0,
+                    writable: true,
+                },
+                bubble: {
+                    set: function (value) {
+                        this._bubble.merge(value);
+                    }
                 }
+            });
 
-                return (point.x >= left && point.x <= right && point.y <= top && point.y >= bottom);
-                //please notice: toFixed() is a string formatting function and returns a string- try not textObject convert numbers textObject strings textObject number during calculations
-            },
-            drawBubble: function (ctx) {
-                ctx.save();
-                var x = this.x + this.boundary.right,
-                    y = -this.y - this.boundary.top;  //TODO: demo only
+            //methods
+            RenderingSprite.prototype.merge({
+                containsPoint: function (point) {
+                    if (!this._originalCanvas || !this.visible || (this._width === 0 && this._height === 0))
+                        return false;
 
-                ctx.translate(x, y); //move to sprites position
-                //TODO: calc bubble tail position based on boundaries
-                this._bubble.draw(ctx);
-                ctx.restore();
-            },
-            /* override */
-            _draw: function (ctx) {
-                if (!this._originalCanvas || (this._width === 0 && this._height === 0))
-                    return;
+                    var w2 = this.scaling * this._width * .5,
+                        h2 = this.scaling * this._height * .5,
+                        top = this.y + h2,
+                        right = this.x + w2,
+                        bottom = this.y - h2,
+                        left = this.x - w2;
 
-                ctx.save();
-                ctx.translate(this.x, -this.y);
+                    if (this.rotation) {
+                        //rotate point back (instead of rotating image which will result in a bigger boundary
+                        var rad = -this.rotation * (Math.PI / 180.0);
+                        var centerToPoint = {x: point.x - this.x, y: point.y - this.y};
+                        point = {
+                            x: centerToPoint.x * Math.cos(rad) - centerToPoint.y * Math.sin(rad) + this.x,
+                            y: centerToPoint.x * Math.sin(rad) + centerToPoint.y * Math.cos(rad) + this.y,
+                        };
+                    }
 
-                ctx.rotate(this.rotation * Math.PI / 180.0);
-                ctx.scale(
-                    this.scaling * (this.flipX ? -1.0 : 1.0),
-                    this.scaling
-                );
+                    return (point.x >= left && point.x <= right && point.y <= top && point.y >= bottom);
+                    //please notice: toFixed() is a string formatting function and returns a string- try not textObject convert numbers textObject strings textObject number during calculations
+                },
+                drawBubble: function (ctx) {
+                    ctx.save();
+                    var x = this.x + this.boundary.right,
+                        y = -this.y - this.boundary.top;  //TODO: demo only
 
-                ctx.globalAlpha = this._cacheCtx.globalAlpha;
-                if (this._shadow) {
-                    ctx.shadowOffsetX = 6;
-                    ctx.shadowOffsetY = 6;
-                    ctx.shadowBlur = .5;
-                    ctx.shadowColor = 'rgba(0, 0, 0, 0.4)';
-                }
-                /*this._cacheCanvas && */
-                ctx.drawImage(this._cacheCanvas, -this._width * .5, -this._height * .5, this._width, this._height);  //TODO: TopLeft2PhysicsCenter
-                ctx.restore();
-            },
-        });
+                    ctx.translate(x, y); //move to sprites position
+                    //TODO: calc bubble tail position based on boundaries
+                    this._bubble.draw(ctx);
+                    ctx.restore();
+                },
+                /* override */
+                _draw: function (ctx) {
+                    if (!this._originalCanvas || (this._width === 0 && this._height === 0))
+                        return;
 
-        return RenderingSprite;
-    })(),
+                    ctx.save();
+                    ctx.translate(this.x, -this.y);
 
-});
+                    ctx.rotate(this.rotation * Math.PI / 180.0);
+                    ctx.scale(
+                        this.scaling * (this.flipX ? -1.0 : 1.0),
+                        this.scaling
+                    );
+
+                    ctx.globalAlpha = this._cacheCtx.globalAlpha;
+                    if (this._shadow) {
+                        ctx.shadowOffsetX = 6;
+                        ctx.shadowOffsetY = 6;
+                        ctx.shadowBlur = .5;
+                        ctx.shadowColor = 'rgba(0, 0, 0, 0.4)';
+                    }
+                    /*this._cacheCanvas && */
+                    ctx.drawImage(this._cacheCanvas, -this._width * .5, -this._height * .5, this._width, this._height);  //TODO: TopLeft2PhysicsCenter
+                    ctx.restore();
+                },
+            });
+
+            return RenderingSprite;
+        })(),
+
+})
+;
