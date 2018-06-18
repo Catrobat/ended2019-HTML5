@@ -817,11 +817,11 @@ PocketCode.merge({
                          */
                         if (!(posLeft === undefined)) {
                             //Right :
-                            x = x +posRight.length;
+                            x = x + Math.round(posRight.length * Math.cos(posRight.angle * (Math.PI / 180)));
                             y= y - Math.round(posRight.length * Math.sin(posRight.angle * (Math.PI / 180)));
 
                             //Left :
-                            x= x - posLeft.length;
+                            x= x - Math.round(posLeft.length * Math.cos(posLeft.angle * (Math.PI / 180)));
                             y= y -Math.round(posLeft.length * Math.sin(posLeft.angle * (Math.PI / 180)));
                             //We change the axis on either posLeft/Right depending on the space available
                         }
