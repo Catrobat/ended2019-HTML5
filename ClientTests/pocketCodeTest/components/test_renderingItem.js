@@ -21,11 +21,11 @@ QUnit.test("RenderingItem", function (assert) {
     var ctx = canvas.getContext("2d");
 
     //tests
-    var ri = new PocketCode.RenderingItem({ id: "s01" });
+    var ri = new PocketCode.RenderingItem({id: "s01"});
     assert.ok(ri instanceof PocketCode.RenderingItem, "instance check");
 
     assert.ok(ri._id == "s01" && ri.x == 0.0 && ri.y == 0.0 && ri.visible == true, "cntr default args check");
-    ri = new PocketCode.RenderingItem({ id: "s02", x: 10, y: 20, visible: false });
+    ri = new PocketCode.RenderingItem({id: "s02", x: 10, y: 20, visible: false});
     assert.ok(ri._id == "s02" && ri.x == 10.0 && ri.y == 20.0 && ri.visible == false, "cntr args check");
 
     //getter setter
@@ -55,7 +55,7 @@ QUnit.test("RenderingItem", function (assert) {
 
 QUnit.test("RenderingText", function (assert) {
 
-    var rt = new PocketCode.RenderingText({ id: "s01" });
+    var rt = new PocketCode.RenderingText({id: "s01"});
     assert.ok(rt instanceof PocketCode.RenderingText && rt instanceof PocketCode.RenderingItem, "instance check");
 
     // underlying vars are defined in uservariablehost
@@ -66,7 +66,7 @@ QUnit.test("RenderingText", function (assert) {
         value = 'Hello, world!',
         visible = true;
 
-    var props = { scopeId: scopeId, id: id, value: value, x: x, y: y, visible: visible };
+    var props = {scopeId: scopeId, id: id, value: value, x: x, y: y, visible: visible};
     var renderingText = new PocketCode.RenderingText(props);
 
     assert.ok(renderingText instanceof PocketCode.RenderingText, 'correct instance');
@@ -175,12 +175,12 @@ QUnit.test("RenderingText", function (assert) {
 
 QUnit.test("RenderingBubble", function (assert) {
 
-    var rb = new PocketCode.RenderingBubble({ id: "s01" });
+    var rb = new PocketCode.RenderingBubble({id: "s01"});
     assert.ok(rb instanceof PocketCode.RenderingBubble && rb instanceof PocketCode.RenderingItem, "instance check");
 
     //Bubble positions
-    rb.content ="Test";
-    assert.ok(rb._cacheCanvas.height>0, "Cache created");
+    rb.content = "Test";
+    assert.ok(rb._cacheCanvas.height > 0, "Cache created");
 
     assert.equal(rb.visible, false, "Initial visibility hidden");
     rb.visible = true;
@@ -190,54 +190,53 @@ QUnit.test("RenderingBubble", function (assert) {
     canvas.height = 1200;
     var ctx = canvas.getContext("2d");
 
-    var screenTl ={
-        length : 35,
-        angle : 75,
-    },
-        screenTr={
-        length : 30,
-        angle : 40,
+    var screenTl = {
+            length: 35,
+            angle: 75,
+        },
+        screenTr = {
+            length: 30,
+            angle: 40,
         },
         screenBottom = -50,
-        posLeft={
-        length : 40,
-        angle: 80
+        posLeft = {
+            length: 40,
+            angle: 80
         }, // or undefined
-        posRight={
-            length : 50,
+        posRight = {
+            length: 50,
             angle: 40
         }, // or undefined
         left = -40, //or undefined
         right = 60; //or undefined
 
-    var canvasInsideScreen= function(rb){
+    var canvasInsideScreen = function (rb) {
         //Check if topRight/Right for using the right vector
 
-    if(rb.x <canvas.width && rb.y < canvas.height){
-        return true;
-    }else{
-        return false;
-    }
-};
+        if (rb.x < canvas.width && rb.y < canvas.height) {
+            return true;
+        } else {
+            return false;
+        }
+    };
     // rb.orientation = PocketCode.BubbleOrientation.RIGHT;
 //TODO: Check if it's inside canvas?
     assert.equal(rb._orientation, PocketCode.BubbleOrientation.TOPRIGHT, "Center of the sprite offscreen and orientation TopRight");
 
+    //TopLeft
     screenTl.angle = 0,
-    screenTl.length = 0,
-    screenTr.angle = 90,
-    screenTr.length = canvas.width;
-    //Position in Top -Left
+        screenTl.length = 0,
+        screenTr.angle = 90,
+        screenTr.length = canvas.width;
     rb.draw(ctx, screenTl, screenTr, canvas.height);
     assert.equal(rb._orientation, PocketCode.BubbleOrientation.TOPRIGHT, "Center of the sprite is at the Top Left corner and orientation TOPRIGHT");
 
-    //Check if it's on screen
 
     //Position Top - Middle
     screenTl.angle = 0,
-    screenTl.length = canvas.width*0.5,
-    screenTr.angle = 90,
-    screenTr.length = canvas.width*0.5;
+        screenTl.length = canvas.width * 0.5,
+        screenTr.angle = 90,
+        screenTr.length = canvas.width * 0.5;
     rb.draw(ctx, screenTl, screenTr, canvas.height);
     assert.equal(rb._orientation, PocketCode.BubbleOrientation.TOPRIGHT, "Center of the sprite is at the Middle Top corner and orientation TOPRIGHT");
 //Check if it's on screen
@@ -253,28 +252,28 @@ QUnit.test("RenderingBubble", function (assert) {
 
     //Position Middle - Right
     screenTl.angle = 45,
-        screenTl.length = Math.sqrt(Math.pow(canvas.width, 2) + Math.pow(canvas.height*0.5, 2)),
+        screenTl.length = Math.sqrt(Math.pow(canvas.width, 2) + Math.pow(canvas.height * 0.5, 2)),
         screenTr.angle = 180,
-        screenTr.length = canvas.height*0.5;
-    rb.draw(ctx, screenTl, screenTr, canvas.height*0.5);
+        screenTr.length = canvas.height * 0.5;
+    rb.draw(ctx, screenTl, screenTr, canvas.height * 0.5);
     assert.equal(rb._orientation, PocketCode.BubbleOrientation.TOPLEFT, "Center of the sprite is at the Right Middle corner and orientation change to TOPLEFT");
 //Check if it's on screen
 
     //Position Middle - Middle
     screenTl.angle = 63.4321574,
-        screenTl.length = Math.sqrt(Math.pow(canvas.width*0.5, 2) + Math.pow(canvas.height*0.5, 2)),
+        screenTl.length = Math.sqrt(Math.pow(canvas.width * 0.5, 2) + Math.pow(canvas.height * 0.5, 2)),
         screenTr.angle = 26.564615213,
-        screenTr.length = Math.sqrt(Math.pow(canvas.width*0.5, 2) + Math.pow(canvas.height*0.5, 2));
-    rb.draw(ctx, screenTl, screenTr, canvas.height*0.5);
+        screenTr.length = Math.sqrt(Math.pow(canvas.width * 0.5, 2) + Math.pow(canvas.height * 0.5, 2));
+    rb.draw(ctx, screenTl, screenTr, canvas.height * 0.5);
     assert.equal(rb._orientation, PocketCode.BubbleOrientation.TOPLEFT, "Center of the sprite is at the Middle- Middle part and orientation stay to TOPLEFT");
 //Check if it's on screen
 
     //Position Middle - Left
     screenTl.angle = 90,
-        screenTl.length = canvas.height*0.5,
+        screenTl.length = canvas.height * 0.5,
         screenTr.angle = 45,
-        screenTr.length = Math.sqrt(Math.pow(canvas.width, 2) + Math.pow(canvas.height*0.5, 2));
-    rb.draw(ctx, screenTl, screenTr, canvas.height*0.5);
+        screenTr.length = Math.sqrt(Math.pow(canvas.width, 2) + Math.pow(canvas.height * 0.5, 2));
+    rb.draw(ctx, screenTl, screenTr, canvas.height * 0.5);
     assert.equal(rb._orientation, PocketCode.BubbleOrientation.TOPRIGHT, "Center of the sprite is at the middle left corner and orientation change to TOPRIGHT");
 //Check if it's on screen
 
@@ -290,9 +289,9 @@ QUnit.test("RenderingBubble", function (assert) {
 
     //Position Middle Bottom Screen
     screenTl.angle = 75.962744478,
-        screenTl.length = Math.sqrt(Math.pow(canvas.width*0.5, 2) + Math.pow(canvas.height, 2)),
+        screenTl.length = Math.sqrt(Math.pow(canvas.width * 0.5, 2) + Math.pow(canvas.height, 2)),
         screenTr.angle = 14.036205474,
-        screenTr.length = Math.sqrt(Math.pow(canvas.width*0.5, 2) + Math.pow(canvas.height, 2));
+        screenTr.length = Math.sqrt(Math.pow(canvas.width * 0.5, 2) + Math.pow(canvas.height, 2));
     rb.draw(ctx, screenTl, screenTr, 0);
     assert.equal(rb._orientation, PocketCode.BubbleOrientation.TOPRIGHT, "Center of the sprite is at the bottom middle  and orientation stay to TOPRIGHT");
 //Check if it's on screen
@@ -305,6 +304,10 @@ QUnit.test("RenderingBubble", function (assert) {
     rb.draw(ctx, screenTl, screenTr, 0);
     assert.equal(rb._orientation, PocketCode.BubbleOrientation.TOPLEFT, "Center of the sprite is at the bottom right corner and orientation change to TOPLEFT");
 //Check if it's on screen
+
+    //////////////////////////////////////////////////////////////////////////
+
+    //tests with sprite
 
 
 });
@@ -353,7 +356,7 @@ QUnit.test("RenderingSprite", function (assert) {
         var xPrime = Math.cos(angle) * (x - anchorX) - Math.sin(angle) * (y - anchorY) + anchorX;
         var yPrime = Math.sin(angle) * (x - anchorX) + Math.cos(angle) * (y - anchorY) + anchorY;
 
-        return { x: xPrime, y: yPrime }
+        return {x: xPrime, y: yPrime}
     };
 
     // helper function to check which pixels of canvas were actually drawn on
@@ -372,7 +375,7 @@ QUnit.test("RenderingSprite", function (assert) {
         var topLeftX = Math.round(centerX - width * 0.5);
         var topLeftY = Math.round(centerY - height * 0.5);
 
-        rect = { tlX: topLeftX, tlY: topLeftY, width: width, height: height };
+        rect = {tlX: topLeftX, tlY: topLeftY, width: width, height: height};
 
         for (var currentY = 0; currentY < canvasHeight; currentY++) {
             for (var currentX = 0; currentX < canvasWidth; currentX++) {
@@ -430,13 +433,13 @@ QUnit.test("RenderingSprite", function (assert) {
     //init tests to start
     var baseUrl = "_resources/images/",
         images = [
-            { id: "s1", url: "imgHelper14.png", size: 1 },  //100% opaque red square
-            { id: "s2", url: "imgHelper15.png", size: 1 }   //green square inside transparent area
+            {id: "s1", url: "imgHelper14.png", size: 1},  //100% opaque red square
+            {id: "s2", url: "imgHelper15.png", size: 1}   //green square inside transparent area
         ];
 
     var imagesScaling = [
-            { id: "s3", url: "imgHelper14.png", size: 1 },
-            { id: "s4", url: "imgHelper15.png", size: 1 }];
+        {id: "s3", url: "imgHelper14.png", size: 1},
+        {id: "s4", url: "imgHelper15.png", size: 1}];
 
     var gameEngine = new PocketCode.GameEngine();
     var scene = new PocketCode.Model.Scene(gameEngine, undefined, []);
@@ -454,16 +457,22 @@ QUnit.test("RenderingSprite", function (assert) {
         canvasElement.height = 20;
         canvasElement.width = 10;
 
-        var renderingSprite = new PocketCode.RenderingSprite({ id: "id", look: canvasElement });
+        var renderingSprite = new PocketCode.RenderingSprite({id: "id", look: canvasElement});
 
         assert.ok(renderingSprite instanceof PocketCode.RenderingSprite && renderingSprite instanceof PocketCode.RenderingItem, "instance check");
         //assert.equal(renderingSprite.look, canvasElement, "RenderingSprite.look returns canvas element");
 
-        assert.throws(function () { new PocketCode.RenderingSprite(); }, Error, "ERROR: missing arguments");
-        assert.throws(function () { new PocketCode.RenderingSprite("string"); }, Error, "ERROR: argument not an object");
+        assert.throws(function () {
+            new PocketCode.RenderingSprite();
+        }, Error, "ERROR: missing arguments");
+        assert.throws(function () {
+            new PocketCode.RenderingSprite("string");
+        }, Error, "ERROR: argument not an object");
 
         //getter, setter
-        assert.throws(function () { renderingSprite.look = "look"; }, Error, "ERROR: look setter: wrong type");
+        assert.throws(function () {
+            renderingSprite.look = "look";
+        }, Error, "ERROR: look setter: wrong type");
         renderingSprite.scaling = 2;
         assert.equal(renderingSprite._scaling, 2, "scaling: setter");
         renderingSprite.rotation = 3;
@@ -481,29 +490,31 @@ QUnit.test("RenderingSprite", function (assert) {
 
         renderingSprite.penSize = 5;
         assert.equal(renderingSprite.penSize, 5, "penSize: getter/setter");
-        renderingSprite.penColor = { r: 0, g: 0, b: 255.0, };
+        renderingSprite.penColor = {r: 0, g: 0, b: 255.0,};
         assert.equal(renderingSprite.penColor.r, 0.0, "penColorRed: getter/setter");
         assert.equal(renderingSprite.penColor.g, 0.0, "penColorGreen: getter/setter");
         assert.equal(renderingSprite.penColor.b, 255.0, "penColorBlue: getter/setter");
 
-        assert.throws(function () { renderingSprite.graphicEffects = "effect"; }, Error, "ERROR: graphicEffects setter: wrong type");
+        assert.throws(function () {
+            renderingSprite.graphicEffects = "effect";
+        }, Error, "ERROR: graphicEffects setter: wrong type");
         renderingSprite.graphicEffects = [];
         assert.deepEqual(renderingSprite._graphicEffects, [], "graphicEffects setter");
 
         //reinit
-        renderingSprite = new PocketCode.RenderingSprite({ id: "id", look: canvasElement });
+        renderingSprite = new PocketCode.RenderingSprite({id: "id", look: canvasElement});
 
         renderingSprite.x = 10;
         renderingSprite.y = 15;
 
-        assert.ok(renderingSprite.containsPoint({ x: 5, y: 5 }), "Contains Point on left top corner");
-        assert.ok(renderingSprite.containsPoint({ x: 15, y: 5 }), "Contains Point on right top corner");
-        assert.ok(renderingSprite.containsPoint({ x: 15, y: 25 }), "Contains Point on right bottom corner");
-        assert.ok(renderingSprite.containsPoint({ x: 5, y: 25 }), "Contains Point on left bottom corner");
-        assert.ok(!renderingSprite.containsPoint({ x: 4, y: 5 }), "Does not contain Point outside left border");
-        assert.ok(!renderingSprite.containsPoint({ x: 5, y: 4 }), "Does not contain Point outside top border");
-        assert.ok(!renderingSprite.containsPoint({ x: 5, y: 26 }), "Does not contain Point outside bottom border");
-        assert.ok(!renderingSprite.containsPoint({ x: 16, y: 6 }), "Does not contain Point outside top border");
+        assert.ok(renderingSprite.containsPoint({x: 5, y: 5}), "Contains Point on left top corner");
+        assert.ok(renderingSprite.containsPoint({x: 15, y: 5}), "Contains Point on right top corner");
+        assert.ok(renderingSprite.containsPoint({x: 15, y: 25}), "Contains Point on right bottom corner");
+        assert.ok(renderingSprite.containsPoint({x: 5, y: 25}), "Contains Point on left bottom corner");
+        assert.ok(!renderingSprite.containsPoint({x: 4, y: 5}), "Does not contain Point outside left border");
+        assert.ok(!renderingSprite.containsPoint({x: 5, y: 4}), "Does not contain Point outside top border");
+        assert.ok(!renderingSprite.containsPoint({x: 5, y: 26}), "Does not contain Point outside bottom border");
+        assert.ok(!renderingSprite.containsPoint({x: 16, y: 6}), "Does not contain Point outside top border");
 
         for (var rotationAngle = 0; rotationAngle <= 360; rotationAngle += 30) {
             renderingSprite.rotation = rotationAngle;
@@ -511,14 +522,14 @@ QUnit.test("RenderingSprite", function (assert) {
 
             var xOffset = renderingSprite._height * 0.5 * Math.cos(rad);
             var yOffset = renderingSprite._height * 0.5 * Math.sin(rad);
-            var centerTop = { x: renderingSprite.x + xOffset, y: renderingSprite.y - yOffset };
-            var centerBottom = { x: renderingSprite.x - xOffset, y: renderingSprite.y + yOffset };
+            var centerTop = {x: renderingSprite.x + xOffset, y: renderingSprite.y - yOffset};
+            var centerBottom = {x: renderingSprite.x - xOffset, y: renderingSprite.y + yOffset};
 
             rad = (-rotationAngle + 180) * (Math.PI / 180.0);
             xOffset = renderingSprite._width * 0.5 * Math.cos(rad);
             yOffset = renderingSprite._width * 0.5 * Math.sin(rad);
-            var centerRight = { x: renderingSprite.x + xOffset, y: renderingSprite.y - yOffset };
-            var centerLeft = { x: renderingSprite.x - xOffset, y: renderingSprite.y + yOffset };
+            var centerRight = {x: renderingSprite.x + xOffset, y: renderingSprite.y - yOffset};
+            var centerLeft = {x: renderingSprite.x - xOffset, y: renderingSprite.y + yOffset};
 
             assert.ok(renderingSprite.containsPoint(centerTop) && renderingSprite.containsPoint(centerBottom)
                 && renderingSprite.containsPoint(centerLeft) && renderingSprite.containsPoint(centerRight), "Contains Points on boundaries with rotation: " + rotationAngle);
@@ -526,14 +537,14 @@ QUnit.test("RenderingSprite", function (assert) {
             rad = (-rotationAngle + 90) * (Math.PI / 180.0);
             xOffset = ((renderingSprite._height * 0.5) + 1) * Math.cos(rad);
             yOffset = ((renderingSprite._height * 0.5) + 1) * Math.sin(rad);
-            centerTop = { x: renderingSprite.x + xOffset, y: renderingSprite.y - yOffset };
-            centerBottom = { x: renderingSprite.x - xOffset, y: renderingSprite.y + yOffset };
+            centerTop = {x: renderingSprite.x + xOffset, y: renderingSprite.y - yOffset};
+            centerBottom = {x: renderingSprite.x - xOffset, y: renderingSprite.y + yOffset};
 
             rad = (-rotationAngle + 180) * (Math.PI / 180.0);
             xOffset = ((renderingSprite._width * 0.5) + 1) * Math.cos(rad);
             yOffset = ((renderingSprite._width * 0.5) + 1) * Math.sin(rad);
-            centerRight = { x: renderingSprite.x + xOffset, y: renderingSprite.y - yOffset };
-            centerLeft = { x: renderingSprite.x - xOffset, y: renderingSprite.y + yOffset };
+            centerRight = {x: renderingSprite.x + xOffset, y: renderingSprite.y - yOffset};
+            centerLeft = {x: renderingSprite.x - xOffset, y: renderingSprite.y + yOffset};
 
             assert.ok(!renderingSprite.containsPoint(centerTop) && !renderingSprite.containsPoint(centerBottom)
                 && !renderingSprite.containsPoint(centerLeft) && !renderingSprite.containsPoint(centerRight), "Does not contain Points outside boundaries with rotation: " + rotationAngle);
@@ -542,10 +553,18 @@ QUnit.test("RenderingSprite", function (assert) {
         //draw tests
         //var look1 = new PocketCode.Model.Look({ name: "look1", id: "sid1", resourceId: "s1" });
         //var look2 = new PocketCode.Model.Look({ name: "look2", id: "sid2", resourceId: "s2" });
-        var sprite1 = new PocketCode.Model.Sprite(gameEngine, scene, { id: "id0", name: "sprite0", looks: [{ name: "look1", id: "sid1", resourceId: "s1" }] });   //look1] });
+        var sprite1 = new PocketCode.Model.Sprite(gameEngine, scene, {
+            id: "id0",
+            name: "sprite0",
+            looks: [{name: "look1", id: "sid1", resourceId: "s1"}]
+        });   //look1] });
         sprite1.initLooks();
         sprite1.init();
-        var sprite2 = new PocketCode.Model.Sprite(gameEngine, scene, { id: "id1", name: "sprite1", looks: [{ name: "look2", id: "sid2", resourceId: "s2" }] });   //look2] });
+        var sprite2 = new PocketCode.Model.Sprite(gameEngine, scene, {
+            id: "id1",
+            name: "sprite1",
+            looks: [{name: "look2", id: "sid2", resourceId: "s2"}]
+        });   //look2] });
         sprite2.initLooks();
         sprite2.init();
 
@@ -752,7 +771,9 @@ QUnit.test("RenderingSprite", function (assert) {
         PocketCode.ImageHelper.setFilters = function () {
             setFiltersCalled++;
         };
-        assert.throws(function () { renderingSprite.graphicEffects = '' }, Error, "Set graphic effects to non-array type");
+        assert.throws(function () {
+            renderingSprite.graphicEffects = ''
+        }, Error, "Set graphic effects to non-array type");
         assert.ok(!setFiltersCalled, "no filters set when non array argument is given");
 
         renderingSprite.graphicEffects = [];
@@ -770,10 +791,18 @@ QUnit.test("RenderingSprite", function (assert) {
         //var lookOpaque = new PocketCode.Model.Look({ name: "look3", id: "sid3", resourceId: "s3" });
         //var lookTransparent = new PocketCode.Model.Look({ name: "look4", id: "sid4", resourceId: "s4" });
 
-        var spriteOpaque = new PocketCode.Model.Sprite(gameEngine, scene, { id: "id2", name: "sprite2", looks: [{ name: "look3", id: "sid3", resourceId: "s3" }] });  //lookOpaque] });
+        var spriteOpaque = new PocketCode.Model.Sprite(gameEngine, scene, {
+            id: "id2",
+            name: "sprite2",
+            looks: [{name: "look3", id: "sid3", resourceId: "s3"}]
+        });  //lookOpaque] });
         spriteOpaque.initLooks();
         spriteOpaque.init();
-        var spriteTransparent = new PocketCode.Model.Sprite(gameEngine, scene, { id: "id3", name: "sprite3", looks: [{ name: "look4", id: "sid4", resourceId: "s4" }] });  //lookTransparent] });
+        var spriteTransparent = new PocketCode.Model.Sprite(gameEngine, scene, {
+            id: "id3",
+            name: "sprite3",
+            looks: [{name: "look4", id: "sid4", resourceId: "s4"}]
+        });  //lookTransparent] });
         spriteTransparent.initLooks();
         spriteTransparent.init();
         var renderingSpriteOpaque = spriteOpaque.renderingSprite; //new PocketCode.RenderingSprite(spriteOpaque.renderingProperties);

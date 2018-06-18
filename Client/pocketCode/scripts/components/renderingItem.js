@@ -798,32 +798,34 @@ PocketCode.merge({
                 console.log("Bubble width = " + canvas.width + " & Bubble height = " + canvas.height);
 
                 //Bubble
-
                 var bubble = this._helperGetHeightAndWidthBubble(PocketCode.BubbleOrientation.RIGHT);
                 console.log("Calculus for R/L width : " + bubble.width + " and for height : " + bubble.height);
                 bubble = this._helperGetHeightAndWidthBubble(PocketCode.BubbleOrientation.TOPRIGHT);
                 console.log("Calculus pour TR/TL width : " + bubble.width + " and for height : " + bubble.height);
 
-
-                /**
-                 * If we have a sprite, we have to move our coordinates either to
-                 *  the end of posRight (default) or posLeft and then calculate
-                 *  if we have enough place for the current orientation with/out 'Top'
-                 *  Or switching to the other end of vector
-                 */
-                if (!(posLeft === undefined)) {
-                    //We change the axis on either posLeft/Right depending on the space available
-                    //TODO: Calculate space available left and right
-
-                    //TODO: Calculate new position for x and y
-
-                }
                 /**
                  * If we don't have posLeft, we don't have any other hull,
                  * so we try to place the bubble according the space at its coordinates
                  */
                 else {
                     if (!(canvas.height > screenHeight && canvas.width > screenWidth)) {
+                        /**
+                         * If we have a sprite, we have to move our coordinates either to
+                         *  the end of posRight (default) or posLeft and then calculate
+                         *  if we have enough place for the current orientation with/out 'Top'
+                         *  Or switching to the other end of vector
+                         */
+                        if (!(posLeft === undefined)) {
+                            //Right :
+                            x = x +posRight.length;
+                            y= y - Math.round(posRight.length * Math.sin(posRight.angle * (Math.PI / 180)));
+
+                            //Left :
+                            x= x - posLeft.length;
+                            y= y -Math.round(posLeft.length * Math.sin(posLeft.angle * (Math.PI / 180)));
+                            //We change the axis on either posLeft/Right depending on the space available
+                        }
+                        //TODo: Checking the double x & y (Left and Right for hull vectors)
                         this._orientation = this._helperGetOrientation(x, y, canvas.width, canvas.height, screenWidth, screenHeight);
                         console.log("On a donc : " + this._orientation);
 
