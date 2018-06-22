@@ -320,7 +320,7 @@ QUnit.test("RenderingBubble", function (assert) {
     posLeft.angle = 135,
         posLeft.length = 200,
         posRight.angle = 45,
-        posRight.length = 2000,
+        posRight.length = 200,
         left = 200,
         right = 200;
     rb.draw(ctx, screenTl, screenTr, canvas.height * 0.83336, posLeft, posRight, left, right);
@@ -338,7 +338,7 @@ QUnit.test("RenderingBubble", function (assert) {
     posLeft.angle = 135,
         posLeft.length = 200,
         posRight.angle = 45,
-        posRight.length = 2000,
+        posRight.length = 200,
         left = 200,
         right = 200;
     rb.draw(ctx, screenTl, screenTr, canvas.height * 0.83336, posLeft, posRight, left, right);
@@ -355,7 +355,7 @@ QUnit.test("RenderingBubble", function (assert) {
     posLeft.angle = 135,
         posLeft.length = 200,
         posRight.angle = 45,
-        posRight.length = 2000,
+        posRight.length = 200,
         left = 200,
         right = 200;
     rb.draw(ctx, screenTl, screenTr, canvas.height * 0.16666, posLeft, posRight, left, right);
@@ -372,7 +372,7 @@ QUnit.test("RenderingBubble", function (assert) {
     posLeft.angle = 135,
         posLeft.length = 200,
         posRight.angle = 45,
-        posRight.length = 2000,
+        posRight.length = 200,
         left = 200,
         right = 200;
     rb.draw(ctx, screenTl, screenTr, canvas.height * 0.16666, posLeft, posRight, left, right);
@@ -388,11 +388,11 @@ QUnit.test("RenderingBubble", function (assert) {
     posLeft.angle = 135,
         posLeft.length = 200,
         posRight.angle = 45,
-        posRight.length = 2000,
+        posRight.length = 200,
         left = 200,
         right = 200;
 
-    rb.draw(ctx, screenTl, screenTr, canvas.height * 0.5);
+    rb.draw(ctx, screenTl, screenTr, canvas.height * 0.5, posLeft, posRight, left, right);
     assert.equal(rb._orientation, PocketCode.BubbleOrientation.TOPRIGHT, "Circle sprite at the middle of the screen and orientation on the Top Right");
 
 });

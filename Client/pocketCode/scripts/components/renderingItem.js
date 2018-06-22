@@ -801,41 +801,56 @@ PocketCode.merge({
                 var bubble = this._helperGetHeightAndWidthBubble(PocketCode.BubbleOrientation.RIGHT);
                 console.log("Calculus for R/L width : " + bubble.width + " and for height : " + bubble.height);
                 bubble = this._helperGetHeightAndWidthBubble(PocketCode.BubbleOrientation.TOPRIGHT);
-                console.log("Calculus pour TR/TL width : " + bubble.width + " and for height : " + bubble.height);
+                console.log("Calculus pour TR/TL width : " + bubble.width + " and for height : " + bubble.height)
+
+                //TODO: Put bubbles outside the screen an offset to be rendered inside
+                //Todo: keep the orientation without overwriting
+                //Todo : Refactor and improve the layout of the getOrientation function
 
                 /**
                  * If we don't have posLeft, we don't have any other hull,
                  * so we try to place the bubble according the space at its coordinates
                  */
-                else {
-                    if (!(canvas.height > screenHeight && canvas.width > screenWidth)) {
-                        /**
-                         * If we have a sprite, we have to move our coordinates either to
-                         *  the end of posRight (default) or posLeft and then calculate
-                         *  if we have enough place for the current orientation with/out 'Top'
-                         *  Or switching to the other end of vector
-                         */
-                        if (!(posLeft === undefined)) {
-                            //Right :
-                            x = x + Math.round(posRight.length * Math.cos(posRight.angle * (Math.PI / 180)));
-                            y= y - Math.round(posRight.length * Math.sin(posRight.angle * (Math.PI / 180)));
+                if (!(canvas.height > screenHeight && canvas.width > screenWidth)) {
+                    /**
+                     * If we have a sprite, we have to move our coordinates either to
+                     *  the end of posRight (default) or posLeft and then calculate
+                     *  if we have enough place for the current orientation with/out 'Top'
+                     *  Or switching to the other end of vector
+                     */
+                    if (!(posLeft === undefined)) {
+                        //Right :
+                         var x1 = x + Math.round(posRight.length * Math.cos(posRight.angle * (Math.PI / 180)));
+                         var y1 = y - Math.round(posRight.length * Math.sin(posRight.angle * (Math.PI / 180)));
 
-                            //Left :
-                            x= x - Math.round(posLeft.length * Math.cos(posLeft.angle * (Math.PI / 180)));
-                            y= y -Math.round(posLeft.length * Math.sin(posLeft.angle * (Math.PI / 180)));
-                            //We change the axis on either posLeft/Right depending on the space available
-                        }
-                        //TODo: Checking the double x & y (Left and Right for hull vectors)
-                        this._orientation = this._helperGetOrientation(x, y, canvas.width, canvas.height, screenWidth, screenHeight);
-                        console.log("On a donc : " + this._orientation);
+                        //Left :
+                        var x2 = x + Math.round(posLeft.length * Math.cos(posLeft.angle * (Math.PI / 180)));
+                        var y2 = y - Math.round(posLeft.length * Math.sin(posLeft.angle * (Math.PI / 180)));
 
 
-                    } else {
-                        x = screenWidth * 0.5;
-                        y = screenHeight * 0.5;
-                        this._orientation = PocketCode.BubbleOrientation.TOPRIGHT
+                        x ={
+                            Right : x1,
+                            Left : x2
+                        };
+                        y={
+                            Right : y1,
+                            Left : y2
+                        };
+                        console.log("======== Sprite detected");
+                        console.log("X Right " + x.Right +" & X Left : " +x.Left +" Y Right : " + y.Right + " & Y Left : " +y.Left);
+                        //We change the axis on either posLeft/Right depending on the space available
                     }
+                    //TODo: Checking the double x & y (Left and Right for hull vectors)
+                    this._orientation = this._helperGetOrientation(x, y, canvas.width, canvas.height, screenWidth, screenHeight);
+                    console.log("On a donc : " + this._orientation);
+
+
+                } else {
+                    x = screenWidth * 0.5;
+                    y = screenHeight * 0.5;
+                    this._orientation = PocketCode.BubbleOrientation.TOPRIGHT
                 }
+
                 // this._orientation = PocketCode.BubbleOrientation.LEFT;
                 console.log("==============================");
                 ctx.save();
