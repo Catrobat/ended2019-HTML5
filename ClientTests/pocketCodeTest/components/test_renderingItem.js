@@ -359,7 +359,7 @@ QUnit.test("RenderingBubble", function (assert) {
         left = 150,
         right = 150;
     rb.draw(ctx, screenTl, screenTr, canvas.height * 0.16666, posLeft, posRight, left, right);
-    assert.equal(rb._orientation, PocketCode.BubbleOrientation.TOPRIGHT, "Circle sprite at the bottom left of the screen and orientation on the Top Right");
+    assert.equal(rb._orientation, PocketCode.BubbleOrientation.RIGHT, "Circle sprite at the bottom left of the screen and orientation on the Top Right");
 
     //Position at the bottom right
     //Screen Data
