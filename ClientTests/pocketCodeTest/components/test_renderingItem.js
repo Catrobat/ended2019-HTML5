@@ -386,14 +386,59 @@ QUnit.test("RenderingBubble", function (assert) {
         screenTr.length = Math.sqrt(Math.pow(canvas.width * 0.5, 2) + Math.pow(canvas.height * 0.5, 2));
     //Sprite Data
     posLeft.angle = 135,
-        posLeft.length = 150,
+        posLeft.length = 100,
         posRight.angle = 45,
-        posRight.length = 150,
-        left = 150,
-        right = 150;
+        posRight.length = 100,
+        left = 100,
+        right = 100;
 
     rb.draw(ctx, screenTl, screenTr, canvas.height * 0.5, posLeft, posRight, left, right);
-    assert.equal(rb._orientation, PocketCode.BubbleOrientation.TOPRIGHT, "Circle sprite at the middle of the screen and orientation on the Top Right");
+    assert.equal(rb._orientation, PocketCode.BubbleOrientation.TOPLEFT, "Circle sprite at the middle of the screen and orientation on the Top Right");
+
+
+    //Test with x outside below 0
+    //Screen Data
+    screenTl.angle = 92.71,
+        screenTl.length = 440,
+        screenTr.angle = 280,
+        screenTr.length = 1019.8;
+
+    rb.draw(ctx, screenTl, screenTr, canvas.height * 0.4 );
+    assert.equal(rb._orientation, PocketCode.BubbleOrientation.TOPLEFT, "Circle sprite at the middle of the screen and orientation on the Top Right");
+
+    // //Test with y outside below 0
+    // //Screen Data
+    // screenTl.angle = 2.5,
+    //     screenTl.length = 500 ,
+    //     screenTr.angle = 280,
+    //     screenTr.length = 1019.8;
+    //
+    // rb.draw(ctx, screenTl, screenTr, canvas.height * 1.5 );
+    // assert.equal(rb._orientation, PocketCode.BubbleOrientation.TOPRIGHT, "Circle sprite at the middle of the screen and orientation on the Top Right");
+    //
+    //
+    // //Test with x> above the screen dimension
+    // //Screen Data
+    // screenTl.angle = 210,
+    //     screenTl.length = 900,
+    //     screenTr.angle = 11.3,
+    //     screenTr.length = 1019.8;
+    //
+    // rb.draw(ctx, screenTl, screenTr, canvas.height * -1.5 );
+    // assert.equal(rb._orientation, PocketCode.BubbleOrientation.TOPRIGHT, "Circle sprite at the middle of the screen and orientation on the Top Right");
+    //
+    // //Test with y> above the screen dimension
+    // //Screen Data
+    // screenTl.angle = 210,
+    //     screenTl.length = 900,
+    //     screenTr.angle = 11.3,
+    //     screenTr.length = 1019.8;
+    //
+    // rb.draw(ctx, screenTl, screenTr, canvas.height * -1.5 );
+    // assert.equal(rb._orientation, PocketCode.BubbleOrientation.TOPRIGHT, "Circle sprite at the middle of the screen and orientation on the Top Right");
+
+
+
 
 });
 
