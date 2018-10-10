@@ -24,7 +24,7 @@ SmartJs.Ui._Window = (function () {  //static class
 
         //var onResizeHandler = function () { };
         var resizeEventName = 'resize';
-        if (window.orientationchange)
+        if (((window.orientation!==undefined)?window.orientation:((window.screen!==undefined)?window.screen.orientation.angle:undefined))change)
             resizeEventName = 'orientationchange';
 
         this._addDomListener(window, resizeEventName, function (e) { this._onResize.dispatchEvent({ height: this.height, width: this.width }); });

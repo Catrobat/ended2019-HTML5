@@ -846,7 +846,7 @@ PocketCode.Web = {
         function PlayerInterface() {
             this._domLoaded = false;
             this._addDomListener(window, 'load', this._initOnLoad);
-            this._isMobile = (typeof window.orientation !== 'undefined') || !!navigator.userAgent.match(/iPad|iPhone|Android|BlackBerry|Phone|ZuneWP7|WPDesktop|webOS/i);
+            this._isMobile = (typeof ((window.orientation!==undefined)?window.orientation:((window.screen!==undefined)?window.screen.orientation.angle:undefined)) !== 'undefined') || !!navigator.userAgent.match(/iPad|iPhone|Android|BlackBerry|Phone|ZuneWP7|WPDesktop|webOS/i);
         }
 
         PlayerInterface.prototype = {
