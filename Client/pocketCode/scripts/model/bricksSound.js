@@ -65,6 +65,9 @@ PocketCode.Model.merge({
         return PlaySoundBrick;
     })(),
 
+    /*
+    included in control/stopBrick - refactoring of brick factory MISSING (TODO)
+
     StopAllSoundsBrick: (function () {
         StopAllSoundsBrick.extends(PocketCode.Model.BaseBrick, false);
 
@@ -87,6 +90,7 @@ PocketCode.Model.merge({
 
         return StopAllSoundsBrick;
     })(),
+    */
 
     SetVolumeBrick: (function () {
         SetVolumeBrick.extends(PocketCode.Model.BaseBrick, false);

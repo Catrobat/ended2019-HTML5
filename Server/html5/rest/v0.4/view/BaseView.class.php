@@ -44,8 +44,7 @@ abstract class BaseView
     }
     catch(Exception $e)
     {
-      $outputObject = new ExceptionDto("UnhandledException", $e->getMessage(), $e->getCode(), $e->getFile(),
-                                       $e->getLine());
+      $outputObject = new ExceptionDto("UnhandledException", $e->getMessage(), $e->getCode(), $e->getFile(), $e->getLine());
       $this->writeResponseString($outputObject);
     }
 
