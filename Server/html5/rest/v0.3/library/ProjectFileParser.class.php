@@ -417,7 +417,7 @@ class ProjectFileParser
             $res = $this->findItemInArrayByUrl($url, $this->sounds, true);
             if($res === false)
             {
-                $id = $this->getNewId() . "_$this->projectId";
+                $id = $this->getNewId() . "_" . $this->projectId;
                 $path = $this->cacheDir . "sounds" . DIRECTORY_SEPARATOR . (string)$sound->fileName;
                 if(is_file($path))
                 {

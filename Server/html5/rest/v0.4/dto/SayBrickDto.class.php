@@ -1,11 +1,11 @@
 <?php
 
-class SpeakBrickDto extends BaseBrickDto {
+class SayBrickDto extends BaseBrickDto {
 
     public $text;	//formula
 
     public function __construct($text, $commentedOut = false) {
-        parent::__construct("Speak", $commentedOut);
+        parent::__construct("Say", $commentedOut);
 
         $this->text = $text;
     }
