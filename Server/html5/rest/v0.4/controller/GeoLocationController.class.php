@@ -3,6 +3,7 @@
 class GeoLocationController extends BaseController
 {
     private $ip = "";
+    private $defaultGeoLocation = "";
 
     public function __construct($request)
     {
@@ -15,21 +16,28 @@ class GeoLocationController extends BaseController
         } else {
             $this->ip = $_SERVER["REMOTE_ADDR"];
         }
+
+        $this->defaultGeoLocation = new GeoLocationDto(47.058662, 15.458973); // default: TU Graz Infeldgasse 16b
     }
 
     public function get()
     {
+        try {
+            $string = file_get_contents('http://ip-api.com/json/' . $this->ip);
+            if($string == false) {
+                return $this->defaultGeoLocation;
+            }
 
-        //request data as xml
-        $string = file_get_contents("http://freegeoip.net/json/".$this->ip);
-        if($string == false) {
-            return new ServiceNotImplementedException($this->request->serviceName . ": geo lookup denied");
+            $json = json_decode($string);
+
+            if(!isset($json->status) || !isset($json->lat) || !isset($json->lon) || $json->status != "success") {
+                return $this->defaultGeoLocation;
+            }
+
+            return new GeoLocationDto($json->lat, $json->lon);
+        } catch (Exception $e) {
+            return $this->defaultGeoLocation;
         }
-
-        $json = json_decode($string);
-        $geoLocation = new GeoLocationDto($json->latitude, $json->longitude);
-
-        return $geoLocation;
     }
 
 }
