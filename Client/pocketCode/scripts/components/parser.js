@@ -868,36 +868,43 @@ PocketCode.merge({
 
                         //date and time
                     case 'CURRENT_YEAR':
+                    case 'DATE_YEAR':
                         if (asUiObject)
                             return this._concatUiObject(jsonFormula, 'formula_editor_sensor_date_year');
                         return '(new Date()).getFullYear()';
 
                     case 'CURRENT_MONTH':
+                    case 'DATE_MONTH':
                         if (asUiObject)
                             return this._concatUiObject(jsonFormula, 'formula_editor_sensor_date_month');
                         return '(new Date()).getMonth()';
 
                     case 'CURRENT_DATE':
+                    case 'DATE_DAY':
                         if (asUiObject)
                             return this._concatUiObject(jsonFormula, 'formula_editor_sensor_date_day');
                         return '(new Date()).getDate()';
 
                     case 'CURRENT_DAY_OF_WEEK':
+                    case 'DATE_WEEKDAY':
                         if (asUiObject)
                             return this._concatUiObject(jsonFormula, 'formula_editor_sensor_date_weekday');
                         return '((new Date()).getDay() > 0 ? (new Date()).getDay() : 7)';
 
                     case 'CURRENT_HOUR':
+                    case 'TIME_HOUR':
                         if (asUiObject)
                             return this._concatUiObject(jsonFormula, 'formula_editor_sensor_time_hour');
                         return '(new Date()).getHours()';
 
                     case 'CURRENT_MINUTE':
+                    case 'TIME_MINUTE':
                         if (asUiObject)
                             return this._concatUiObject(jsonFormula, 'formula_editor_sensor_time_minute');
                         return '(new Date()).getMinutes()';
 
                     case 'CURRENT_SECOND':
+                    case 'TIME_SECOND':
                         if (asUiObject)
                             return this._concatUiObject(jsonFormula, 'formula_editor_sensor_time_second');
                         return '(new Date()).getSeconds()';
@@ -1060,6 +1067,120 @@ PocketCode.merge({
                         if (asUiObject)
                             return this._concatUiObject(jsonFormula, 'formula_editor_phiro_sensor_bottom_right');
                         return 'this._device.phiroBottomRight';
+
+                        // drone
+                    case 'DRONE_BATTERY_STATUS':
+                        if (asUiObject)
+                            return this._concatUiObject(jsonFormula, 'formula_editor_sensor_drone_battery_status');
+                        return 'this._device.droneBatteryStatus';
+
+                    case 'DRONE_EMERGENCY_STATE':
+                        if (asUiObject)
+                            return this._concatUiObject(jsonFormula, 'formula_editor_sensor_drone_emergency_state');
+                        return 'this._device.droneEmergencyState';
+
+                    case 'DRONE_FLYING':
+                        if (asUiObject)
+                            return this._concatUiObject(jsonFormula, 'formula_editor_sensor_drone_flying');
+                        return 'this._device.droneFlying';
+
+                    case 'DRONE_INITIALIZED':
+                        if (asUiObject)
+                            return this._concatUiObject(jsonFormula, 'formula_editor_sensor_drone_initialized');
+                        return 'this._device.droneInitialized';
+
+                    case 'DRONE_USB_ACTIVE':
+                        if (asUiObject)
+                            return this._concatUiObject(jsonFormula, 'formula_editor_sensor_drone_usb_active');
+                        return 'this._device.droneUsbActive';
+
+                    case 'DRONE_USB_REMAINING_TIME':
+                        if (asUiObject)
+                            return this._concatUiObject(jsonFormula, 'formula_editor_sensor_drone_usb_remaining_time');
+                        return 'this._device.droneUsbRemainingTime';
+
+                    case 'DRONE_CAMERA_READY':
+                        if (asUiObject)
+                            return this._concatUiObject(jsonFormula, 'formula_editor_sensor_drone_camera_ready');
+                        return 'this._device.droneCameraReady';
+
+                    case 'DRONE_RECORD_READY':
+                        if (asUiObject)
+                            return this._concatUiObject(jsonFormula, 'formula_editor_sensor_drone_record_ready');
+                        return 'this._device.droneRecordReady';
+
+                    case 'DRONE_RECORDING':
+                        if (asUiObject)
+                            return this._concatUiObject(jsonFormula, 'formula_editor_sensor_drone_recording');
+                        return 'this._device.droneRecording';
+
+                    case 'DRONE_NUM_FRAMES':
+                        if (asUiObject)
+                            return this._concatUiObject(jsonFormula, 'formula_editor_sensor_drone_num_frames');
+                        return 'this._device.droneNumFrames';
+
+                        // nfc
+                    case 'NFC_TAG_ID':
+                        if (asUiObject)
+                            return this._concatUiObject(jsonFormula, 'formula_editor_nfc_tag_id');
+                        return 'this._device.nfcTagId';
+
+                    case 'NFC_TAG_MESSAGE':
+                        if (asUiObject)
+                            return this._concatUiObject(jsonFormula, 'formula_editor_nfc_tag_message');
+                        return 'this._device.nfcTagMessage';
+
+                        // gamepad
+                    case 'GAMEPAD_A_PRESSED':
+                        if (asUiObject)
+                            return this._concatUiObject(jsonFormula, 'formula_editor_sensor_gamepad_a_pressed');
+                        return 'this._device.gamepadAPressed';
+
+                    case 'GAMEPAD_B_PRESSED':
+                        if (asUiObject)
+                            return this._concatUiObject(jsonFormula, 'formula_editor_sensor_gamepad_b_pressed');
+                        return 'this._device.gamepadBPressed';
+
+                    case 'GAMEPAD_UP_PRESSED':
+                        if (asUiObject)
+                            return this._concatUiObject(jsonFormula, 'formula_editor_sensor_gamepad_up_pressed');
+                        return 'this._device.gamepadUpPressed';
+
+                    case 'GAMEPAD_DOWN_PRESSED':
+                        if (asUiObject)
+                            return this._concatUiObject(jsonFormula, 'formula_editor_sensor_gamepad_down_pressed');
+                        return 'this._device.gamepadDownPressed';
+
+                    case 'GAMEPAD_LEFT_PRESSED':
+                        if (asUiObject)
+                            return this._concatUiObject(jsonFormula, 'formula_editor_sensor_gamepad_left_pressed');
+                        return 'this._device.gamepadLeftPressed';
+
+                    case 'GAMEPAD_RIGHT_PRESSED':
+                        if (asUiObject)
+                            return this._concatUiObject(jsonFormula, 'formula_editor_sensor_gamepad_right_pressed');
+                        return 'this._device.gamepadRightPressed';
+
+                        // ev3
+                    case 'EV3_SENSOR_1':
+                        if (asUiObject)
+                            return this._concatUiObject(jsonFormula, 'formula_editor_sensor_lego_ev3_1');
+                        return 'this._device.ev3Sensor1';
+
+                    case 'EV3_SENSOR_2':
+                        if (asUiObject)
+                            return this._concatUiObject(jsonFormula, 'formula_editor_sensor_lego_ev3_2');
+                        return 'this._device.ev3Sensor2';
+
+                    case 'EV3_SENSOR_3':
+                        if (asUiObject)
+                            return this._concatUiObject(jsonFormula, 'formula_editor_sensor_lego_ev3_3');
+                        return 'this._device.ev3Sensor3';
+
+                    case 'EV3_SENSOR_4':
+                        if (asUiObject)
+                            return this._concatUiObject(jsonFormula, 'formula_editor_sensor_lego_ev3_4');
+                        return 'this._device.ev3Sensor4';
 
                     default:
                         throw new Error('formula parser: unknown sensor: ' + jsonFormula.value);      //TODO: do we need an onError event? -> new and unsupported operators? PHIRO?

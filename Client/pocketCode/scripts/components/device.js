@@ -68,6 +68,26 @@ PocketCode.Device = (function () {
                 supported: false,
                 initialized: false,
             },
+            DRONE: {
+                i18nKey: 'lblDeviceDrone',
+                inUse: false,
+                supported: false,
+            },
+            NFC: {
+                i18nKey: 'lblDeviceNfc',
+                inUse: false,
+                supported: false,
+            },
+            GAMEPAD: {
+                i18nKey: 'lblDeviceGamepad',
+                inUse: false,
+                supported: false,
+            },
+            EV3: {
+                i18nKey: 'lblDeviceEv3',
+                inUse: false,
+                supported: false,
+            },
         };
 
         //attach device feature handler
@@ -459,6 +479,142 @@ PocketCode.Device = (function () {
             get: function () {
                 this._getGeoLocationData();
                 return this._geoLocationData.accuracy;
+            },
+        },
+        // drone
+        droneBatteryStatus: {
+            get: function () {
+                this._features.DRONE.inUse = true;
+                return 0.0; //not supported
+            },
+        },
+        droneEmergencyState: {
+            get: function () {
+                this._features.DRONE.inUse = true;
+                return 0.0; //not supported
+            },
+        },
+        droneFlying: {
+            get: function () {
+                this._features.DRONE.inUse = true;
+                return 0.0; //not supported
+            },
+        },
+        droneInitialized: {
+            get: function () {
+                this._features.DRONE.inUse = true;
+                return 0.0; //not supported
+            },
+        },
+        droneUsbActive: {
+            get: function () {
+                this._features.DRONE.inUse = true;
+                return 0.0; //not supported
+            },
+        },
+        droneUsbRemainingTime: {
+            get: function () {
+                this._features.DRONE.inUse = true;
+                return 0.0; //not supported
+            },
+        },
+        droneCameraReady: {
+            get: function () {
+                this._features.DRONE.inUse = true;
+                return 0.0; //not supported
+            },
+        },
+        droneRecordReady: {
+            get: function () {
+                this._features.DRONE.inUse = true;
+                return 0.0; //not supported
+            },
+        },
+        droneRecording: {
+            get: function () {
+                this._features.DRONE.inUse = true;
+                return 0.0; //not supported
+            },
+        },
+        droneNumFrames: {
+            get: function () {
+                this._features.DRONE.inUse = true;
+                return 0.0; //not supported
+            },
+        },
+        // nfc
+        nfcTagId: {
+            get: function () {
+                this._features.NFC.inUse = true;
+                return ""; //not supported
+            },
+        },
+        nfcTagMessage: {
+            get: function () {
+                this._features.NFC.inUse = true;
+                return ""; //not supported
+            },
+        },
+        // gamepad
+        gamepadAPressed: {
+            get: function () {
+                this._features.GAMEPAD.inUse = true;
+                return 0.0; //not supported
+            },
+        },
+        gamepadBPressed: {
+            get: function () {
+                this._features.GAMEPAD.inUse = true;
+                return 0.0; //not supported
+            },
+        },
+        gamepadUpPressed: {
+            get: function () {
+                this._features.GAMEPAD.inUse = true;
+                return 0.0; //not supported
+            },
+        },
+        gamepadDownPressed: {
+            get: function () {
+                this._features.GAMEPAD.inUse = true;
+                return 0.0; //not supported
+            },
+        },
+        gamepadLeftPressed: {
+            get: function () {
+                this._features.GAMEPAD.inUse = true;
+                return 0.0; //not supported
+            },
+        },
+        gamepadRightPressed: {
+            get: function () {
+                this._features.GAMEPAD.inUse = true;
+                return 0.0; //not supported
+            },
+        },
+        // ev3
+        ev3Sensor1: {
+            get: function () {
+                this._features.EV3.inUse = true;
+                return 0.0; //not supported
+            },
+        },
+        ev3Sensor2: {
+            get: function () {
+                this._features.EV3.inUse = true;
+                return 0.0; //not supported
+            },
+        },
+        ev3Sensor3: {
+            get: function () {
+                this._features.EV3.inUse = true;
+                return 0.0; //not supported
+            },
+        },
+        ev3Sensor4: {
+            get: function () {
+                this._features.EV3.inUse = true;
+                return 0.0; //not supported
             },
         },
     });

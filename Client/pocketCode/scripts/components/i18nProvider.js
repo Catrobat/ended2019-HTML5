@@ -47,6 +47,10 @@ PocketCode._I18nProvider = (function (propObject) {
             "lbDeviceAccDescr": "Represents the change (angle per second) the device will move to one side if you start pressing a cusor button, e.g. the maximum acceleration of a sprite based on the inclination sensor.",
             "lbDeviceIncX": "Inclination X",
             "lbDeviceIncY": "Inclination Y",
+            "lblDeviceDrone": "Drone",
+            "lblDeviceNfc": "NFC",
+            "lblDeviceGamepad": "Gamepad",
+            "lblDeviceEv3": "EV3",
 
             "variableTrue": "true",  //true
             "variableFalse": "false",  //false
@@ -288,6 +292,28 @@ PocketCode._I18nProvider = (function (propObject) {
             "formula_editor_bracket_open":"(",
             "formula_editor_bracket_close":")",
             "formula_editor_function_collision":"touches_object",
+            "formula_editor_sensor_drone_battery_status": "drone_battery_status",
+            "formula_editor_sensor_drone_emergency_state": "drone_emergency_state",
+            "formula_editor_sensor_drone_flying": "drone_flying",
+            "formula_editor_sensor_drone_initialized": "drone_initialized",
+            "formula_editor_sensor_drone_usb_active": "drone_usb_active",
+            "formula_editor_sensor_drone_usb_remaining_time": "drone_usb_remaining_time",
+            "formula_editor_sensor_drone_camera_ready": "drone_camera_ready",
+            "formula_editor_sensor_drone_record_ready": "drone_record_ready",
+            "formula_editor_sensor_drone_recording": "drone_recording",
+            "formula_editor_sensor_drone_num_frames": "drone_num_frames",
+            "formula_editor_nfc_tag_id": "nfc_tag_id",
+            "formula_editor_nfc_tag_message": "nfc_tag_message",
+            "formula_editor_sensor_gamepad_a_pressed": "gamepad_a_pressed",
+            "formula_editor_sensor_gamepad_b_pressed": "gamepad_b_pressed",
+            "formula_editor_sensor_gamepad_up_pressed": "gamepad_up_pressed",
+            "formula_editor_sensor_gamepad_down_pressed": "gamepad_down_pressed",
+            "formula_editor_sensor_gamepad_left_pressed": "gamepad_left_pressed",
+            "formula_editor_sensor_gamepad_right_pressed": "gamepad_right_pressed",
+            "formula_editor_sensor_lego_ev3_1": "EV3_sensor_1",
+            "formula_editor_sensor_lego_ev3_2": "EV3_sensor_2",
+            "formula_editor_sensor_lego_ev3_3": "EV3_sensor_3",
+            "formula_editor_sensor_lego_ev3_4": "EV3_sensor_4",
 
         };
 
