@@ -582,6 +582,7 @@
 .pc-playerButton span {
     position: absolute;
     font-size: 1.01em;
+    line-height: 1.3em;
     font-weight: 600;
     text-align: center;
     bottom: 0.6em;
@@ -1256,6 +1257,10 @@
     width: 100%;
 }
 
+    .pc-expander label {
+        font-size: 15px;
+    }
+
 .pc-expanderHeader {
     padding: 3px 0px 3px;
 }
@@ -1434,12 +1439,12 @@
     background-color: #00475E;
     background-color: rgba(0,71,94,.8);
     color: #A9DCF1;
-    font-size: 19px;
 }
 
     .pc-deviceEmulator .pc-expanderHeader label {
         padding-left: 7px;
         padding-right: 10px;
+        font-size: 19px;
     }
 
         .pc-deviceEmulator .pc-expanderHeader label::after {

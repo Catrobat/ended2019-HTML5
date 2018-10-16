@@ -237,7 +237,7 @@ PocketCode.Model.Scene = (function () {
                     clones.push(sprites[i]);    //do not edit indices during iterating
 
             for (var i = 0, l = clones.length; i < l; i++)
-                this.deleteClone(clones[i].id);
+                clones[i].dispose();
 
             this._sprites = this._originalSpriteOrder;
             for (var i = 0, l = sprites.length; i < l; i++)

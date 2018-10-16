@@ -456,6 +456,7 @@ PocketCode.Model.merge({
             this._x = new PocketCode.Formula(device, sprite, propObject.x);
             this._y = new PocketCode.Formula(device, sprite, propObject.y);
             this._duration = new PocketCode.Formula(device, sprite, propObject.duration);
+            this._velocity = 0; //initial
         }
 
         //formula accessors
@@ -746,7 +747,7 @@ PocketCode.Model.merge({
 
             if (!isNaN(degreesPerSecond))
                 this._sprite.turnNDegreePerSecond = -degreesPerSecond;
-            
+
             this._return();
         };
 
@@ -767,7 +768,7 @@ PocketCode.Model.merge({
 
             if (!isNaN(degreesPerSecond))
                 this._sprite.turnNDegreePerSecond = degreesPerSecond;
-            
+
             this._return();
         };
 

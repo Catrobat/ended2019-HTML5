@@ -123,6 +123,18 @@ Array.prototype.dispose = function () {
 };
 Object.defineProperty(Array.prototype, 'dispose', { enumerable: false });
 
+/**
+ * String.format allowes to format strings like known from printf
+ */
+if (!String.prototype.format) {
+    String.prototype.format = function () {
+        var args = arguments;
+        return this.replace(/{(\d+)}/g, function (match, idx) {
+            return typeof args[idx] != 'undefined' ? args[idx].toString() : match;
+        });
+    };
+    Object.defineProperty(String.prototype, 'format', { enumerable: false });
+}
 
 /* smart js infrastructure */
 
@@ -249,7 +261,7 @@ var SmartJs = {
                 style.width = '100px';
 
                 document.body.appendChild(box);
-                var supported = box.offsetHeight == 100 && box.offsetWidth == 100;
+                var supported = Math.abs(box.offsetHeight - 100) < 2 && Math.abs(box.offsetWidth - 100) < 2;
                 document.body.removeChild(box);
                 box = undefined;
 

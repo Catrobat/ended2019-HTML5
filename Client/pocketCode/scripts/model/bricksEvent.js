@@ -107,7 +107,7 @@ PocketCode.Model.merge({
             PocketCode.Model.EventBrick.call(this, device, sprite, propObject);
 
             this._msgId = propObject.msgId;
-            this._callback = this._subscribeCallback.bind(this);
+            this._callback = this._subscriberCallback.bind(this);
             this._broadcastMgr = broadcastMgr;
             broadcastMgr.subscribe(this._msgId, this._callback);
         }

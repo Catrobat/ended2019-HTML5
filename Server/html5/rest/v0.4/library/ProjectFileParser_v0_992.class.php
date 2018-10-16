@@ -838,7 +838,7 @@ class ProjectFileParser_v0_992
                     $id = $res->id;
                 }
 
-                $brick = new BroadcastBrickDto($id, true);
+                $brick = new BroadcastAndWaitBrickDto($id);
                 break;
 
             //WhenConditionMet, e.g. when x<y becomes true
@@ -1587,7 +1587,7 @@ class ProjectFileParser_v0_992
                 $value = $this->parseFormula($fl->formula);
 
                 array_pop($this->cpp);
-                $brick = new SetRotationSpeedBrickDto($value, true);
+                $brick = new RotationSpeedLeftBrickDto($value);
                 break;
 
             case "TurnRightSpeedBrick":
@@ -1595,7 +1595,7 @@ class ProjectFileParser_v0_992
                 array_push($this->cpp, $fl);
                 $value = $this->parseFormula($fl->formula);
 
-                $brick = new SetRotationSpeedBrickDto($value);
+                $brick = new RotationSpeedRightBrickDto($value);
                 break;
 
             case "SetGravityBrick": //PHYSICS_GRAVITY_X, PHYSICS_GRAVITY_Y
@@ -1658,7 +1658,7 @@ class ProjectFileParser_v0_992
                 if ($brickType == "PlaySoundBrick")
                     $brick = new PlaySoundBrickDto(null);
                 else
-                    $brick = new PlaySoundBrickDto(null, true);
+                    $brick = new PlaySoundAndWaitBrickDto(null);
 
                 if(!property_exists($script, "sound"))  //play sound brick is initial set to "New.." and has no child tags per default
                     break;
@@ -1673,7 +1673,7 @@ class ProjectFileParser_v0_992
                 break;
 
             case "StopAllSoundsBrick":
-                $brick = new StopBrickDto(EStopType::ALL_SOUNDS);
+                $brick = new StopAllSoundsBrickDto();
                 break;
 
             case "SetVolumeToBrick":
@@ -1702,7 +1702,7 @@ class ProjectFileParser_v0_992
             case "SpeakAndWaitBrick":
                 $fl = $script->formulaList;
                 array_push($this->cpp, $fl);
-                $brick = new SpeakBrickDto($this->parseFormula($fl->formula), true);
+                $brick = new SpeakAndWaitBrickDto($this->parseFormula($fl->formula));
                 array_pop($this->cpp);
                 break;
 
@@ -1721,7 +1721,7 @@ class ProjectFileParser_v0_992
                 if ($brickType == "SetBackgroundBrick")
                     $brick = new SetBackgroundBrickDto(null);
                 else
-                    $brick = new SetBackgroundBrickDto(null, true);
+                    $brick = new SetBackgroundAndWaitBrickDto(null);
 
                 if(!property_exists($script, "look"))   // when no look set, look => empty
                     break;
@@ -1874,23 +1874,7 @@ class ProjectFileParser_v0_992
                 $fl = $script->formulaList;
                 array_push($this->cpp, $fl);
                 $transparency = $fl->formula;
-                $brick = new SetGraphicEffectBrickDto(EGraphicEffect::GHOST, $this->parseFormula($transparency));
-                array_pop($this->cpp);
-                break;
-
-            case "SetBrightnessBrick":
-                $fl = $script->formulaList;
-                array_push($this->cpp, $fl);
-                $brightness = $fl->formula;
-                $brick = new SetGraphicEffectBrickDto(EGraphicEffect::BRIGHTNESS, $this->parseFormula($brightness));
-                array_pop($this->cpp);
-                break;
-
-            case "SetColorBrick":
-                $fl = $script->formulaList;
-                array_push($this->cpp, $fl);
-                $color = $fl->formula;
-                $brick = new SetGraphicEffectBrickDto(EGraphicEffect::COLOR, $this->parseFormula($color));
+                $brick = new SetTransparencyBrickDto($this->parseFormula($transparency));
                 array_pop($this->cpp);
                 break;
 
@@ -1898,7 +1882,15 @@ class ProjectFileParser_v0_992
                 $fl = $script->formulaList;
                 array_push($this->cpp, $fl);
                 $transparency = $fl->formula;
-                $brick = new ChangeGraphicEffectBrickDto(EGraphicEffect::GHOST, $this->parseFormula($transparency));
+                $brick = new ChangeTransparencyBrickDto($this->parseFormula($transparency));
+                array_pop($this->cpp);
+                break;
+
+            case "SetBrightnessBrick":
+                $fl = $script->formulaList;
+                array_push($this->cpp, $fl);
+                $brightness = $fl->formula;
+                $brick = new SetBrightnessBrickDto($this->parseFormula($brightness));
                 array_pop($this->cpp);
                 break;
 
@@ -1906,7 +1898,15 @@ class ProjectFileParser_v0_992
                 $fl = $script->formulaList;
                 array_push($this->cpp, $fl);
                 $brightness = $fl->formula;
-                $brick = new ChangeGraphicEffectBrickDto(EGraphicEffect::BRIGHTNESS, $this->parseFormula($brightness));
+                $brick = new ChangeBrightnessBrickDto($this->parseFormula($brightness));
+                array_pop($this->cpp);
+                break;
+
+            case "SetColorBrick":
+                $fl = $script->formulaList;
+                array_push($this->cpp, $fl);
+                $color = $fl->formula;
+                $brick = new SetColorEffectBrickDto($this->parseFormula($color));
                 array_pop($this->cpp);
                 break;
 
@@ -1914,7 +1914,7 @@ class ProjectFileParser_v0_992
                 $fl = $script->formulaList;
                 array_push($this->cpp, $fl);
                 $color = $fl->formula;
-                $brick = new ChangeGraphicEffectBrickDto(EGraphicEffect::COLOR, $this->parseFormula($color));
+                $brick = new ChangeColorEffectBrickDto($this->parseFormula($color));
                 array_pop($this->cpp);
                 break;
 
@@ -2234,7 +2234,7 @@ class ProjectFileParser_v0_992
         else if($type === "COLLISION_FORMULA")
         {
             $name = (string)$formula->value;   //either 'sp1 touches sp2' (v0.992) or 'sp1' (v0.993 - ?)
-            $spriteNames = explode(" touches ", $value);
+            $spriteNames = explode(" touches ", $name);
             if(count($spriteNames) == 2)    //v0.992
             {
                 $name = $spriteNames[1];
@@ -2249,6 +2249,7 @@ class ProjectFileParser_v0_992
             }
 
             //detect id by object name (unique): all sprites are already pre-parsed with id and name
+            $value = "";
             foreach($this->currentScene->sprites as $s)
             {
                 if($s->name === $name)
@@ -2257,6 +2258,9 @@ class ProjectFileParser_v0_992
                     break;
                 }
             }
+
+            if ($value == "")
+                throw new InvalidProjectFileException("Formula type error: COLLISION_FORMULA: sprite with name = $name not found.");
         }
         else
         {

@@ -210,6 +210,10 @@ PocketCode.merge({
                         //type = 'BroadcastAndWaitBrick'; //fix to make sure we are catroid compatible?
                     case 'BroadcastAndWaitBrick':
                     case 'WhenBroadcastReceiveBrick':
+                        if(type === "BroadcastAndWaitBrick") {
+                            jsonBrick.andWait = true;
+                            type = 'BroadcastBrick';
+                        }
                         brick = new PocketCode.Model[type](this._device, currentSprite, this._broadcastMgr, jsonBrick);
                         break;
 
@@ -740,6 +744,13 @@ PocketCode.merge({
                     case 'ARDUINODIGITAL':
                         if (asUiObject)
                             return this._concatUiObject(jsonFormula, 'formula_editor_function_arduino_read_pin_value_digital');
+
+                        this._isStatic = false;
+                        return 'this._device.getArduinoDigitalPin(' + this._parseJsonType(jsonFormula.left) + ')';
+
+                    case 'RASPIDIGITAL':
+                        if (uiString)
+                            return 'arduino_digital_pin( ' + this._parseJsonType(jsonFormula.left, uiString) + ' )';
 
                         this._isStatic = false;
                         return 'this._device.getArduinoDigitalPin(' + this._parseJsonType(jsonFormula.left) + ')';

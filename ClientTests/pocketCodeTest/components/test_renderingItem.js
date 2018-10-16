@@ -71,12 +71,6 @@ QUnit.test("RenderingText", function (assert) {
 
     assert.ok(renderingText instanceof PocketCode.RenderingText, 'correct instance');
 
-    // test default config
-    //value = 5.333;
-    //renderingText.value = value;
-    //assert.equal(renderingText._text, value.toString(), "Text set correctly");
-    //assert.ok(typeof renderingText._text == "string", "numbers are converted: typecheck");
-
     //rendering
     var canvas = document.createElement("canvas");
     canvas.width = 200;
@@ -104,11 +98,6 @@ QUnit.test("RenderingText", function (assert) {
     assert.equal(fillTextCalled, 6, "cache rerendered on value update");
     renderingText.value = value;
     assert.equal(fillTextCalled, 6, "cache NOT rerendered if value does not change");
-
-    //fillTextCalled = 0;
-    //renderingText.visible = true;
-    //renderingText.draw(ctx);
-    //assert.equal(fillTextCalled, numberOfNewlines + 1, "Create Text on Canvas with fillText for each line of text");
 
     //recreate RT (without fillText override)
     renderingText = new PocketCode.RenderingText(props);
@@ -164,12 +153,6 @@ QUnit.test("RenderingText", function (assert) {
     renderingText.y = 10;
     renderingText.draw(ctx);
 
-    //img = PocketCode.ImageHelper.adjustCenterAndTrim(canvas, true);
-    //var top = Math.round(Math.sin(img.tl.angle) * img.tl.length),
-    //    bottom = Math.round(Math.sin(img.bl.angle) * img.bl.length);
-    //assert.ok(Math.abs(top - bottom) <= 32, "rendering Text line height: based on screenshot (2016-07-11)");
-
-    assert.ok(false, "TODO");
 });
 
 

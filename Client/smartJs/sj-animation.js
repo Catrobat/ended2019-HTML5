@@ -334,6 +334,7 @@ SmartJs.Animation.Rotation = (function () {
         stop: function () {
             SmartJs.AnimationFrame.removeEventListener(this._afl);
             this._timer.stop();
+            this._rotationSpeed = 0.0;
             this._paused = false;
         },
         dispose: function () {
