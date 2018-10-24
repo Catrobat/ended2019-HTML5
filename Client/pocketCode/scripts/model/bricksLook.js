@@ -573,7 +573,7 @@ PocketCode.Model.merge({
             dispose: function () {
                 this._scene = undefined;
                 PocketCode.Model.ThreadedBrick.prototype.dispose.call(this);
-            },
+            }
         });
 
         return SetBackgroundAndWaitBrick;
@@ -618,11 +618,12 @@ PocketCode.Model.merge({
     CameraBrick: (function () {
         CameraBrick.extends(PocketCode.Model.BaseBrick, false);
 
-        function CameraBrick(device, sprite, propObject) {
+        function CameraBrick(device, sprite,gameEngine, propObject) {
             PocketCode.Model.BaseBrick.call(this, device, sprite, propObject);
             this._turnOn = parseInt(propObject.selected) == 1;    //{0: off, 1: on}
-
-            this._device.stopCamera();  //call on ctr to notify our device this feature is in use without changing the setting
+            /*gameEngine.onCanvasSizeUpdated.addEventListener(new SmartJs.Event.EventListener(function(e){
+                this._device.startCamera(false, e.width, e.height);
+            }.bind(this)))  //call on ctr to notify our device this feature is in use without changing the setting*/
         }
 
         CameraBrick.prototype.merge({

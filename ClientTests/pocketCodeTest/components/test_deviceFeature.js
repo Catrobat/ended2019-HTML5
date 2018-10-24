@@ -132,10 +132,124 @@ QUnit.test("DeviceFeature: DeviceVibration", function (assert) {
 
 
 QUnit.test("DeviceFeature: Camera", function (assert) {
+    var done = assert.async();
+    var executionTimer = setTimeout(allTestsNotExecuted, 15000);
+    var stage = "";
 
     var df = new PocketCode.Camera();
 
-    assert.ok(false, "TODO");
+    assert.ok(df instanceof PocketCode.Camera && df instanceof PocketCode.DeviceFeature, "instance check");
+
+    assert.ok(df.onInit instanceof SmartJs.Event.Event, "onInit should be instance of Event");
+    assert.ok(df.onChange instanceof SmartJs.Event.Event, "onChange should be instance of Event");
+
+    assert.ok(typeof df.supported === "boolean", " supported must be type boolean");
+    assert.ok(typeof df.inUse === "boolean", "inUse must be type boolean");
+
+    assert.equal(df.selected, PocketCode.CameraType.FRONT, "front camera should be used by default" );
+
+    df.onChange.addEventListener(new SmartJs.Event.EventListener(onCameraStarted, this));
+    var result = df.start();
+    if(df.supported) {
+        assert.ok(result, "start function should return true if camera feature is supported");
+    } else {
+        assert.equal(result, false, "start function should return false if camera feature is not supported");
+    }
+
+    function onCameraStarted(e) {
+        assert.ok(true, "camera onChange has been triggered");
+        stage = "onCameraStarted";
+        df.onChange.removeEventListener(new SmartJs.Event.EventListener(onCameraStarted, this));
+        assert.ok(df._inUse, "camera feature should be inUse");
+        assert.ok(df._supported, "camera feature should be supported");
+        assert.ok(df._on, "camera feature should be on");
+        assert.ok(df._initialized, "camera should be initialized");
+        assert.ok(e.src instanceof HTMLVideoElement, "event: src should be HTMLVideoElement");
+        assert.ok(e.src.srcObject instanceof MediaStream, "event: video src should be MediaStream");
+        assert.ok(e.on , true, "event: camera should be on");
+        assert.ok(e.src.videoHeight >0 , "event: video element should have height");
+        assert.ok(e.src.videoWidth >0, "event: video element should have width");
+        df.pause();
+        assert.equal(df.video.paused, true, " video should be paused after pause()");
+        assert.equal(df._on, false, " camera should not be on after pause()");
+        df.resume();
+        assert.equal(df._on, true, "camera should be on after resume");
+        assert.equal(df.video.paused, false, " video should not be paused after resume()");
+        df.onChange.addEventListener(new SmartJs.Event.EventListener(onCameraTypeChanged, this));
+        var result = df.setType(PocketCode.CameraType.BACK);
+        assert.ok(result, "camera type should be changed");
+    }
+
+    function onCameraTypeChanged(e){
+        stage = "onCameraTypeChanged";
+        df.onChange.removeEventListener(new SmartJs.Event.EventListener(onCameraTypeChanged, this));
+        assert.ok(df._inUse, "camera feature should be inUse");
+        assert.ok(df._supported, "camera feature should be supported");
+        assert.ok(df._on, "camera feature should be on");
+        assert.ok(df._initialized, "camera should be initialized");
+        assert.equal(df.selected, PocketCode.CameraType.BACK , "back camera should be selected");
+        assert.ok(e.on, "event: camera should still be on after type change");
+        assert.ok(e.src instanceof HTMLVideoElement, "event: camera source should still be video element after type change");
+        assert.ok(e.src.srcObject instanceof MediaStream, "event: video element should still use MediaStream after type change");
+        assert.equal(e.src.paused, false, "event: video should not be paused after type change");
+        assert.ok(e.src.videoHeight >0 , "event: video element should have height");
+        assert.ok(e.src.videoWidth >0, "event: video element should have width");
+        df.onChange.addEventListener(new SmartJs.Event.EventListener(onCameraStopped, this));
+        df.stop();
+    }
+
+    function onCameraStopped(e){
+        stage = "onCameraStopped";
+        df.onChange.removeEventListener(new SmartJs.Event.EventListener(onCameraStopped, this));
+        assert.equal(df._inUse, false, "camera feature should not be inUse");
+        assert.ok(df._supported, "camera feature should be supported");
+        assert.equal(df._on, false, "camera feature should not be on");
+        assert.equal(df._initialized, false, "camera should not be initialized");
+        assert.equal(e.on, false, "event: camera should not be on after stop()");
+        assert.equal(e.src, "", "event: video srcObject should be '' after stop()");
+        df.onChange.addEventListener(new SmartJs.Event.EventListener(onCameraStartedAgain, this));
+        df.start();
+    }
+
+    function onCameraStartedAgain(e){
+        stage = "onCameraStartedAgain";
+        df.onChange.removeEventListener(new SmartJs.Event.EventListener(onCameraStartedAgain, this));
+        assert.ok(df._inUse, "camera feature should be inUse");
+        assert.ok(df._supported, "camera feature should be supported");
+        assert.ok(df._on, "camera feature should be on");
+        assert.ok(df._initialized, "camera should be initialized");
+        assert.ok(e.src instanceof HTMLVideoElement, "event: src should be HTMLVideoElement");
+        assert.ok(e.src.srcObject instanceof MediaStream, "event: video src should be MediaStream");
+        assert.ok(e.on , true, "event: camera should be on");
+        assert.ok(e.src.videoHeight >0 , "event: video element should have height");
+        assert.ok(e.src.videoWidth >0, "event: video element should have width");
+        df.onChange.addEventListener(new SmartJs.Event.EventListener(onCameraReset, this));
+        df.reset();
+    }
+
+    function onCameraReset(e){
+        stage = "onCameraReset";
+        df.onChange.removeEventListener(new SmartJs.Event.EventListener(onCameraReset, this));
+        assert.equal(df._inUse, false, "camera feature should not be inUse");
+        assert.ok(df._supported, "camera feature should be supported");
+        assert.equal(df._on, false, "camera feature should not be on");
+        assert.equal(df._initialized, false, "camera should not be initialized");
+        assert.equal(e.on, false, "event: camera should not be on after stop()");
+        assert.equal(e.src, "", "event: video srcObject should be '' after stop()");
+        df.setIdealResolution(800, 600, false);
+        assert.equal(df.constraints.video.height.ideal, 600, "should set correct ideal height");
+        assert.equal(df.constraints.video.width.ideal, 800 , "should set correct ideal width");
+        df.setIdealResolution("a", "b", false);
+        assert.equal(df.constraints.video.height.ideal, 600, "should set correct ideal height");
+        assert.equal(df.constraints.video.width.ideal, 800 , "should set correct ideal width");
+        done();
+    }
+
+    function allTestsNotExecuted(){
+        assert.ok(false, "test execution stopped at "+ stage+ ". not all tests are completed , possibly because some events are not triggered");
+        clearTimeout(executionTimer);
+        done();
+    }
 });
 
 

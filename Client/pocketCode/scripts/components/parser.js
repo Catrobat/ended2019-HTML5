@@ -145,12 +145,12 @@ PocketCode.merge({
                     case 'UserScriptBrick':
                     case 'CallUserScriptBrick':
 
-                        //in development:
+                    //in development:
                     case 'WhenCollisionBrick':
 
-                        //case 'SetRotationSpeedBrick':
-                        //case 'RotationSpeedLeftBrick':  //is removed
-                        //case 'RotationSpeedRightBrick': //is removed
+                    //case 'SetRotationSpeedBrick':
+                    //case 'RotationSpeedLeftBrick':  //is removed
+                    //case 'RotationSpeedRightBrick': //is removed
                     case 'SetPhysicsObjectTypeBrick':
                     case 'SetVelocityBrick':
                     case 'SetGravityBrick':
@@ -158,19 +158,21 @@ PocketCode.merge({
                     case 'SetBounceFactorBrick':
                     case 'SetFrictionBrick':
 
-                    case 'SelectCameraBrick':
+                    //case 'SelectCameraBrick':
                     case 'CameraBrick':
-                        //bubbles
+                        brick = new PocketCode.Model[type](this._device, currentSprite, this._gameEngine, jsonBrick);
+                        break;
+
+                    //bubbles
                     case 'SayBrick':
                     case 'SayForBrick':
                     case 'ThinkBrick':
                     case 'ThinkForBrick':
-
                         brick = new PocketCode.Model.UnsupportedBrick(this._device, currentSprite, jsonBrick);
                         break;
                         //    //^^ in development: delete/comment out bricks for testing purpose (but do not push these changes until you've finished implementation + testing)
 
-                        //active:
+                    //active:
                     case 'SetPhysicsObjectTypeBrick':
                         brick = new PocketCode.Model[type](this._device, currentSprite, this._scene.physicsWorld, jsonBrick);
                         break;
@@ -195,7 +197,8 @@ PocketCode.merge({
                             type = 'AskBrick';
                     case 'CloneBrick':
                     case 'GoToBrick':
-                        //background
+
+                    //background
                     case 'SetBackgroundBrick':
                     case 'SetBackgroundAndWaitBrick':
                     case 'SetBackgroundByIndexBrick':

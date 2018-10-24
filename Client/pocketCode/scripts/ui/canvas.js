@@ -21,10 +21,18 @@ PocketCode.Ui.Canvas = (function () {
         this._penStampCache = {}; //register here with { id: { elem: ?, ctx: ? } } on first use
         this._currentSceneCache = undefined;
 
-        this._cameraOn = false;
-        this._cameraStream = null;
 
-
+        this._camera = {
+            on : false,
+            stream: null,
+            setIdealResolution: null,
+            renderingWidth: 0,
+            renderingHeight: 0,
+            offsetX: 0,
+            offsetY: 0,
+            scale: 1,
+            flipped: false
+        };
         //handling click/touch/multi-touch
         this._activeTouchEvents = [];
 
@@ -53,6 +61,7 @@ PocketCode.Ui.Canvas = (function () {
 
         this._upperCanvasEl = document.createElement('canvas');
         this._upperCanvasCtx = this._upperCanvasEl.getContext('2d');
+        this._scaleFactor = 1;
 
         // TODO think about order of elements!
         this._dom.appendChild(this._cameraCanvasEl);
@@ -135,7 +144,6 @@ PocketCode.Ui.Canvas = (function () {
 
                 this._dom.style.width = (value + 'px');
                 this._backgroundCanvasEl.width = value;
-                this._cameraCanvasEl.width = value;
                 this._penStampCanvasEl.width = value;
 
                 this._spritesCanvasEl.width = value;
@@ -143,6 +151,10 @@ PocketCode.Ui.Canvas = (function () {
                 this._upperCanvasEl.width = value;
 
                 this._helperCanvasEl.width = value;
+                if(this._setIdealCameraResolution){
+                    this._setIdealCameraResolution(this.width, this.height);
+                }
+                this.updateCameraSize();
                 this._translation = { x: Math.round(value * 0.5), y: Math.round(this.height * 0.5) };
             },
         },
@@ -157,36 +169,35 @@ PocketCode.Ui.Canvas = (function () {
 
                 this._dom.style.height = (value + 'px');
                 this._backgroundCanvasEl.height = value;
-                this._cameraCanvasEl.height = value;
                 this._penStampCanvasEl.height = value;
+
+
 
                 this._spritesCanvasEl.height = value;
                 this._bubblesCanvasEl.height = value;
                 this._upperCanvasEl.height = value;
 
                 this._helperCanvasEl.height = value;
+                this.updateCameraSize();
                 this._translation = { x: Math.round(this.width * 0.5), y: Math.round(value * 0.5) };
             },
         },
         //camera
         cameraStream: {
             set: function (cameraStream) {
-                this._cameraStream = cameraStream;
-
-                //console.log("camera stream in setter:", this._cameraStream);
+                this._camera.stream  = cameraStream;
             },
             get: function () {
-                return this._cameraStream;
+                return this._camera.stream;
             }
         },
         cameraOn: {
             set: function (cameraOn) {
-                //console.log("setting camera on in canvas to :", cameraOn);
-                this._cameraOn = cameraOn;
+                this._camera.on = cameraOn;
                 this.renderCamera();
             },
             get: function () {
-                return this._cameraOn;
+                return this._camera.on;
             }
         },
         cameraContext: {
@@ -194,6 +205,8 @@ PocketCode.Ui.Canvas = (function () {
                 return this._cameraCanvasCtx;
             }
         },
+
+
     });
 
     //methods
@@ -234,6 +247,51 @@ PocketCode.Ui.Canvas = (function () {
             this.render();
         },
 
+        updateCamera: function(e)
+        {
+            this._camera.on = e.on;
+            this._camera.stream = e.src;
+            this.updateCameraSize();
+            this.renderCamera();
+        },
+
+        updateCameraSize: function(){
+            if(this.cameraStream){
+                if(this._camera.stream.videoHeight && this._camera.stream.videoWidth){
+                    if( this.height > this.width){
+
+                        this._camera.scale=this.height /  this.cameraStream.videoHeight ;
+
+                        this._camera.renderingWidth = this._camera.stream.videoWidth*  this._camera.scale;
+                        this._camera.renderingHeight = this._camera.stream.videoHeight * this._camera.scale;
+                        this._cameraCanvasEl.width = this.width;
+                        this._cameraCanvasEl.height = this.height;
+                       this._camera.offsetX =  (this.width - this._camera.renderingWidth) / 2;
+                       this._camera.offsetY =   (this.height - this._camera.renderingHeight) / 2;
+                    }
+
+
+                else {
+
+                        this._camera.scale=this.width /  this.cameraStream.videoHeight ;
+
+                        this._camera.renderingWidth = this._camera.stream.videoWidth*  this._camera.scale;
+                        this._camera.renderingHeight = this._camera.stream.videoHeight * this._camera.scale;
+                        this._cameraCanvasEl.width = this.width;
+                        this._cameraCanvasEl.height = this.height;
+                        this._camera.offsetX =  (this.width - this._camera.renderingWidth) / 2;
+                        this._camera.offsetY =   (this.height - this._camera.renderingHeight) / 2;
+                    }
+                }
+
+            }
+
+            else {
+                this._cameraCanvasEl.width = this.width;
+                this._cameraCanvasEl.height = this.height;
+            }
+
+        },
         clear: function () {
             this._upperCanvasCtx.clearRect(0, 0, this.width, this.height);
             this._bubblesCanvasCtx.clearRect(0, 0, this.width, this.height);
@@ -421,14 +479,28 @@ PocketCode.Ui.Canvas = (function () {
         },
         //camera
         renderCamera: function () {
-            if (this._cameraOn && this._cameraStream != null && this._cameraStream != undefined) {
-                this._cameraStream.width = this.width;
-                this._cameraStream.height = this.height;
-                this._cameraCanvasCtx.drawImage(this._cameraStream, 0, 0, this._cameraCanvasEl.width, this._cameraCanvasEl.height);
-                setTimeout(this.renderCamera.bind(this), 10);
-            }
-            else {
-                //this._cameraCanvasCtx.clearRect(0, 0, this.width, this.height);
+            if (this._camera.stream) {
+                // firefox mobile flips image upside down
+                var is_firefox = navigator.userAgent.toLowerCase().indexOf('firefox') > -1;
+                var is_android = navigator.platform.toLowerCase().indexOf("android") > -1;
+
+                    if(is_firefox && SmartJs.Device.isMobile ) {
+                        this._cameraCanvasCtx.translate(0, this.height);
+                        this._cameraCanvasCtx.scale(1, -1);
+                    }
+                this._cameraCanvasCtx.drawImage(
+                    this._camera.stream,
+                    this._camera.offsetX,
+                    this._camera.offsetY,
+                    this._camera.renderingWidth,
+                    this._camera.renderingHeight);
+
+                    if(is_firefox && SmartJs.Device.isMobile) {
+                        this._cameraCanvasCtx.translate(0, this.height);
+                        this._cameraCanvasCtx.scale(1, -1);
+                    }
+                if(this._camera.on)
+                window.requestAnimationFrame(this.renderCamera.bind(this));
             }
         },
         //pen, stamp
@@ -532,6 +604,21 @@ PocketCode.Ui.Canvas = (function () {
             ctx.scale(width * this._scalingX / currentWidth, height * this._scalingY / currentHeight);
 
             var ro = this._renderingSprites;
+
+            //camera
+            if ( this._camera.stream) {
+                var cameraScale = height /  currentHeight;
+
+                var cameraWidth = this._camera.renderingWidth*  cameraScale;
+                var cameraHeight  = this._camera.renderingHeight* cameraScale;
+                var cameraOffsetX =  (this._camera.offsetX* cameraScale) -width * 0.5 ;
+                var cameraOffsetY =   (this._camera.offsetY * cameraScale) - height * 0.5;
+                ctx.drawImage(
+                    this._camera.stream,
+                    cameraOffsetX ,
+                    cameraOffsetY,
+                    cameraWidth , cameraHeight);
+            }
             //background
             for (var i = 0, l = ro.length; i < l; i++) {
                 if (ro[i].isBackground) {
@@ -542,8 +629,7 @@ PocketCode.Ui.Canvas = (function () {
 
             //pen stamp
             ctx.drawImage(this._currentSceneCache.element, - width * 0.5, -height * 0.5);
-            //camera
-            //TODO
+
             //sprites
             for (var i = 0, l = ro.length; i < l; i++)
                 if (!ro[i].isBackground)

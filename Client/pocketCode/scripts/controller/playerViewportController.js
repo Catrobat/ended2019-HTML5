@@ -59,6 +59,13 @@ PocketCode.PlayerViewportController = (function () {
                 return this._view.onUserAction;
             },
         },
+
+        onCanvasSizeUpdated: {
+            get: function(){
+                return this._view._onCanvasSizeUpdated;
+            }
+        }
+
     });
 
     //methods
@@ -132,8 +139,8 @@ PocketCode.PlayerViewportController = (function () {
             }
         },
 
-        updateCameraUse: function (cameraOn, cameraStream) {    //TODO: params
-            this._view.updateCameraUse(cameraOn, cameraStream);
+        updateCameraUse: function (e) {    //TODO: params
+            this._view.updateCameraUse(e);
         },
 
         setProjectScreenSize: function (width, height) {
