@@ -198,10 +198,8 @@ PocketCode.Device = (function () {
             get: function () {
                 if (!this.isMobile)
                     return false;
-                var tmp = this._features
-                if (tmp.ACCELERATION.inUse || tmp.COMPASS.inUse || tmp.INCLINATION.inUse)
-                    return true;
-                return false;
+                var tmp = this._features;
+                return tmp.ACCELERATION.inUse || tmp.COMPASS.inUse || tmp.INCLINATION.inUse;
             },
         },
         unsupportedFeatureDetected: {
@@ -1209,9 +1207,7 @@ PocketCode.DeviceEmulator = (function () {
         /* override */
         emulationInUse: {
             get: function () {
-                if (this._features.INCLINATION.inUse)
-                    return true;
-                return false;
+                return this._features.INCLINATION.inUse;
             },
         },
     });

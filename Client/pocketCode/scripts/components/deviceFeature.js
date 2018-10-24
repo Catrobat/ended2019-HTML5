@@ -56,7 +56,7 @@ PocketCode.DeviceFeature = (function () {
         },
         initialized: {
             get: function () {
-                return !this.inUse || this._initialized ? true : false;
+                return !this.inUse || this._initialized;
             },
         },
         isActive: {
@@ -150,9 +150,9 @@ PocketCode.merge({
                 }
                 if (!this._supported)
                     return false;
-                if (typeof duration != 'number')
+                if (typeof duration !== 'number')
                     return false;
-                if (duration == 0)
+                if (duration === 0)
                     this.reset();
 
                 var timespan = duration * 1000;
@@ -272,7 +272,7 @@ PocketCode.merge({
                     return this._supported;
                 },
                 set: function (value) {
-                    if (typeof value != 'boolean')
+                    if (typeof value !== 'boolean')
                         throw new Error('invalid setter: supported');
                     this._supported = value;
                     if (!value)
@@ -284,7 +284,7 @@ PocketCode.merge({
                     return this._inUse;
                 },
                 set: function (value) {
-                    if (typeof value != 'boolean')
+                    if (typeof value !== 'boolean')
                         throw new Error('invalid setter: inUse');
                     if (!value)
                         this._resetStream();

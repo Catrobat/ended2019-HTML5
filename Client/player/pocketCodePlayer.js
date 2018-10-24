@@ -117,11 +117,8 @@ PocketCode.Web = {
         FullscreenApi.prototype = {
             _initOnLoad: function () {    //init when DOM available
                 this.supported = function () {
-                    if (document.fullscreenEnabled || document.webkitFullscreenEnabled ||
-						document.mozFullScreenEnabled || document.msFullscreenEnabled)
-                        return true;
-
-                    return false;
+                    return !!(document.fullscreenEnabled || document.webkitFullscreenEnabled ||
+                        document.mozFullScreenEnabled || document.msFullscreenEnabled);
                 }();
 
                 if (this.supported) {
@@ -170,15 +167,10 @@ PocketCode.Web = {
                 this._removeDomListener(document, 'keypress', this._l3);
             },
             isJsFullscreen: function () {
-                if (
-					document.fullscreenElement ||
-					document.webkitFullscreenElement ||
-					document.mozFullScreenElement ||
-					document.msFullscreenElement
-				)
-                    return true;
-
-                return false;
+                return !!(document.fullscreenElement ||
+                    document.webkitFullscreenElement ||
+                    document.mozFullScreenElement ||
+                    document.msFullscreenElement);
             },
             isBrowserFullscreen: function () {
                 return (window.outerHeight >= screen.height && window.outerWidth >= screen.width);
@@ -450,10 +442,7 @@ PocketCode.Web = {
                 this._touchMoveHandler = this._addDomListener(document, 'touchmove', function (e) { e.preventDefault(); });
 
                 var fapi = PocketCode.Web.FullscreenApi;
-                if (fapi.supported && !fapi.isBrowserFullscreen())
-                    this.fullscreenButton.disabled = false;
-                else
-                    this.fullscreenButton.disabled = true;
+                this.fullscreenButton.disabled = !(fapi.supported && !fapi.isBrowserFullscreen());
 
                 //trigger resize event (call)
                 this._onResizeHandler();	//init size
@@ -724,8 +713,7 @@ PocketCode.Web = {
             //	window.addEventListener('error', this._onGlobalError.bind(this), false);
             //else
             //    window.attachEvent('onerror', this._onGlobalError.bind(this));
-        };
-
+        }
         //methods
         ResourceLoader.prototype = {
             //_onGlobalError: function (msg, url, line, col, error) {

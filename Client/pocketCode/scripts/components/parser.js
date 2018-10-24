@@ -151,7 +151,6 @@ PocketCode.merge({
                     //case 'SetRotationSpeedBrick':
                     //case 'RotationSpeedLeftBrick':  //is removed
                     //case 'RotationSpeedRightBrick': //is removed
-                    case 'SetPhysicsObjectTypeBrick':
                     case 'SetVelocityBrick':
                     case 'SetGravityBrick':
                     case 'SetMassBrick':
