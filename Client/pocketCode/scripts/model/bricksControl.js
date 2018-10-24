@@ -429,7 +429,7 @@ PocketCode.Model.merge({
                         this._return(this._sprite.stopAllScripts(true, this._scriptId));
                         break;
                     case PocketCode.StopType.ALL_SOUNDS:
-                        //TODO
+                        this._scene.stopAllSounds();
                         break;
                     case PocketCode.StopType.ALL:
                         this._scene.stopAllScriptsAndSounds(true);

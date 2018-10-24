@@ -744,6 +744,13 @@ PocketCode.merge({
                         this._isStatic = false;
                         return 'this._device.getArduinoDigitalPin(' + this._parseJsonType(jsonFormula.left) + ')';
 
+                    case 'RASPIDIGITAL':
+                        if (uiString)
+                            return 'arduino_digital_pin( ' + this._parseJsonType(jsonFormula.left, uiString) + ' )';
+
+                        this._isStatic = false;
+                        return 'this._device.getArduinoDigitalPin(' + this._parseJsonType(jsonFormula.left) + ')';
+
                     default:
                         throw new Error('formula parser: unknown function: ' + jsonFormula.value);    //TODO: do we need an onError event? -> new and unsupported operators?
 

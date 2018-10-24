@@ -261,7 +261,7 @@ var SmartJs = {
                 style.width = '100px';
 
                 document.body.appendChild(box);
-                var supported = box.offsetHeight == 100 && box.offsetWidth == 100;
+                var supported = Math.abs(box.offsetHeight - 100) < 2 && Math.abs(box.offsetWidth - 100) < 2;
                 document.body.removeChild(box);
                 box = undefined;
 
