@@ -107,7 +107,7 @@ PocketCode.Device = (function () {
                 this._initDeviceMotionListener = this._addDomListener(window, 'devicemotion', this._initDeviceMotionHandler);
 
             this._orientationChangeListener = this._addDomListener(window, 'orientationchange', this._orientationChangeHandler);
-            this._windowOrientation = window.orientation;
+            this._windowOrientation = ((window.orientation!==undefined)?window.orientation:((window.screen!==undefined)?window.screen.orientation.angle:undefined));
         }
         else {  //initialized but no supported
             var features = this._features;
@@ -557,7 +557,7 @@ PocketCode.Device = (function () {
             //this._rotationRate = e.rotationRate;
         },
         _orientationChangeHandler: function () {
-            this._windowOrientation = window.orientation;
+            this._windowOrientation = ((window.orientation!==undefined)?window.orientation:((window.screen!==undefined)?window.screen.orientation.angle:undefined));
         },
         //geo location
         _setGeoLocationInitialized: function () {
@@ -814,7 +814,7 @@ PocketCode.MediaDevice = (function () {
         },
         _cameraChangeHandler: function (e) {
             e = e || this._camStatus;
-            e.merge({ orientation: window.orientation || 0, transparency: this._cameraTransparency });
+            e.merge({ orientation: ((window.orientation!==undefined)?window.orientation:((window.screen!==undefined)?window.screen.orientation.angle:undefined)) || 0, transparency: this._cameraTransparency });
             this._camStatus = e;
             /**  if (e.on && e.width && e.height && e.src)
              this._fd.start(e.src, e.width, e.height, e.orientation);
@@ -855,7 +855,7 @@ PocketCode.MediaDevice = (function () {
             //    video.width = width;
             //    video.height = height;
             //    if (this._cam.on)
-            //        this._onCameraChange.dispatchEvent({ on: true, src: video, height: video.videoHeight, width: video.videoWidth, orientation: window.orientation || 0, transparency: this._cameraTransparency });
+            //        this._onCameraChange.dispatchEvent({ on: true, src: video, height: video.videoHeight, width: video.videoWidth, orientation: ((window.orientation!==undefined)?window.orientation:((window.screen!==undefined)?window.screen.orientation.angle:undefined)) || 0, transparency: this._cameraTransparency });
         },
         setCameraTransparency: function (value) {
             if (value < 0.0)
@@ -873,7 +873,7 @@ PocketCode.MediaDevice = (function () {
                     src: video,
                     height: video.videoHeight,
                     width: video.videoWidth,
-                    orientation: window.orientation || 0,
+                    orientation: ((window.orientation!==undefined)?window.orientation:((window.screen!==undefined)?window.screen.orientation.angle:undefined)) || 0,
                     transparency: value
                 });
                 return true;

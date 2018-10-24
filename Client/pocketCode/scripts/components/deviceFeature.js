@@ -467,7 +467,7 @@ PocketCode.merge({
                     video.play();
                     this._startCameraStreamOnInit = false;
                     this._on = true;
-                    //var orientation = window.orientation || 0;
+                    //var orientation = ((window.orientation!==undefined)?window.orientation:((window.screen!==undefined)?window.screen.orientation.angle:undefined)) || 0;
                     this._onChange.dispatchEvent({ on: true, src: video, height: video.videoHeight, width: video.videoWidth });
                 }
 
