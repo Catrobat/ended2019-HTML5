@@ -155,7 +155,7 @@ QUnit.test("SetRotionStyleBrick", function (assert) {
 
     var device = "device";
     var gameEngine = new PocketCode.GameEngine();
-    var scene = new PocketCode.Model.Scene(gameEngine, undefined, undefined, []);
+    var scene = new PocketCode.Model.Scene(gameEngine, undefined, []);
     var sprite = new PocketCode.Model.Sprite(gameEngine, scene, { id: "spriteId", name: "spriteName" });
 
     var b = new PocketCode.Model.SetRotionStyleBrick(device, sprite, { id: "id" });
@@ -311,11 +311,11 @@ QUnit.test("TurnLeftBrick", function (assert) {
     var sprite = new PocketCode.Model.Sprite(gameEngine, scene, { id: "spriteId", name: "spriteName" });
     var degrees = JSON.parse('{"type":"NUMBER","value":"45","right":null,"left":null}');
 
-    var b = new PocketCode.Model.TurnLeftBrick(device, sprite, { degrees: degrees });
+    var b = new PocketCode.Model.RotateBrick(device, sprite, { degrees: degrees, ccw: true });
 
-    assert.ok(b._device === device && b._sprite === sprite && b._degrees instanceof PocketCode.Formula, "brick created and properties set correctly");
-    assert.ok(b instanceof PocketCode.Model.TurnLeftBrick, "instance check");
-    assert.ok(b.objClassName === "TurnLeftBrick", "objClassName check");
+    assert.ok(b._device === device && b._sprite === sprite && b._degrees instanceof PocketCode.Formula && typeof b._ccw == "boolean", "brick created and properties set correctly");
+    assert.ok(b instanceof PocketCode.Model.RotateBrick, "instance check");
+    assert.ok(b.objClassName === "RotateBrick", "objClassName check");
 
     //execute
     var handler = function (e) {
@@ -325,7 +325,7 @@ QUnit.test("TurnLeftBrick", function (assert) {
         done1();
     };
     b.execute(new SmartJs.Event.EventListener(handler, this), "thread_id");
-
+    assert.ok(sprite._rotation.angle, 45, "rotation angle correct");
 });
 
 
@@ -339,11 +339,11 @@ QUnit.test("TurnRightBrick", function (assert) {
     var sprite = new PocketCode.Model.Sprite(gameEngine, scene, { id: "spriteId", name: "spriteName" });
     var degrees = JSON.parse('{"type":"NUMBER","value":"30","right":null,"left":null}');
 
-    var b = new PocketCode.Model.TurnRightBrick(device, sprite, { degrees: degrees });
+    var b = new PocketCode.Model.RotateBrick(device, sprite, { degrees: degrees, ccw: false });
 
-    assert.ok(b._device === device && b._sprite === sprite && b._degrees instanceof PocketCode.Formula, "brick created and properties set correctly");
-    assert.ok(b instanceof PocketCode.Model.TurnRightBrick, "instance check");
-    assert.ok(b.objClassName === "TurnRightBrick", "objClassName check");
+    assert.ok(b._device === device && b._sprite === sprite && b._degrees instanceof PocketCode.Formula && typeof b._ccw == "boolean", "brick created and properties set correctly");
+    assert.ok(b instanceof PocketCode.Model.RotateBrick, "instance check");
+    assert.ok(b.objClassName === "RotateBrick", "objClassName check");
 
     //execute
     var handler = function (e) {
@@ -353,7 +353,7 @@ QUnit.test("TurnRightBrick", function (assert) {
         done1();
     };
     b.execute(new SmartJs.Event.EventListener(handler, this), "thread_id");
-
+    assert.ok(sprite._rotation.angle, 120, "rotation angle correct");
 });
 
 
@@ -422,7 +422,7 @@ QUnit.test("SetRotionStyleBrick", function (assert) {
 
     var device = "device";
     var gameEngine = new PocketCode.GameEngine();
-    var scene = new PocketCode.Model.Scene(gameEngine, undefined, undefined, []);
+    var scene = new PocketCode.Model.Scene(gameEngine, undefined, []);
     var sprite = new PocketCode.Model.Sprite(gameEngine, scene, { id: "spriteId", name: "spriteName" });
 
     var b = new PocketCode.Model.SetRotionStyleBrick(device, sprite, { id: "id" });
@@ -455,7 +455,7 @@ QUnit.test("SetRotationSpeedBrick", function (assert) {
 
     var device = new PocketCode.MediaDevice(new PocketCode.SoundManager());
     var gameEngine = new PocketCode.GameEngine();
-    var scene = new PocketCode.Model.Scene(gameEngine, undefined, undefined, []);
+    var scene = new PocketCode.Model.Scene(gameEngine, undefined, []);
 
     var sprite = new PocketCode.Model.Sprite(gameEngine, scene, { id: "spriteId", name: "spriteName" });
     var deg = JSON.parse('{"type":"NUMBER","value":"35","right":null,"left":null}');
@@ -474,13 +474,13 @@ QUnit.test("SetRotationSpeedBrick", function (assert) {
         assert.equal(e.id, "thread_id", "threadId handled correctly");
     };
     b.execute(new SmartJs.Event.EventListener(handler, this), "thread_id");
-    assert.ok(sprite._rotationSpeed, 35, "rotation speed set correctly");
+    assert.ok(sprite._rotation.rotationSpeed, 35, "rotation speed set correctly");
 
     //counterclockwise
     deg = JSON.parse('{"type":"NUMBER","value":"24","right":null,"left":null}');
     b = new PocketCode.Model.SetRotationSpeedBrick(device, sprite, { degreesPerSec: deg, ccw: true });
     b.execute(new SmartJs.Event.EventListener(handler, this), "thread_id");
-    assert.ok(sprite._rotationSpeed, -24, "rotation speed set correctly: ccw");
+    assert.ok(sprite._rotation.rotationSpeed, -24, "rotation speed set correctly: ccw");
 
 });
 

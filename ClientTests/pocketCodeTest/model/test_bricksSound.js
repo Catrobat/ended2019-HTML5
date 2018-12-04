@@ -172,15 +172,15 @@ QUnit.test("StopAllSoundsBrick", function (assert) {
     scene._id = "s01";
     var sprite = new PocketCode.Model.Sprite(gameEngine, scene, { id: "spriteId", name: "spriteName" });
 
-    var b = new PocketCode.Model.StopAllSoundsBrick(device, sprite, scene, { id: "id", commentedOut: false });
+    var b = new PocketCode.Model.StopBrick(device, sprite, scene, "s01", { stopType: PocketCode.StopType.ALL_SOUNDS });
     b.dispose();
     assert.ok(b._disposed && !sprite._disposed, "disposed without disposing sound manager");
     //recreate
-    b = new PocketCode.Model.StopAllSoundsBrick(device, sprite, scene, { id: "id", commentedOut: false });
+    b = new PocketCode.Model.StopBrick(device, sprite, scene, "s01", { stopType: PocketCode.StopType.ALL_SOUNDS });
 
     assert.ok(b._device === device && b._sprite === sprite, "brick created and properties set correctly");
-    assert.ok(b instanceof PocketCode.Model.StopAllSoundsBrick, "instance check");
-    assert.ok(b.objClassName === "StopAllSoundsBrick", "objClassName check");
+    assert.ok(b instanceof PocketCode.Model.StopBrick, "instance check");
+    assert.ok(b.objClassName === "StopBrick", "objClassName check");
 
     //execute
     var handler = function (e) {

@@ -14,7 +14,7 @@ QUnit.test("SetLookBrick", function (assert) {
 
     var device = "device";
     var gameEngine = new PocketCode.GameEngine();
-    var scene = new PocketCode.Model.Scene(gameEngine, undefined, undefined, []);
+    var scene = new PocketCode.Model.Scene(gameEngine, undefined, []);
     var sprite = new PocketCode.Model.Sprite(gameEngine, scene, { id: "spriteId", name: "spriteName" });
 
     var b = new PocketCode.Model.SetLookBrick(device, sprite, { lookId: "lookId" });
@@ -41,7 +41,7 @@ QUnit.test("SetLookByIndexBrick", function (assert) {
 
     var device = "device";
     var gameEngine = new PocketCode.GameEngine();
-    var scene = new PocketCode.Model.Scene(gameEngine, undefined, undefined, []);
+    var scene = new PocketCode.Model.Scene(gameEngine, undefined, []);
     var sprite = new PocketCode.Model.Sprite(gameEngine, scene, { id: "spriteId", name: "spriteName" });
     var looks = [
         new PocketCode.Model.Look({ id: "s01" }),
@@ -81,7 +81,7 @@ QUnit.test("NextLookBrick", function (assert) {
 
     var device = "device";
     var gameEngine = new PocketCode.GameEngine();
-    var scene = new PocketCode.Model.Scene(gameEngine, undefined, undefined, []);
+    var scene = new PocketCode.Model.Scene(gameEngine, undefined, []);
     var sprite = new PocketCode.Model.Sprite(gameEngine, scene, { id: "spriteId", name: "spriteName" });
     var called = false;
     sprite.nextLook = function () {
@@ -113,7 +113,7 @@ QUnit.test("PreviousLookBrick", function (assert) {
 
     var device = "device";
     var gameEngine = new PocketCode.GameEngine();
-    var scene = new PocketCode.Model.Scene(gameEngine, undefined, undefined, []);
+    var scene = new PocketCode.Model.Scene(gameEngine, undefined, []);
     var sprite = new PocketCode.Model.Sprite(gameEngine, scene, { id: "spriteId", name: "spriteName" });
     var called = false;
     sprite.previousLook = function () {
@@ -147,7 +147,7 @@ QUnit.test("AskBrick", function (assert) {
 
     var device = "device";
     var gameEngine = new PocketCode.GameEngine();
-    var scene = new PocketCode.Model.Scene(gameEngine, undefined, undefined, []);
+    var scene = new PocketCode.Model.Scene(gameEngine, undefined, []);
     var sprite = new PocketCode.Model.Sprite(gameEngine, scene, { id: "spriteId", name: "spriteName" });
 
     var b = new PocketCode.Model.AskBrick(device, sprite, scene, { question: { type: "STRING", value: "test", right: null, left: null }, resourceId: "s11" });
@@ -210,7 +210,7 @@ QUnit.test("SetSizeBrick", function (assert) {
 
     var device = "device";
     var gameEngine = new PocketCode.GameEngine();
-    var scene = new PocketCode.Model.Scene(gameEngine, undefined, undefined, []);
+    var scene = new PocketCode.Model.Scene(gameEngine, undefined, []);
     var sprite = new PocketCode.Model.Sprite(gameEngine, scene, { id: "spriteId", name: "spriteName" });
     var percentage = JSON.parse('{"type":"NUMBER","value":"5","right":null,"left":null}');
 
@@ -238,7 +238,7 @@ QUnit.test("ChangeSizeBrick", function (assert) {
 
     var device = "device";
     var gameEngine = new PocketCode.GameEngine();
-    var scene = new PocketCode.Model.Scene(gameEngine, undefined, undefined, []);
+    var scene = new PocketCode.Model.Scene(gameEngine, undefined, []);
     var sprite = new PocketCode.Model.Sprite(gameEngine, scene, { id: "spriteId", name: "spriteName" });
     var value = JSON.parse('{"type":"NUMBER","value":"5","right":null,"left":null}');
 
@@ -266,7 +266,7 @@ QUnit.test("HideBrick", function (assert) {
 
     var device = "device";
     var gameEngine = new PocketCode.GameEngine();
-    var scene = new PocketCode.Model.Scene(gameEngine, undefined, undefined, []);
+    var scene = new PocketCode.Model.Scene(gameEngine, undefined, []);
     var sprite = new PocketCode.Model.Sprite(gameEngine, scene, { id: "spriteId", name: "spriteName" });
 
     var b = new PocketCode.Model.HideBrick(device, sprite, { Id: "Id" });
@@ -293,7 +293,7 @@ QUnit.test("ShowBrick", function (assert) {
 
     var device = "device";
     var gameEngine = new PocketCode.GameEngine();
-    var scene = new PocketCode.Model.Scene(gameEngine, undefined, undefined, []);
+    var scene = new PocketCode.Model.Scene(gameEngine, undefined, []);
     var sprite = new PocketCode.Model.Sprite(gameEngine, scene, { id: "spriteId", name: "spriteName" });
 
     var b = new PocketCode.Model.ShowBrick(device, sprite, { Id: "Id" });
@@ -320,7 +320,7 @@ QUnit.test("SayBrick", function (assert) {
 
     var device = "device";
     var gameEngine = new PocketCode.GameEngine();
-    var scene = new PocketCode.Model.Scene(gameEngine, undefined, undefined, []);
+    var scene = new PocketCode.Model.Scene(gameEngine, undefined, []);
     var sprite = new PocketCode.Model.Sprite(gameEngine, scene, { id: "spriteId", name: "spriteName" });
     var text = JSON.parse('{"type":"STRING","value":"good morning","right":null,"left":null}');
 
@@ -350,7 +350,7 @@ QUnit.test("SayForBrick", function (assert) {
 
     var device = "device";
     var gameEngine = new PocketCode.GameEngine();
-    var scene = new PocketCode.Model.Scene(gameEngine, undefined, undefined, []);
+    var scene = new PocketCode.Model.Scene(gameEngine, undefined, []);
     var sprite = new PocketCode.Model.Sprite(gameEngine, scene, { id: "spriteId", name: "spriteName" });
     var text = JSON.parse('{"type":"STRING","value":"good morning","right":null,"left":null}');
     var duration = JSON.parse('{"type":"NUMBER","value":"0.5","right":null,"left":null}');
@@ -398,7 +398,7 @@ QUnit.test("ThinkBrick", function (assert) {
 
     var device = "device";
     var gameEngine = new PocketCode.GameEngine();
-    var scene = new PocketCode.Model.Scene(gameEngine, undefined, undefined, []);
+    var scene = new PocketCode.Model.Scene(gameEngine, undefined, []);
     var sprite = new PocketCode.Model.Sprite(gameEngine, scene, { id: "spriteId", name: "spriteName" });
     var text = JSON.parse('{"type":"STRING","value":"good morning","right":null,"left":null}');
 
@@ -428,7 +428,7 @@ QUnit.test("ThinkForBrick", function (assert) {
 
     var device = "device";
     var gameEngine = new PocketCode.GameEngine();
-    var scene = new PocketCode.Model.Scene(gameEngine, undefined, undefined, []);
+    var scene = new PocketCode.Model.Scene(gameEngine, undefined, []);
     var sprite = new PocketCode.Model.Sprite(gameEngine, scene, { id: "spriteId", name: "spriteName" });
     var text = JSON.parse('{"type":"STRING","value":"sdf","right":null,"left":null}');
     var duration = JSON.parse('{"type":"NUMBER","value":"0.5","right":null,"left":null}');
@@ -477,15 +477,15 @@ QUnit.test("SetGraphicEffectBrick", function (assert) {
 
     var device = "device";
     var gameEngine = new PocketCode.GameEngine();
-    var scene = new PocketCode.Model.Scene(gameEngine, undefined, undefined, []);
+    var scene = new PocketCode.Model.Scene(gameEngine, undefined, []);
     var sprite = new PocketCode.Model.Sprite(gameEngine, scene, { id: "spriteId", name: "spriteName" });
     var value = JSON.parse('{"type":"NUMBER","value":"5","right":null,"left":null}');
 
-    var b = new PocketCode.Model.SetGraphicEffectBrick(device, sprite, { value: value, effect: PocketCode.GraphicEffect.COLOR });
+    var b = new PocketCode.Model.GraphicEffectBrick(device, sprite, { value: value, effect: PocketCode.GraphicEffect.COLOR, change: false });
 
     assert.ok(b._device === device && b._sprite === sprite && b._value instanceof PocketCode.Formula, "brick created and properties set correctly");
-    assert.ok(b instanceof PocketCode.Model.SetGraphicEffectBrick, "instance check");
-    assert.ok(b.objClassName === "SetGraphicEffectBrick", "objClassName check");
+    assert.ok(b instanceof PocketCode.Model.GraphicEffectBrick, "instance check");
+    assert.ok(b.objClassName === "GraphicEffectBrick", "objClassName check");
 
     //execute
     var handler = function (e) {
@@ -496,7 +496,7 @@ QUnit.test("SetGraphicEffectBrick", function (assert) {
     };
     b.execute(new SmartJs.Event.EventListener(handler, this), "thread_id");
 
-    b = new PocketCode.Model.SetGraphicEffectBrick(device, sprite, { value: value, effect: PocketCode.GraphicEffect.BRIGHTNESS });
+    b = new PocketCode.Model.GraphicEffectBrick(device, sprite, { value: value, effect: PocketCode.GraphicEffect.BRIGHTNESS, change: false });
 
     //execute
     var handler2 = function (e) {
@@ -507,7 +507,7 @@ QUnit.test("SetGraphicEffectBrick", function (assert) {
     };
     b.execute(new SmartJs.Event.EventListener(handler2, this), "thread_id2");
 
-    b = new PocketCode.Model.SetGraphicEffectBrick(device, sprite, { value: value, effect: PocketCode.GraphicEffect.GHOST });
+    b = new PocketCode.Model.GraphicEffectBrick(device, sprite, { value: value, effect: PocketCode.GraphicEffect.GHOST, change: false });
 
     //execute
     var handler3 = function (e) {
@@ -528,15 +528,15 @@ QUnit.test("ChangeGraphicEffectBrick", function (assert) {
 
     var device = "device";
     var gameEngine = new PocketCode.GameEngine();
-    var scene = new PocketCode.Model.Scene(gameEngine, undefined, undefined, []);
+    var scene = new PocketCode.Model.Scene(gameEngine, undefined, []);
     var sprite = new PocketCode.Model.Sprite(gameEngine, scene, { id: "spriteId", name: "spriteName" });
     var value = JSON.parse('{"type":"NUMBER","value":"5","right":null,"left":null}');
 
-    var b = new PocketCode.Model.ChangeGraphicEffectBrick(device, sprite, { value: value, effect: PocketCode.GraphicEffect.COLOR });
+    var b = new PocketCode.Model.GraphicEffectBrick(device, sprite, { value: value, effect: PocketCode.GraphicEffect.COLOR, change: true });
 
     assert.ok(b._device === device && b._sprite === sprite && b._value instanceof PocketCode.Formula, "brick created and properties set correctly");
-    assert.ok(b instanceof PocketCode.Model.ChangeGraphicEffectBrick, "instance check");
-    assert.ok(b.objClassName === "ChangeGraphicEffectBrick", "objClassName check");
+    assert.ok(b instanceof PocketCode.Model.GraphicEffectBrick, "instance check");
+    assert.ok(b.objClassName === "GraphicEffectBrick", "objClassName check");
 
     //execute
     var handler = function (e) {
@@ -547,7 +547,7 @@ QUnit.test("ChangeGraphicEffectBrick", function (assert) {
     };
     b.execute(new SmartJs.Event.EventListener(handler, this), "thread_id");
 
-    b = new PocketCode.Model.ChangeGraphicEffectBrick(device, sprite, { value: value, effect: PocketCode.GraphicEffect.BRIGHTNESS });
+    b = new PocketCode.Model.GraphicEffectBrick(device, sprite, { value: value, effect: PocketCode.GraphicEffect.BRIGHTNESS, change: true });
 
     //execute
     var handler2 = function (e) {
@@ -559,7 +559,7 @@ QUnit.test("ChangeGraphicEffectBrick", function (assert) {
     b.execute(new SmartJs.Event.EventListener(handler2, this), "thread_id2");
 
 
-    b = new PocketCode.Model.ChangeGraphicEffectBrick(device, sprite, { value: value, effect: PocketCode.GraphicEffect.GHOST });
+    b = new PocketCode.Model.GraphicEffectBrick(device, sprite, { value: value, effect: PocketCode.GraphicEffect.GHOST, change: true });
 
     //execute
     var handler3 = function (e) {
@@ -578,7 +578,7 @@ QUnit.test("ClearGraphicEffectBrick", function (assert) {
 
     var device = "device";
     var gameEngine = new PocketCode.GameEngine();
-    var scene = new PocketCode.Model.Scene(gameEngine, undefined, undefined, []);
+    var scene = new PocketCode.Model.Scene(gameEngine, undefined, []);
     var sprite = new PocketCode.Model.Sprite(gameEngine, scene, { id: "spriteId", name: "spriteName" });
 
     var b = new PocketCode.Model.ClearGraphicEffectBrick(device, sprite, { Id: "Id" });
@@ -605,20 +605,20 @@ QUnit.test("SetBackgroundBrick", function (assert) {
 
     var device = "device";
     var gameEngine = new PocketCode.GameEngine();
-    var scene = new PocketCode.Model.Scene(gameEngine, undefined, undefined, []);
+    var scene = new PocketCode.Model.Scene(gameEngine, undefined, []);
     var sprite = new PocketCode.Model.Sprite(gameEngine, scene, { id: "spriteId", name: "spriteName" });
     scene._background = sprite;
-    var b = new PocketCode.Model.SetBackgroundBrick(device, sprite, scene, { lookId: "lookId" });
+    var b = new PocketCode.Model.SetBackgroundBrick(device, sprite, scene, { lookId: "lookId", andWait: false});
 
     assert.ok(b._device === device && b._sprite === sprite && b._lookId === "lookId", "brick created and properties set correctly");
-    assert.ok(b instanceof PocketCode.Model.SetBackgroundBrick && b instanceof PocketCode.Model.BaseBrick, "instance check");
+    assert.ok(b instanceof PocketCode.Model.SetBackgroundBrick && b instanceof PocketCode.Model.ThreadedBrick, "instance check");
     assert.ok(b.objClassName === "SetBackgroundBrick", "objClassName check");
 
     b.dispose();
     assert.ok(b._disposed && !scene._disposed, "disposed without disposing scene");
 
     //recreate
-    b = new PocketCode.Model.SetBackgroundBrick(device, sprite, scene, { lookId: "lookId" });
+    b = new PocketCode.Model.SetBackgroundBrick(device, sprite, scene, { lookId: "lookId", andWait: false });
 
     //execute
     var handler = function (e) {
@@ -639,21 +639,21 @@ QUnit.test("SetBackgroundAndWaitBrick", function (assert) {
 
     var device = "device";
     var gameEngine = new PocketCode.GameEngine();
-    var scene = new PocketCode.Model.Scene(gameEngine, undefined, undefined, []);
+    var scene = new PocketCode.Model.Scene(gameEngine, undefined, []);
     var sprite = new PocketCode.Model.Sprite(gameEngine, scene, { id: "spriteId", name: "spriteName" });
     var background = new PocketCode.Model.BackgroundSprite(gameEngine, scene, { id: "spriteId", name: "spriteName" });
 
-    var b = new PocketCode.Model.SetBackgroundAndWaitBrick(device, sprite, scene, { lookId: "lookId" });
+    var b = new PocketCode.Model.SetBackgroundBrick(device, sprite, scene, { lookId: "lookId", andWait: true });
 
     assert.ok(b._device === device && b._sprite === sprite && b._lookId === "lookId", "brick created and properties set correctly");
-    assert.ok(b instanceof PocketCode.Model.SetBackgroundAndWaitBrick && b instanceof PocketCode.Model.ThreadedBrick, "instance check");
-    assert.ok(b.objClassName === "SetBackgroundAndWaitBrick", "objClassName check");
+    assert.ok(b instanceof PocketCode.Model.SetBackgroundBrick && b instanceof PocketCode.Model.ThreadedBrick, "instance check");
+    assert.ok(b.objClassName === "SetBackgroundBrick", "objClassName check");
 
     b.dispose();
     assert.ok(b._disposed && !scene._disposed, "disposed without disposing scene");
 
     //recreate
-    b = new PocketCode.Model.SetBackgroundAndWaitBrick(device, sprite, scene, { lookId: "lookId" });
+    b = new PocketCode.Model.SetBackgroundBrick(device, sprite, scene, { lookId: "lookId", andWait: true });
 
     //execute
     var handler = function (e) {
@@ -668,7 +668,7 @@ QUnit.test("SetBackgroundAndWaitBrick", function (assert) {
 
     scene._background = background;
     function runTestOnBackground() {
-        b = new PocketCode.Model.SetBackgroundAndWaitBrick(device, background, scene, { lookId: "lookId" });
+        b = new PocketCode.Model.SetBackgroundBrick(device, background, scene, { lookId: "lookId", andWait: true });
 
         var handler2 = function (e) {
             assert.equal(typeof e.loopDelay, "boolean", "sprite = background: loopDelay received");
@@ -727,7 +727,7 @@ QUnit.test("SelectCameraBrick", function (assert) {
     device._cam._on = true;
 
     var gameEngine = new PocketCode.GameEngine();
-    var scene = new PocketCode.Model.Scene(gameEngine, undefined, undefined, []);
+    var scene = new PocketCode.Model.Scene(gameEngine, undefined, []);
     var sprite = new PocketCode.Model.Sprite(gameEngine, scene, { id: "spriteId", name: "spriteName" });
 
     var b = new PocketCode.Model.SelectCameraBrick(device, sprite, { Id: "Id" });
@@ -781,7 +781,7 @@ QUnit.test("CameraBrick", function (assert) {
 
     var device = new PocketCode.MediaDevice(new PocketCode.SoundManager());
     var gameEngine = new PocketCode.GameEngine();
-    var scene = new PocketCode.Model.Scene(gameEngine, undefined, undefined, []);
+    var scene = new PocketCode.Model.Scene(gameEngine, undefined, []);
     var sprite = new PocketCode.Model.Sprite(gameEngine, scene, { id: "spriteId", name: "spriteName" });
 
     var b = new PocketCode.Model.CameraBrick(device, sprite, { Id: "Id" });
@@ -851,7 +851,7 @@ QUnit.test("FlashBrick", function (assert) {
 
     var device = new PocketCode.MediaDevice(new PocketCode.SoundManager());
     var gameEngine = new PocketCode.GameEngine();
-    var scene = new PocketCode.Model.Scene(gameEngine, undefined, undefined, []);
+    var scene = new PocketCode.Model.Scene(gameEngine, undefined, []);
     var sprite = new PocketCode.Model.Sprite(gameEngine, scene, { id: "spriteId", name: "spriteName" });
 
     var b = new PocketCode.Model.FlashBrick(device, sprite, {

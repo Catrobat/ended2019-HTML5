@@ -129,7 +129,7 @@ PocketCode.Model.merge({
 
             this._broadcastMgr = broadcastMgr;
             this._msgId = propObject.msgId;
-            this._andWait = propObject.andWait;
+            this._andWait = !!propObject.andWait;
         }
 
         BroadcastBrick.prototype.merge({

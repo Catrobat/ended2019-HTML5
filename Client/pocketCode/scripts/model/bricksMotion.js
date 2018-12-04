@@ -276,62 +276,41 @@ PocketCode.Model.merge({
         return MoveNStepsBrick;
     })(),
 
-    TurnLeftBrick: (function () {
-        TurnLeftBrick.extends(PocketCode.Model.BaseBrick, false);
+    RotateBrick: (function () {
+        RotateBrick.extends(PocketCode.Model.BaseBrick, false);
 
-        function TurnLeftBrick(device, sprite, propObject) {
+        function RotateBrick(device, sprite, propObject) {
             PocketCode.Model.BaseBrick.call(this, device, sprite, propObject);
 
             this._degrees = new PocketCode.Formula(device, sprite, propObject.degrees);
+            this._ccw = !!propObject.ccw; //counterclockwise (=rotate left)
         }
 
         //formula accessors
-        Object.defineProperties(TurnLeftBrick.prototype, {
+        Object.defineProperties(RotateBrick.prototype, {
             degreesFormula: {
                 get: function () {
                     return this._degrees;
                 },
             },
-        });
-
-        TurnLeftBrick.prototype._execute = function (scope) {
-            var val = this._degrees.calculate(scope);
-            if (isNaN(val))
-                this._return();
-            else
-                this._return(this._sprite.rotate(-val));
-        };
-
-        return TurnLeftBrick;
-    })(),
-
-    TurnRightBrick: (function () {
-        TurnRightBrick.extends(PocketCode.Model.BaseBrick, false);
-
-        function TurnRightBrick(device, sprite, propObject) {
-            PocketCode.Model.BaseBrick.call(this, device, sprite, propObject);
-
-            this._degrees = new PocketCode.Formula(device, sprite, propObject.degrees);
-        }
-
-        //formula accessors
-        Object.defineProperties(TurnRightBrick.prototype, {
-            degreesFormula: {
+            ccw: {
                 get: function () {
-                    return this._degrees;
+                    return this._ccw;
                 },
             },
         });
 
-        TurnRightBrick.prototype._execute = function (scope) {
+        RotateBrick.prototype._execute = function (scope) {
             var val = this._degrees.calculate(scope);
             if (isNaN(val))
                 this._return();
             else
+                if (this._ccw)
+                    val *= -1;
                 this._return(this._sprite.rotate(val));
         };
 
-        return TurnRightBrick;
+        return RotateBrick;
     })(),
 
     SetDirectionBrick: (function () {
@@ -415,7 +394,7 @@ PocketCode.Model.merge({
             PocketCode.Model.BaseBrick.call(this, device, sprite, propObject);
 
             this._degreesPerSecond = new PocketCode.Formula(device, sprite, propObject.degreesPerSec);
-            this._ccw = propObject.ccw; //counterclockwise (=rotate left)
+            this._ccw = !!propObject.ccw; //counterclockwise (=rotate left)
         }
 
         //formula accessors
@@ -439,7 +418,7 @@ PocketCode.Model.merge({
             if (!isNaN(value)) {
                 if (this._ccw)
                     value *= -1;
-                this._sprite.rotationSpeed = value;
+                this._sprite.setRotationSpeed(value);
             }
             this._return();
         };

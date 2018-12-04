@@ -65,33 +65,6 @@ PocketCode.Model.merge({
         return PlaySoundBrick;
     })(),
 
-    /*
-    included in control/stopBrick - refactoring of brick factory MISSING (TODO)
-
-    StopAllSoundsBrick: (function () {
-        StopAllSoundsBrick.extends(PocketCode.Model.BaseBrick, false);
-
-        function StopAllSoundsBrick(device, sprite, scene, propObject) {
-            PocketCode.Model.BaseBrick.call(this, device, sprite, propObject);
-
-            this._scene = scene;
-        }
-
-        StopAllSoundsBrick.prototype.merge({
-            _execute: function () {
-                this._scene.stopAllSounds();
-                this._return();
-            },
-            dispose: function () {
-                this._scene = undefined;
-                PocketCode.Model.BaseBrick.prototype.dispose.call(this);
-            }
-        });
-
-        return StopAllSoundsBrick;
-    })(),
-    */
-
     SetVolumeBrick: (function () {
         SetVolumeBrick.extends(PocketCode.Model.BaseBrick, false);
 

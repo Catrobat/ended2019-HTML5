@@ -51,6 +51,7 @@ PocketCode._I18nProvider = (function (propObject) {
             "lblDeviceNfc": "NFC",
             "lblDeviceGamepad": "Gamepad",
             "lblDeviceEv3": "EV3",
+            "lblDeviceRaspberryPi": "Raspberry Pi",
 
             "variableTrue": "true",  //true
             "variableFalse": "false",  //false
@@ -289,6 +290,7 @@ PocketCode._I18nProvider = (function (propObject) {
             "formula_editor_function_is_multi_finger_touching":"screen_is_touched",
             "formula_editor_function_arduino_read_pin_value_digital":"arduino_digital_pin",
             "formula_editor_function_arduino_read_pin_value_analog":"arduino_analog_pin",
+            "formula_editor_function_raspi_read_pin_value_digital": "raspberry_pi_pin",
             "formula_editor_bracket_open":"(",
             "formula_editor_bracket_close":")",
             "formula_editor_function_collision":"touches_object",

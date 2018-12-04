@@ -190,6 +190,9 @@ PocketCode.merge({
                         break;
 
                     case 'StopAllSoundsBrick':
+                        jsonBrick.stopType = PocketCode.StopType.ALL_SOUNDS;
+                        type = "StopBrick";
+
                     case 'AskSpeechBrick':
                     case 'AskBrick':
                         if (type == 'AskSpeechBrick')  //providing a ask dialog instead the typical askSpeech brick
@@ -205,11 +208,14 @@ PocketCode.merge({
                     case 'WhenBackgroundChangesToBrick':
                     case 'StartSceneBrick':
                     case 'SceneTransitionBrick':
+                        if(type === "SetBackgroundAndWaitBrick") {
+                            jsonBrick.andWait = true;
+                            type = 'SetBackgroundBrick';
+                        }
                         brick = new PocketCode.Model[type](this._device, currentSprite, this._scene, jsonBrick);
                         break;
 
                     case 'BroadcastBrick':
-                        //type = 'BroadcastAndWaitBrick'; //fix to make sure we are catroid compatible?
                     case 'BroadcastAndWaitBrick':
                     case 'WhenBroadcastReceiveBrick':
                         if(type === "BroadcastAndWaitBrick") {
@@ -229,6 +235,28 @@ PocketCode.merge({
                     case 'StopBrick':
                         brick = new PocketCode.Model[type](this._device, currentSprite, this._scene, this._currentScriptId, jsonBrick);
                         break;
+
+                    // graphic effects
+                    case 'ChangeTransparency':
+                    case 'ChangeBrightness':
+                    case 'ChangeColorEffect':
+                    case 'ChangeGraphicEffectBrick':
+                        jsonBrick.change = true;
+                    case 'SetGraphicEffectBrick':
+                    case 'SetTransparency':
+                    case 'SetBrightness':
+                    case 'SetColorEffect':
+                    case 'GraphicEffectBrick':
+                        type = "GraphicEffectBrick";
+                        brick = new PocketCode.Model[type](this._device, currentSprite, jsonBrick);
+
+                    // motion
+                    case 'TurnLeftBrick':
+                        jsonBrick.ccw = true;
+                        type = "RotateBlock";
+                    case 'TurnRightBrick':
+                        jsonBrick.ccw = false;
+                        type = "RotateBlock";
 
                     default:
                         //control: WaitBrick, NoteBrick, WhenStartAsCloneBrick, IfThenElse, DeleteCloneBrick
@@ -750,12 +778,13 @@ PocketCode.merge({
                         this._isStatic = false;
                         return 'this._device.getArduinoDigitalPin(' + this._parseJsonType(jsonFormula.left) + ')';
 
+                    // raspberry pi
                     case 'RASPIDIGITAL':
-                        if (uiString)
-                            return 'arduino_digital_pin( ' + this._parseJsonType(jsonFormula.left, uiString) + ' )';
+                        if (asUiObject)
+                            return this._concatUiObject(jsonFormula, 'formula_editor_function_raspi_read_pin_value_digital');
 
                         this._isStatic = false;
-                        return 'this._device.getArduinoDigitalPin(' + this._parseJsonType(jsonFormula.left) + ')';
+                        return 'this._device.getRaspberryPiDigitalPin(' + this._parseJsonType(jsonFormula.left) + ')';
 
                     default:
                         throw new Error('formula parser: unknown function: ' + jsonFormula.value);    //TODO: do we need an onError event? -> new and unsupported operators?

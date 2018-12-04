@@ -62,6 +62,11 @@ PocketCode.Device = (function () {
                 inUse: false,
                 supported: false,
             },
+            RASPBERRY_PI: {
+                i18nKey: 'lblDeviceRaspberryPi',
+                inUse: false,
+                supported: false,
+            },
             GEO_LOCATION: {
                 i18nKey: 'lblDeviceGeoLocation',
                 inUse: false,
@@ -856,6 +861,12 @@ PocketCode.Device = (function () {
         },
         getArduinoDigitalPin: function (pin) {
             this._features.ARDUINO.inUse = true;
+            return 0.0; //not supported
+        },
+
+        //raspberry pi
+        getRaspberryPiDigitalPin: function (pin) {
+            this._features.RASPBERRY_PI.inUse = true;
             return 0.0; //not supported
         },
 

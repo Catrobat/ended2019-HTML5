@@ -6,18 +6,19 @@
 
 PocketCode.Model.merge({
 
-    SetGraphicEffectBrick: (function () {
-        SetGraphicEffectBrick.extends(PocketCode.Model.BaseBrick, false);
+    GraphicEffectBrick: (function () {
+        GraphicEffectBrick.extends(PocketCode.Model.BaseBrick, false);
 
-        function SetGraphicEffectBrick(device, sprite, propObject) {
+        function GraphicEffectBrick(device, sprite, propObject) {
             PocketCode.Model.BaseBrick.call(this, device, sprite, propObject);
 
-            this._effect = propObject.effect;    //typeof PocketCode.GraphicEffect 
+            this._effect = propObject.effect;    //typeof PocketCode.GraphicEffect
             this._value = new PocketCode.Formula(device, sprite, propObject.value);
+            this._change = !!propObject.change;
         }
 
         //formula accessors
-        Object.defineProperties(SetGraphicEffectBrick.prototype, {
+        Object.defineProperties(GraphicEffectBrick.prototype, {
             valueFormula: {
                 get: function () {
                     return this._value;
@@ -25,45 +26,20 @@ PocketCode.Model.merge({
             },
         });
 
-        SetGraphicEffectBrick.prototype._execute = function (scope) {
+        GraphicEffectBrick.prototype._execute = function (scope) {
             var val = this._value.calculate(scope);
-            if (isNaN(val))
+            if (isNaN(val)) {
                 this._return();
-            else
-                this._return(this._sprite.setGraphicEffect(this._effect, val));
+            } else {
+             if(this._change) {
+                 this._return(this._sprite.changeGraphicEffect(this._effect, val));
+             } else {
+                 this._return(this._sprite.setGraphicEffect(this._effect, val));
+             }
+            }
         };
 
-        return SetGraphicEffectBrick;
-    })(),
-
-    ChangeGraphicEffectBrick: (function () {
-        ChangeGraphicEffectBrick.extends(PocketCode.Model.BaseBrick, false);
-
-        function ChangeGraphicEffectBrick(device, sprite, propObject) {
-            PocketCode.Model.BaseBrick.call(this, device, sprite, propObject);
-
-            this._effect = propObject.effect;    //typeof PocketCode.GraphicEffect
-            this._value = new PocketCode.Formula(device, sprite, propObject.value);
-        }
-
-        //formula accessors
-        Object.defineProperties(ChangeGraphicEffectBrick.prototype, {
-            changeFormula: {
-                get: function () {
-                    return this._value;
-                },
-            },
-        });
-
-        ChangeGraphicEffectBrick.prototype._execute = function (scope) {
-            var val = this._value.calculate(scope);
-            if (isNaN(val))
-                this._return();
-            else
-                this._return(this._sprite.changeGraphicEffect(this._effect, val));
-        };
-
-        return ChangeGraphicEffectBrick;
+        return GraphicEffectBrick;
     })(),
 
 });
@@ -528,55 +504,34 @@ PocketCode.Model.merge({
     })(),
 
     SetBackgroundBrick: (function () {
-        SetBackgroundBrick.extends(PocketCode.Model.BaseBrick, false);
+        SetBackgroundBrick.extends(PocketCode.Model.ThreadedBrick, false);
 
         function SetBackgroundBrick(device, sprite, scene, propObject) {
-            PocketCode.Model.BaseBrick.call(this, device, sprite, propObject);
-
-            this._scene = scene;
-            this._lookId = propObject.lookId;
-        }
-
-        SetBackgroundBrick.prototype.merge({
-            _execute: function () {
-                if (!this._lookId)  //can be null
-                    this._return();
-                else
-                    this._return(this._scene.setBackground(this._lookId));
-            },
-            dispose: function () {
-                this._scene = undefined;
-                PocketCode.Model.BaseBrick.prototype.dispose.call(this);
-            },
-        });
-
-        return SetBackgroundBrick;
-    })(),
-
-    SetBackgroundAndWaitBrick: (function () {
-        SetBackgroundAndWaitBrick.extends(PocketCode.Model.ThreadedBrick, false);
-
-        function SetBackgroundAndWaitBrick(device, sprite, scene, propObject) {
             PocketCode.Model.ThreadedBrick.call(this, device, sprite, propObject);
 
             this._scene = scene;
             this._lookId = propObject.lookId;
+            this._andWait = !!propObject.andWait;
         }
 
-        SetBackgroundAndWaitBrick.prototype.merge({
+        SetBackgroundBrick.prototype.merge({
             _execute: function (id) {
-                if (!this._lookId)  //can be null
+                if (!this._lookId) { //can be null
                     this._return(id);
-                else
+                } else if(this._andWait) {
                     this._return(this._scene.setBackground(this._lookId, this._return.bind(this, id)));
+                } else {
+                    this._scene.setBackground(this._lookId);
+                    this._return(id);
+                }
             },
             dispose: function () {
                 this._scene = undefined;
                 PocketCode.Model.ThreadedBrick.prototype.dispose.call(this);
-            }
+            },
         });
 
-        return SetBackgroundAndWaitBrick;
+        return SetBackgroundBrick;
     })(),
 
     SetBackgroundByIndexBrick: (function () {

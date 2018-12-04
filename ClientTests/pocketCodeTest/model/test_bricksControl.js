@@ -894,6 +894,9 @@ QUnit.test("StopBrick", function (assert) {
     var d = new PocketCode.Model.StopBrick(device, sprite, scene, "s01", { stopType: PocketCode.StopType.OTHER_SCRIPTS });
     assert.equal(d._type, PocketCode.StopType.OTHER_SCRIPTS, "type set: OTHER");
 
+    var e = new PocketCode.Model.StopBrick(device, sprite, scene, "s01", { stopType: PocketCode.StopType.ALL_SOUNDS });
+    assert.equal(e._type, PocketCode.StopType.ALL_SOUNDS, "type set: ALL_SOUNDS");
+
     //execute
     var valid = 0;
     var handlerThis = function (e) {
@@ -909,6 +912,12 @@ QUnit.test("StopBrick", function (assert) {
         assert.ok(e.loopDelay == undefined || typeof e.loopDelay == "boolean", "OTHER: loopDelay received");
         assert.equal(e.id, "thread_id", "OTHER: threadId handled correctly");
     };
+    var handlerSounds = function (e) {
+        assert.ok(true, "ALL_SOUNDS: executed");
+        assert.equal(e.loopDelay, undefined, "ALL_SOUNDS: loopDelay received");
+        assert.equal(e.id, "thread_id", "ALL_SOUNDS: threadId handled correctly");
+    };
+
     b.execute(new SmartJs.Event.EventListener(handlerThis, this), "thread_id");
 
     c.execute(new SmartJs.Event.EventListener(handlerAll, this), "thread_id");
@@ -916,11 +925,13 @@ QUnit.test("StopBrick", function (assert) {
 
     d.execute(new SmartJs.Event.EventListener(handlerOther, this), "thread_id");
 
+    e.execute(new SmartJs.Event.EventListener(handlerSounds, this), "thread_id");
+
 });
 
 
 QUnit.test("StopBrick: type THIS_SCRIPT: interaction with bricks after the stop & the current script block", function (assert) {
-    //stopscript THIS works like a retur statement in common programming languages: the brick stops all bricks 
+    //stopscript THIS works like a return statement in common programming languages: the brick stops all bricks
     //coming afterward in the same script block from getting executed. The script itself have to trigger a return 
     //to notify waiting bricks like BroadcastAndWait, ChangeBackgroundAndWait, .. to continue executing
 
