@@ -20,11 +20,12 @@ QUnit.test("SetVariableBrick", function (assert) {
     sprite.__variablesSimple._variables.var1 = new PocketCode.Model.UserVariableSimple("var1", "var1name", 0);//{ id: "var1", name: "var1name", value: 0 };
 
     var value = JSON.parse('{"type":"NUMBER","value":"1.0","right":null,"left":null}');
-    var b = new PocketCode.Model.SetVariableBrick("device", sprite, { resourceId: "var1", value: value });
+    var b = new PocketCode.Model.VariableBrick("device", sprite, { resourceId: "var1", value: value, opType: PocketCode.OpType.SET });
 
     assert.ok(b._device === "device" && b._sprite instanceof PocketCode.Model.Sprite && b._varId == "var1" && b._value instanceof PocketCode.Formula , "brick created and properties set correctly");
-    assert.ok(b instanceof PocketCode.Model.SetVariableBrick, "instance check");
-    assert.ok(b.objClassName === "SetVariableBrick", "objClassName check");
+    assert.ok(b instanceof PocketCode.Model.VariableBrick, "instance check");
+    assert.ok(b.objClassName === "VariableBrick", "objClassName check");
+    assert.equal(b._type, PocketCode.OpType.SET, "type set: SET");
 
     //check value
     assert.equal(b._value.calculate(), 1.0, "formual calculation (value to set)");
@@ -44,7 +45,7 @@ QUnit.test("SetVariableBrick", function (assert) {
     //global
     sprite._variables = []; //please notice: the ref ist stored in the brick even if the global var is cleared
     gameEngine.__variablesSimple._variables.var1 = new PocketCode.Model.UserVariableSimple("var1", "var1name", 0);
-    b = new PocketCode.Model.SetVariableBrick("device", sprite, { resourceId: "var1", value: value });
+    b = new PocketCode.Model.VariableBrick("device", sprite, { resourceId: "var1", value: value, opType: PocketCode.OpType.SET });
 
     var executedHandler2 = function (e) {
         assert.equal(e.id, "setGlobalVar", "return id check");
@@ -74,11 +75,12 @@ QUnit.test("ChangeVariableBrick", function (assert) {
     sprite.__variablesSimple._variables.varUnset = new PocketCode.Model.UserVariableSimple("varUnset", "name");
 
     var value = JSON.parse('{"type":"NUMBER","value":"1.0","right":null,"left":null}');
-    var b = new PocketCode.Model.ChangeVariableBrick("device", sprite, { resourceId: "var1", value: value });
+    var b = new PocketCode.Model.VariableBrick("device", sprite, { resourceId: "var1", value: value, opType: PocketCode.OpType.CHANGE });
 
     assert.ok(b._device === "device" && b._sprite instanceof PocketCode.Model.Sprite && b._varId == "var1" && b._value instanceof PocketCode.Formula, "brick created and properties set correctly");
-    assert.ok(b instanceof PocketCode.Model.ChangeVariableBrick, "instance check");
-    assert.ok(b.objClassName === "ChangeVariableBrick", "objClassName check");
+    assert.ok(b instanceof PocketCode.Model.VariableBrick, "instance check");
+    assert.ok(b.objClassName === "VariableBrick", "objClassName check");
+    assert.equal(b._type, PocketCode.OpType.CHANGE, "type set: CHANGE");
 
     //check value
     assert.equal(b._value.calculate(), 1.0, "formual calculation (value to add)");
@@ -97,7 +99,7 @@ QUnit.test("ChangeVariableBrick", function (assert) {
 
     //change with not numeric
     value = JSON.parse('{ "type": "FUNCTION", "value": "TRUE", "right": null, "left": null }');
-    b = new PocketCode.Model.ChangeVariableBrick("device", sprite, { resourceId: "varUnset", value: value });
+    b = new PocketCode.Model.VariableBrick("device", sprite, { resourceId: "varUnset", value: value, opType: PocketCode.OpType.CHANGE });
     var executedHandlerBool = function (e) {
         assert.equal(sprite.getVariable("varUnset").value, true, "variable set correctly: change with not numeric");
         done2();
@@ -107,7 +109,7 @@ QUnit.test("ChangeVariableBrick", function (assert) {
     //global
     sprite._variables = [];
     gameEngine.__variablesSimple._variables.var1 = new PocketCode.Model.UserVariableSimple("var1", "name", 1);
-    b = new PocketCode.Model.ChangeVariableBrick("device", sprite, { resourceId: "var1", value: value });
+    b = new PocketCode.Model.VariableBrick("device", sprite, { resourceId: "var1", value: value, opType: PocketCode.OpType.CHANGE });
 
     var executedHandler2 = function (e) {
         assert.equal(e.id, "changeGlobalVar", "return id check");

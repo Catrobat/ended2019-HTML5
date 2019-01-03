@@ -214,11 +214,12 @@ QUnit.test("SetSizeBrick", function (assert) {
     var sprite = new PocketCode.Model.Sprite(gameEngine, scene, { id: "spriteId", name: "spriteName" });
     var percentage = JSON.parse('{"type":"NUMBER","value":"5","right":null,"left":null}');
 
-    var b = new PocketCode.Model.SetSizeBrick(device, sprite, { percentage: percentage });
+    var b = new PocketCode.Model.SizeBrick(device, sprite, { value: percentage, opType: PocketCode.OpType.SET });
 
-    assert.ok(b._device === device && b._sprite === sprite && b._percentage instanceof PocketCode.Formula, "brick created and properties set correctly");
-    assert.ok(b instanceof PocketCode.Model.SetSizeBrick, "instance check");
-    assert.ok(b.objClassName === "SetSizeBrick", "objClassName check");
+    assert.ok(b._device === device && b._sprite === sprite && b._value instanceof PocketCode.Formula, "brick created and properties set correctly");
+    assert.ok(b instanceof PocketCode.Model.SizeBrick, "instance check");
+    assert.ok(b.objClassName === "SizeBrick", "objClassName check");
+    assert.equal(b._type, PocketCode.OpType.SET, "type set: SET");
 
     //execute
     var handler = function (e) {
@@ -242,11 +243,12 @@ QUnit.test("ChangeSizeBrick", function (assert) {
     var sprite = new PocketCode.Model.Sprite(gameEngine, scene, { id: "spriteId", name: "spriteName" });
     var value = JSON.parse('{"type":"NUMBER","value":"5","right":null,"left":null}');
 
-    var b = new PocketCode.Model.ChangeSizeBrick(device, sprite, { value: value });
+    var b = new PocketCode.Model.SizeBrick(device, sprite, { value: value, opType: PocketCode.OpType.CHANGE });
 
     assert.ok(b._device === device && b._sprite === sprite && b._value instanceof PocketCode.Formula, "brick created and properties set correctly");
-    assert.ok(b instanceof PocketCode.Model.ChangeSizeBrick, "instance check");
-    assert.ok(b.objClassName === "ChangeSizeBrick", "objClassName check");
+    assert.ok(b instanceof PocketCode.Model.SizeBrick, "instance check");
+    assert.ok(b.objClassName === "SizeBrick", "objClassName check");
+    assert.equal(b._type, PocketCode.OpType.CHANGE, "type set: CHANGE");
 
     //execute
     var handler = function (e) {
