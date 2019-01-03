@@ -6,7 +6,70 @@
 
 PocketCode.Model.merge({
 
-    SetVariableBrick: (function () {
+    VariableBrick: (function () {
+        VariableBrick.extends(PocketCode.Model.BaseBrick, false);
+
+        function VariableBrick(device, sprite, propObject) {
+            PocketCode.Model.BaseBrick.call(this, device, sprite, propObject);
+
+            this._varId = propObject.resourceId;
+            this._value = new PocketCode.Formula(device, sprite, propObject.value);
+            this.type = propObject.opType;
+        }
+
+        //formula accessors
+        Object.defineProperties(VariableBrick.prototype, {
+            valueFormula: {
+                get: function () {
+                    return this._value;
+                },
+            },
+            changeFormula: {
+                get: function () {
+                    return this._value;
+                },
+            },
+            type: {
+                get: function () {
+                    return this._type;
+                },
+                set: function (type) {
+                    if (this._type == type)
+                        return;
+
+                    //validate type
+                    var found = false;
+                    for (var t in PocketCode.OpType) {
+                        if (PocketCode.OpType[t] == type) {
+                            found = true;
+                            break;
+                        }
+                    }
+                    if (!found)
+                        throw new Error('unrecognized type: check if type is part of PocketCode.OpType');
+
+                    this._type = type;
+                },
+            },
+        });
+
+        VariableBrick.prototype._execute = function (scope) {
+            scope = scope || this._sprite;
+            var variable = scope.getVariable(this._varId);
+            var value = this._value.calculate(scope);
+
+            if (variable)  //can be undefined
+                if (!isNaN(variable.value) && !isNaN(value) && this._type == PocketCode.OpType.CHANGE)
+                    variable.value += value;
+                else //overwrite existing if values not numeric
+                    variable.value = value;
+            this._return();
+        };
+
+        return VariableBrick;
+    })(),
+
+    /*SetVariableBrick: (function () {
         SetVariableBrick.extends(PocketCode.Model.BaseBrick, false);
 
         function SetVariableBrick(device, sprite, propObject) {
@@ -70,7 +133,7 @@ PocketCode.Model.merge({
         };
 
         return ChangeVariableBrick;
-    })(),
+    })(),*/
 
     ShowVariableBrick: (function () {
         ShowVariableBrick.extends(PocketCode.Model.BaseBrick, false);

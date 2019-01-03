@@ -2,11 +2,11 @@
 
 class SetVolumeBrickDto extends BaseBrickDto {
 
-    public $percentage;	//type of FormulaDto
+    public $value;	//type of FormulaDto
 
-    public function __construct($percentage, $commentedOut = false) {
+    public function __construct($value, $commentedOut = false) {
         parent::__construct("SetVolume", $commentedOut);
 
-        $this->percentage = $percentage;
+        $this->value = $value;
     }
 }

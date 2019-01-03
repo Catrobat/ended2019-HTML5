@@ -189,9 +189,22 @@ PocketCode.merge({
                         brick = new PocketCode.Model[type](this._device, currentSprite, jsonBrick, actions);
                         break;
 
+                    // sounds
                     case 'StopAllSoundsBrick':
                         jsonBrick.stopType = PocketCode.StopType.ALL_SOUNDS;
                         type = "StopBrick";
+                        brick = new PocketCode.Model[type](this._device, currentSprite, jsonBrick);
+                        break;
+                    case 'SetVolumeBrick':
+                        jsonBrick.opType = PocketCode.OpType.SET;
+                        type = "VolumeBrick";
+                        brick = new PocketCode.Model[type](this._device, currentSprite, jsonBrick);
+                        break;
+                    case 'ChangeVolumeBrick':
+                        jsonBrick.opType = PocketCode.OpType.CHANGE;
+                        type = "VolumeBrick";
+                        brick = new PocketCode.Model[type](this._device, currentSprite, jsonBrick);
+                        break;
 
                     case 'AskSpeechBrick':
                     case 'AskBrick':
@@ -249,14 +262,65 @@ PocketCode.merge({
                     case 'GraphicEffectBrick':
                         type = "GraphicEffectBrick";
                         brick = new PocketCode.Model[type](this._device, currentSprite, jsonBrick);
+                        break;
 
                     // motion
                     case 'TurnLeftBrick':
                         jsonBrick.ccw = true;
                         type = "RotateBlock";
+                        brick = new PocketCode.Model[type](this._device, currentSprite, jsonBrick);
+                        break;
                     case 'TurnRightBrick':
                         jsonBrick.ccw = false;
                         type = "RotateBlock";
+                        brick = new PocketCode.Model[type](this._device, currentSprite, jsonBrick);
+                        break;
+                    case 'SetXBrick':
+                        jsonBrick.opType = PocketCode.OpType.SET;
+                        type = "XBrick";
+                        brick = new PocketCode.Model[type](this._device, currentSprite, jsonBrick);
+                        break;
+                    case 'ChangeXBrick':
+                        jsonBrick.opType = PocketCode.OpType.CHANGE;
+                        type = "XBrick";
+                        brick = new PocketCode.Model[type](this._device, currentSprite, jsonBrick);
+                        break;
+                    case 'SetYBrick':
+                        jsonBrick.opType = PocketCode.OpType.SET;
+                        type = "YBrick";
+                        brick = new PocketCode.Model[type](this._device, currentSprite, jsonBrick);
+                        break;
+                    case 'ChangeYBrick':
+                        jsonBrick.opType = PocketCode.OpType.CHANGE;
+                        type = "YBrick";
+                        brick = new PocketCode.Model[type](this._device, currentSprite, jsonBrick);
+                        break;
+
+                    // look
+                    case 'SetSizeBrick':
+                        jsonBrick.opType = PocketCode.OpType.SET;
+                        jsonBrick.value = jsonBrick.percentage || jsonBrick.value;
+                        type = "SizeBrick";
+                        brick = new PocketCode.Model[type](this._device, currentSprite, jsonBrick);
+                        break;
+                    case 'ChangeSizeBrick':
+                        jsonBrick.opType = PocketCode.OpType.CHANGE;
+                        type = "SizeBrick";
+                        brick = new PocketCode.Model[type](this._device, currentSprite, jsonBrick);
+                        break;
+
+                    // data
+                    case 'SetVariableBrick':
+                        jsonBrick.opType = PocketCode.OpType.SET;
+                        type = "VariableBrick";
+                        brick = new PocketCode.Model[type](this._device, currentSprite, jsonBrick);
+                        break;
+                    case 'ChangeVariableBrick':
+                        jsonBrick.opType = PocketCode.OpType.CHANGE;
+                        type = "VariableBrick";
+                        brick = new PocketCode.Model[type](this._device, currentSprite, jsonBrick);
+                        break;
+
 
                     default:
                         //control: WaitBrick, NoteBrick, WhenStartAsCloneBrick, IfThenElse, DeleteCloneBrick

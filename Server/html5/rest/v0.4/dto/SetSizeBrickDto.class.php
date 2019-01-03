@@ -2,11 +2,11 @@
 
 class SetSizeBrickDto extends BaseBrickDto {
 
-    public $percentage;	//FormulaDto
+    public $value;	//FormulaDto
 
-    public function __construct($percentage, $commentedOut = false) {
+    public function __construct($value, $commentedOut = false) {
         parent::__construct("SetSize", $commentedOut);
 
-        $this->percentage = $percentage;
+        $this->value = $value;
     }
 }

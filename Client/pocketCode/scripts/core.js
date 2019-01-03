@@ -110,6 +110,10 @@ PocketCode.merge({
         ALL_SOUNDS: 2,
         ALL: 3,
     },
+    OpType: {
+        CHANGE: 0,
+        SET: 1,
+    },
 
     isPlayerCompatible: function () {
         var _result = true;

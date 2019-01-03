@@ -123,7 +123,72 @@ PocketCode.Model.merge({
         return PreviousLookBrick;
     })(),
 
-    SetSizeBrick: (function () {
+    SizeBrick: (function () {
+        SizeBrick.extends(PocketCode.Model.BaseBrick, false);
+
+        function SizeBrick(device, sprite, propObject) {
+            PocketCode.Model.BaseBrick.call(this, device, sprite, propObject);
+
+            this._value = new PocketCode.Formula(device, sprite, propObject.value);
+            this.type = propObject.opType;
+        }
+
+        //formula accessors
+        Object.defineProperties(SizeBrick.prototype, {
+            valueFormula: {
+                get: function () {
+                    return this._value;
+                },
+            },
+            changeFormula: {
+                get: function () {
+                    return this._value;
+                },
+            },
+            type: {
+                get: function () {
+                    return this._type;
+                },
+                set: function (type) {
+                    if (this._type == type)
+                        return;
+
+                    //validate type
+                    var found = false;
+                    for (var t in PocketCode.OpType) {
+                        if (PocketCode.OpType[t] == type) {
+                            found = true;
+                            break;
+                        }
+                    }
+                    if (!found)
+                        throw new Error('unrecognized type: check if type is part of PocketCode.OpType');
+
+                    this._type = type;
+                },
+            },
+        });
+
+        SizeBrick.prototype._execute = function (scope) {
+            var val = this._value.calculate(scope);
+            if (isNaN(val))
+                this._return();
+            else
+                switch (this._type) {
+                    case PocketCode.OpType.SET:
+                        this._return(this._sprite.setSize(val));
+                        break;
+                    case PocketCode.OpType.CHANGE:
+                        this._return(this._sprite.changeSize(val));
+                        break;
+                }
+
+        };
+
+        return SizeBrick;
+    })(),
+
+    /*SetSizeBrick: (function () {
         SetSizeBrick.extends(PocketCode.Model.BaseBrick, false);
 
         function SetSizeBrick(device, sprite, propObject) {
@@ -179,7 +244,7 @@ PocketCode.Model.merge({
         };
 
         return ChangeSizeBrick;
-    })(),
+    })(),*/
 
     HideBrick: (function () {
         HideBrick.extends(PocketCode.Model.BaseBrick, false);
