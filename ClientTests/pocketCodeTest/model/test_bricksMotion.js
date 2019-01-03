@@ -47,11 +47,11 @@ QUnit.test("SetXBrick", function (assert) {
     var sprite = new PocketCode.Model.Sprite(gameEngine, scene, { id: "spriteId", name: "spriteName" });
     var x = JSON.parse('{"type":"NUMBER","value":"3","right":null,"left":null}');
 
-    var b = new PocketCode.Model.SetXBrick(device, sprite, { value: x });
+    var b = new PocketCode.Model.XBrick(device, sprite, { value: x, opType: PocketCode.OpType.SET });
 
     assert.ok(b._device === device && b._sprite === sprite && b._x instanceof PocketCode.Formula, "brick created and properties set correctly");
-    assert.ok(b instanceof PocketCode.Model.SetXBrick, "instance check");
-    assert.ok(b.objClassName === "SetXBrick", "objClassName check");
+    assert.ok(b instanceof PocketCode.Model.XBrick, "instance check");
+    assert.ok(b.objClassName === "XBrick", "objClassName check");
 
     //execute
     var handler = function (e) {
@@ -75,11 +75,11 @@ QUnit.test("SetYBrick", function (assert) {
     var sprite = new PocketCode.Model.Sprite(gameEngine, scene, { id: "spriteId", name: "spriteName" });
     var y = JSON.parse('{"type":"NUMBER","value":"5","right":null,"left":null}');
 
-    var b = new PocketCode.Model.SetYBrick(device, sprite, { value: y });
+    var b = new PocketCode.Model.YBrick(device, sprite, { value: y, opType: PocketCode.OpType.SET });
 
     assert.ok(b._device === device && b._sprite === sprite && b._y instanceof PocketCode.Formula, "brick created and properties set correctly");
-    assert.ok(b instanceof PocketCode.Model.SetYBrick, "instance check");
-    assert.ok(b.objClassName === "SetYBrick", "objClassName check");
+    assert.ok(b instanceof PocketCode.Model.YBrick, "instance check");
+    assert.ok(b.objClassName === "YBrick", "objClassName check");
 
     //execute
     var handler = function (e) {
@@ -103,11 +103,11 @@ QUnit.test("ChangeXBrick", function (assert) {
     var sprite = new PocketCode.Model.Sprite(gameEngine, scene, { id: "spriteId", name: "spriteName" });
     var x = JSON.parse('{"type":"NUMBER","value":"3","right":null,"left":null}');
 
-    var b = new PocketCode.Model.ChangeXBrick(device, sprite, { value: x });
+    var b = new PocketCode.Model.XBrick(device, sprite, { value: x, opType: PocketCode.OpType.CHANGE });
 
     assert.ok(b._device === device && b._sprite === sprite && b._x instanceof PocketCode.Formula, "brick created and properties set correctly");
-    assert.ok(b instanceof PocketCode.Model.ChangeXBrick, "instance check");
-    assert.ok(b.objClassName === "ChangeXBrick", "objClassName check");
+    assert.ok(b instanceof PocketCode.Model.XBrick, "instance check");
+    assert.ok(b.objClassName === "XBrick", "objClassName check");
 
     //execute
     var handler = function (e) {
@@ -131,11 +131,11 @@ QUnit.test("ChangeYBrick", function (assert) {
     var sprite = new PocketCode.Model.Sprite(gameEngine, scene, { id: "spriteId", name: "spriteName" });
     var y = JSON.parse('{"type":"NUMBER","value":"5","right":null,"left":null}');
 
-    var b = new PocketCode.Model.ChangeYBrick(device, sprite, { value: y });
+    var b = new PocketCode.Model.YBrick(device, sprite, { value: y, opType: PocketCode.OpType.CHANGE });
 
     assert.ok(b._device === device && b._sprite === sprite && b._y instanceof PocketCode.Formula, "brick created and properties set correctly");
-    assert.ok(b instanceof PocketCode.Model.ChangeYBrick, "instance check");
-    assert.ok(b.objClassName === "ChangeYBrick", "objClassName check");
+    assert.ok(b instanceof PocketCode.Model.YBrick, "instance check");
+    assert.ok(b.objClassName === "YBrick", "objClassName check");
 
     //execute
     var handler = function (e) {

@@ -45,7 +45,125 @@ PocketCode.Model.merge({
         return GoToPositionBrick;
     })(),
 
-    SetXBrick: (function () {
+    XBrick: (function () {
+        XBrick.extends(PocketCode.Model.BaseBrick, false);
+
+        function XBrick(device, sprite, propObject) {
+            PocketCode.Model.BaseBrick.call(this, device, sprite, propObject);
+
+            this._x = new PocketCode.Formula(device, sprite, propObject.value);
+            this.type = propObject.opType;
+        }
+
+        //formula accessors
+        Object.defineProperties(XBrick.prototype, {
+            xFormula: {
+                get: function () {
+                    return this._x;
+                },
+            },
+            type: {
+                get: function () {
+                    return this._type;
+                },
+                set: function (type) {
+                    if (this._type == type)
+                        return;
+
+                    //validate type
+                    var found = false;
+                    for (var t in PocketCode.OpType) {
+                        if (PocketCode.OpType[t] == type) {
+                            found = true;
+                            break;
+                        }
+                    }
+                    if (!found)
+                        throw new Error('unrecognized type: check if type is part of PocketCode.OpType');
+
+                    this._type = type;
+                },
+            },
+        });
+
+        XBrick.prototype._execute = function (scope) {
+            var x = this._x.calculate(scope);
+            if (isNaN(x))
+                this._return();
+            else
+                switch (this._type) {
+                    case PocketCode.OpType.SET:
+                        this._return(this._sprite.setPositionX(x));
+                        break;
+                    case PocketCode.OpType.CHANGE:
+                        this._return(this._sprite.changePositionX(x));
+                        break;
+                }
+        };
+
+        return XBrick;
+    })(),
+
+    YBrick: (function () {
+        YBrick.extends(PocketCode.Model.BaseBrick, false);
+
+        function YBrick(device, sprite, propObject) {
+            PocketCode.Model.BaseBrick.call(this, device, sprite, propObject);
+
+            this._y = new PocketCode.Formula(device, sprite, propObject.value);
+            this.type = propObject.opType;
+        }
+
+        //formula accessors
+        Object.defineProperties(YBrick.prototype, {
+            yFormula: {
+                get: function () {
+                    return this._y;
+                },
+            },
+            type: {
+                get: function () {
+                    return this._type;
+                },
+                set: function (type) {
+                    if (this._type == type)
+                        return;
+
+                    //validate type
+                    var found = false;
+                    for (var t in PocketCode.OpType) {
+                        if (PocketCode.OpType[t] == type) {
+                            found = true;
+                            break;
+                        }
+                    }
+                    if (!found)
+                        throw new Error('unrecognized type: check if type is part of PocketCode.OpType');
+
+                    this._type = type;
+                },
+            },
+        });
+
+        YBrick.prototype._execute = function (scope) {
+            var y = this._y.calculate(scope);
+            if (isNaN(y))
+                this._return();
+            else
+                switch (this._type) {
+                    case PocketCode.OpType.SET:
+                        this._return(this._sprite.setPositionY(y));
+                        break;
+                    case PocketCode.OpType.CHANGE:
+                        this._return(this._sprite.changePositionY(y));
+                        break;
+                }
+        };
+
+        return YBrick;
+    })(),
+
+    /*SetXBrick: (function () {
         SetXBrick.extends(PocketCode.Model.BaseBrick, false);
 
         function SetXBrick(device, sprite, propObject) {
@@ -72,9 +190,9 @@ PocketCode.Model.merge({
         };
 
         return SetXBrick;
-    })(),
+    })(),*/
 
-    SetYBrick: (function () {
+    /*SetYBrick: (function () {
         SetYBrick.extends(PocketCode.Model.BaseBrick, false);
 
         function SetYBrick(device, sprite, propObject) {
@@ -159,7 +277,7 @@ PocketCode.Model.merge({
         };
 
         return ChangeYBrick;
-    })(),
+    })(),*/
 
     SetRotionStyleBrick: (function () {
         SetRotionStyleBrick.extends(PocketCode.Model.BaseBrick, false);
