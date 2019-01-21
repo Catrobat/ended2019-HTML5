@@ -204,16 +204,16 @@ QUnit.test("SetVolumeBrick", function (assert) {
     var sprite = new PocketCode.Model.Sprite(gameEngine, scene, { id: "spriteId", name: "spriteName" });
     var percentage = JSON.parse('{"type":"NUMBER","value":"80","right":null,"left":null}');
 
-    var b = new PocketCode.Model.SetVolumeBrick(device, sprite, { percentage: percentage, commentedOut: false });
+    var b = new PocketCode.Model.VolumeBrick(device, sprite, { value: percentage, commentedOut: false, opType: PocketCode.OpType.SET });
     assert.ok(b.volumeFormula instanceof PocketCode.Formula, "formula accessor");
     b.dispose();
     assert.ok(b._disposed && !sprite._disposed, "disposed without disposing sound manager");
     //recreate
-    b = new PocketCode.Model.SetVolumeBrick(device, sprite, { percentage: percentage, commentedOut: false });
+    b = new PocketCode.Model.VolumeBrick(device, sprite, { value: percentage, commentedOut: false, opType: PocketCode.OpType.SET });
 
-    assert.ok(b._device === device && b._sprite === sprite && b._percentage instanceof PocketCode.Formula, "brick created and properties set correctly");
-    assert.ok(b instanceof PocketCode.Model.SetVolumeBrick, "instance check");
-    assert.ok(b.objClassName === "SetVolumeBrick", "objClassName check");
+    assert.ok(b._device === device && b._sprite === sprite && b._value instanceof PocketCode.Formula, "brick created and properties set correctly");
+    assert.ok(b instanceof PocketCode.Model.VolumeBrick, "instance check");
+    assert.ok(b.objClassName === "VolumeBrick", "objClassName check");
 
     //execute
     var handler = function (e) {
@@ -237,16 +237,16 @@ QUnit.test("ChangeVolumeBrick", function (assert) {
     var sprite = new PocketCode.Model.Sprite(gameEngine, scene, { id: "spriteId", name: "spriteName" });
     var value = JSON.parse('{"type":"NUMBER","value":"15","right":null,"left":null}');
 
-    var b = new PocketCode.Model.ChangeVolumeBrick(device, sprite, { value: value, commentedOut: false });
+    var b = new PocketCode.Model.VolumeBrick(device, sprite, { value: value, commentedOut: false, opType: PocketCode.OpType.CHANGE });
     assert.ok(b.volumeFormula instanceof PocketCode.Formula, "formula accessor");
     b.dispose();
     assert.ok(b._disposed && !sprite._disposed, "disposed without disposing sound manager");
     //recreate
-    b = new PocketCode.Model.ChangeVolumeBrick(device, sprite, { value: value, commentedOut: false });
+    b = new PocketCode.Model.VolumeBrick(device, sprite, { value: value, commentedOut: false, opType: PocketCode.OpType.CHANGE });
 
     assert.ok(b._device === device && b._sprite === sprite && b._value instanceof PocketCode.Formula, "brick created and properties set correctly");
-    assert.ok(b instanceof PocketCode.Model.ChangeVolumeBrick, "instance check");
-    assert.ok(b.objClassName === "ChangeVolumeBrick", "objClassName check");
+    assert.ok(b instanceof PocketCode.Model.VolumeBrick, "instance check");
+    assert.ok(b.objClassName === "VolumeBrick", "objClassName check");
 
     //execute
     var handler = function (e) {

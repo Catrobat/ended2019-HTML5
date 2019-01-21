@@ -197,6 +197,7 @@ PocketCode.merge({
                         break;
                     case 'SetVolumeBrick':
                         jsonBrick.opType = PocketCode.OpType.SET;
+                        jsonBrick.value = jsonBrick.percentage || jsonBrick.value;
                         type = "VolumeBrick";
                         brick = new PocketCode.Model[type](this._device, currentSprite, jsonBrick);
                         break;

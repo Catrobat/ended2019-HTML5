@@ -65,64 +65,65 @@ PocketCode.Model.merge({
         return PlaySoundBrick;
     })(),
 
-    SetVolumeBrick: (function () {
-        SetVolumeBrick.extends(PocketCode.Model.BaseBrick, false);
+    VolumeBrick: (function () {
+        VolumeBrick.extends(PocketCode.Model.BaseBrick, false);
 
-        function SetVolumeBrick(device, sprite, propObject) {
-            PocketCode.Model.BaseBrick.call(this, device, sprite, propObject);
-
-            this._percentage = new PocketCode.Formula(device, sprite, propObject.percentage);
-        }
-
-        //formula accessors
-        Object.defineProperties(SetVolumeBrick.prototype, {
-            volumeFormula: {
-                get: function () {
-                    return this._percentage;
-                },
-            },
-        });
-
-        SetVolumeBrick.prototype.merge({
-            _execute: function (scope) {
-                var val = this._percentage.calculate(scope);
-                if (!isNaN(val))
-                    this._sprite.volume = val;
-                this._return();
-            },
-        });
-
-        return SetVolumeBrick;
-    })(),
-
-    ChangeVolumeBrick: (function () {
-        ChangeVolumeBrick.extends(PocketCode.Model.BaseBrick, false);
-
-        function ChangeVolumeBrick(device, sprite, propObject) {
+        function VolumeBrick(device, sprite, propObject) {
             PocketCode.Model.BaseBrick.call(this, device, sprite, propObject);
 
             this._value = new PocketCode.Formula(device, sprite, propObject.value);
+            this.type = propObject.opType;
         }
 
         //formula accessors
-        Object.defineProperties(ChangeVolumeBrick.prototype, {
+        Object.defineProperties(VolumeBrick.prototype, {
             volumeFormula: {
                 get: function () {
                     return this._value;
                 },
             },
+            type: {
+                get: function () {
+                    return this._type;
+                },
+                set: function (type) {
+                    if (this._type == type)
+                        return;
+
+                    //validate type
+                    var found = false;
+                    for (var t in PocketCode.OpType) {
+                        if (PocketCode.OpType[t] == type) {
+                            found = true;
+                            break;
+                        }
+                    }
+                    if (!found)
+                        throw new Error('unrecognized type: check if type is part of PocketCode.OpType');
+
+                    this._type = type;
+                },
+            },
         });
 
-        ChangeVolumeBrick.prototype.merge({
+        VolumeBrick.prototype.merge({
             _execute: function (scope) {
                 var val = this._value.calculate(scope);
-                if (!isNaN(val))
-                    this._sprite.volume += val;
+                if (!isNaN(val)) {
+                    switch (this._type) {
+                        case PocketCode.OpType.SET:
+                            this._sprite.volume = val;
+                            break;
+                        case PocketCode.OpType.CHANGE:
+                            this._sprite.volume += val;
+                            break;
+                    }
+                }
                 this._return();
             },
         });
 
-        return ChangeVolumeBrick;
+        return VolumeBrick;
     })(),
 });
 
