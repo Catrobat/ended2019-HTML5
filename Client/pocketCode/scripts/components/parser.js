@@ -193,7 +193,7 @@ PocketCode.merge({
                     case 'StopAllSoundsBrick':
                         jsonBrick.stopType = PocketCode.StopType.ALL_SOUNDS;
                         type = "StopBrick";
-                        brick = new PocketCode.Model[type](this._device, currentSprite, jsonBrick);
+                        brick = new PocketCode.Model[type](this._device, currentSprite, this._scene, this._currentScriptId, jsonBrick);
                         break;
                     case 'SetVolumeBrick':
                         jsonBrick.opType = PocketCode.OpType.SET;
